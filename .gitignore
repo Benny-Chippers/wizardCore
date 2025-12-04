@@ -1,0 +1,47 @@
+# === Verilator build output ===
+obj_dir/
+logs/
+verilated.cpp
+verilated.h
+verilated_vcd_c.cpp
+verilated_vcd_c.h
+verilated_fst_c.cpp
+verilated_fst_c.h
+verilated.mk
+verilated.d
+*.d
+*.o
+*.a
+*.so
+*.vpd
+
+# C++ build output (common in Verilator projects)
+*.exe
+*.out
+*.elf
+
+# Simulation outputs
+*.vcd
+*.fst
+*.lxt
+*.lxt2
+*.vcd.gz
+*.fst.gz
+
+# GTKWave save files
+*.gtkw
+*.save
+
+# Temporary / debug files
+*.log
+*.tmp
+*.swp
+*.bak
+
+# VSCode / editor junk (optional but recommended)
+.vscode/
+*.code-workspace
+
+# Mac/Linux temp files
+.DS_Store
+Thumbs.db
