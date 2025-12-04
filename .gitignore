@@ -41,6 +41,7 @@ verilated.d
 # VSCode / editor junk (optional but recommended)
 .vscode/
 *.code-workspace
+*.sublime-workspace
 
 # Mac/Linux temp files
 .DS_Store
