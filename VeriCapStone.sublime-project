@@ -1,0 +1,37 @@
+{
+	"folders":
+	[
+		{
+			"path": ".",
+			"name": "base",
+		},
+		{
+			"path": "src",
+			"name": "src",
+			"file_include_patterns": ["*.sv","*.svh"],
+		}
+	],
+	"build_systems":
+    [
+        {
+            "name": "build",
+            "working_dir":"$project_path",
+            "shell_cmd": "make build",
+        },
+        {
+            "name": "sim",
+            "working_dir":"$project_path",
+            "shell_cmd": "make sim",
+        },
+        {
+        	"name": "view results",
+        	"working_dir":"$project_path",
+        	"shell_cmd":"make view",
+        },
+        {
+        	"name": "sim&view",
+        	"working_dir":"$project_path",
+        	"shell_cmd": "make simview",
+        }
+	],
+}
