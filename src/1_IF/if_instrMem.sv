@@ -45,8 +45,8 @@ module if_instrMem (
       28:  o_instr <= gen_instr(`SLL_OP, 9, 9, 2, 0);
       32:  o_instr <= gen_instr(`SUB_OP, 1, 1, 2, 0);
       36:  o_instr <= gen_instr(`BEQ_OP, 0, 1, 0, -20);
-      40:  o_instr <= gen_instr(`SW_OP, 0, 2, 9, 13'd4);
-      44:  o_instr <= gen_instr(`LW_OP, 10, 2, 0, 13'd4);
+      40:  o_instr <= gen_instr(`SW_OP, 0, 0, 9, 13'd4);
+      44:  o_instr <= gen_instr(`LW_OP, 10, 0, 0, 13'd4);
       default: o_instr <= gen_instr(`ADD_OP, 0, 0, 0, 0);
     endcase
   end
