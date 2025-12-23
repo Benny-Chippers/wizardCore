@@ -1,7 +1,10 @@
 module top (
     input clk,    // Clock
-    input reset_n  // Asynchronous reset active low
+    input reset_n,  // Asynchronous reset active low
+    output logic [31:0] mem_addr,
+    output logic [31:0] mem_data
 );
+
     // Internal signals
     logic PCSrc;
     logic [31:0] inAddr;
@@ -80,7 +83,9 @@ module top (
             .i_ctrlMEM    (mem),
             .i_zero       (zero),
             .o_readData   (readData),
-            .o_PCSrc      (PCSrc)
+            .o_PCSrc      (PCSrc),
+            .mem_addr     (mem_addr),
+            .mem_data     (mem_data)
         );
 
     wb_top WB
