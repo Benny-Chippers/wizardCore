@@ -42,7 +42,8 @@ module if_top (i_clk, i_reset_n, i_PCSrc, i_inAddr, o_outAddr, o_instruction);
     /////////////////////
     // assign to connect PCout and o_outAddr
     // MUX switches between internal incrementing or outside address computation
-    always begin
+    always_comb
+    begin
         o_outAddr = PCout;
 
         // MUX

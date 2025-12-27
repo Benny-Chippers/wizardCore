@@ -1,7 +1,8 @@
 module mem_top (
     i_clk, i_reset_n,
     i_memAddr, i_wrData, i_ctrlMEM, i_zero,
-    o_readData, o_PCSrc
+    o_readData, o_PCSrc,
+    mem_addr, mem_data
 );
     // I/O
     input logic i_clk;
@@ -12,6 +13,9 @@ module mem_top (
     input logic i_zero;
     output logic [31:0] o_readData;
     output logic o_PCSrc;
+    output logic [31:0] mem_addr;
+    output logic [31:0] mem_data;
+
 
     // Memory
     mem_memory Memory (
@@ -20,7 +24,9 @@ module mem_top (
         .i_memAddr   (i_memAddr),
         .i_writeData (i_wrData),
         .i_ctrlMEM   (i_ctrlMEM[1:0]),
-        .o_readData  (o_readData)
+        .o_readData  (o_readData),
+        .mem_addr    (mem_addr),
+        .mem_data    (mem_data)
     );
 
     // Combinational Logic

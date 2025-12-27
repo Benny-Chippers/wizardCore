@@ -47,6 +47,38 @@ module if_instrMem (
       36:  o_instr <= gen_instr(`BEQ_OP, 0, 1, 0, -20);
       40:  o_instr <= gen_instr(`SW_OP, 0, 0, 9, 13'd4);
       44:  o_instr <= gen_instr(`LW_OP, 10, 0, 0, 13'd4);
+      48:  o_instr <= gen_instr(`ADDI_OP, 1, 0, 0, 13'd1);
+      52:  o_instr <= gen_instr(`ADD_OP, 2, 1, 0, 0);
+      56:  o_instr <= gen_instr(`ADD_OP, 3, 2, 1, 0);
+      60:  o_instr <= gen_instr(`ADD_OP, 4, 3, 2, 0);
+      64:  o_instr <= gen_instr(`ADD_OP, 5, 4, 3, 0);
+      68:  o_instr <= gen_instr(`ADD_OP, 6, 5, 4, 0);
+      72:  o_instr <= gen_instr(`ADD_OP, 7, 6, 5, 0);
+      76:  o_instr <= gen_instr(`ADD_OP, 8, 7, 6, 0);
+      80:  o_instr <= gen_instr(`ADD_OP, 9, 8, 7, 0);
+      84:  o_instr <= gen_instr(`ADD_OP, 10, 9, 8, 0);
+      88:  o_instr <= gen_instr(`ADD_OP, 11, 10, 9, 0);
+      92:  o_instr <= gen_instr(`ADD_OP, 12, 11, 10, 0);
+      96:  o_instr <= gen_instr(`ADD_OP, 13, 12, 11, 0);
+      100: o_instr <= gen_instr(`ADD_OP, 14, 13, 12, 0);
+      104: o_instr <= gen_instr(`ADD_OP, 15, 14, 13, 0);
+      108: o_instr <= gen_instr(`ADD_OP, 16, 15, 14, 0);
+      112: o_instr <= gen_instr(`ADD_OP, 17, 16, 15, 0);
+      116: o_instr <= gen_instr(`ADD_OP, 18, 17, 16, 0);
+      120: o_instr <= gen_instr(`ADD_OP, 19, 18, 17, 0);
+      124: o_instr <= gen_instr(`ADD_OP, 20, 19, 18, 0);
+      128: o_instr <= gen_instr(`ADD_OP, 21, 20, 19, 0);
+      132: o_instr <= gen_instr(`ADD_OP, 22, 21, 20, 0);
+      136: o_instr <= gen_instr(`ADD_OP, 23, 22, 21, 0);
+      140: o_instr <= gen_instr(`ADD_OP, 24, 23, 22, 0);
+      144: o_instr <= gen_instr(`ADD_OP, 25, 24, 23, 0);
+      148: o_instr <= gen_instr(`ADD_OP, 26, 25, 24, 0);
+      152: o_instr <= gen_instr(`ADD_OP, 27, 26, 25, 0);
+      156: o_instr <= gen_instr(`ADD_OP, 28, 27, 26, 0);
+      160: o_instr <= gen_instr(`ADD_OP, 29, 28, 27, 0);
+      164: o_instr <= gen_instr(`ADD_OP, 30, 29, 28, 0);
+      168: o_instr <= gen_instr(`ADD_OP, 31, 30, 29, 0);
+
       default: o_instr <= gen_instr(`ADD_OP, 0, 0, 0, 0);
     endcase
   end
