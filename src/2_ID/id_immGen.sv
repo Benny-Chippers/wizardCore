@@ -11,25 +11,26 @@ module id_immGen (
             7'b0010011: begin
                 // I-Type Instruction (OP IMM)
                 o_imm = {20'b0, i_instr[31:20]};
-
             end
 
             7'b0000011: begin
                 // I-Type Instruction (LOAD)
                 o_imm = {20'b0, i_instr[31:20]};
-
             end
 
             7'b0100011: begin
                 // S-Type Instruction (STORE)
                 o_imm = {20'b0, i_instr[31:25], i_instr[11:7]};
-
             end
 
             7'b01100011: begin
                 // B-Type Instruction (Branch)
                 o_imm = {19'b0, i_instr[31], i_instr[7], i_instr[30:25], i_instr[11:8], 1'b0};
+            end
 
+            7'b0110111: begin
+                // U-Type Instruction (Load upper immediate)
+                o_imm = {i_instr[31:12], 12'b0};
             end
 
             default: begin

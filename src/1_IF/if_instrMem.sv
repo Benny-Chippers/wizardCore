@@ -1,7 +1,8 @@
-`define ADD_OP 0
-`define SUB_OP 1
-`define ADDI_OP 2
-`define SLL_OP 3
+`define LUI_OP 0
+`define ADD_OP 1
+`define SUB_OP 2
+`define ADDI_OP 3
+`define SLL_OP 4
 `define BEQ_OP 10
 `define SW_OP 20
 `define LW_OP 21
@@ -18,9 +19,10 @@ module if_instrMem (
     input [4:0]  rd;
     input [4:0]  rs1;
     input [4:0]  rs2;
-    input signed [12:0] imm;
+    input signed [31:0] imm;
     begin
       case (op)
+        `LUI_OP:  gen_instr = {imm[31:12], rd, 7'b0110111};
         `ADD_OP:  gen_instr = {7'b0000000, rs2, rs1, 3'b000, rd, 7'b0110011};
         `SUB_OP:  gen_instr = {7'b0100000, rs2, rs1, 3'b000, rd, 7'b0110011};
         `ADDI_OP: gen_instr = {imm[11:0], rs1, 3'b000, rd, 7'b0010011};
@@ -35,19 +37,20 @@ module if_instrMem (
 
   always_ff @(negedge i_clk) begin
     case (i_addr)
-      0:   o_instr <= gen_instr(`ADDI_OP, 1, 1, 0, 13'd1);
-      4:   o_instr <= gen_instr(`ADDI_OP, 2, 2, 0, 13'd1);
-      8:   o_instr <= gen_instr(`ADDI_OP, 8, 8, 0, 13'd53);
-      12:  o_instr <= gen_instr(`ADDI_OP, 7, 7, 0, 13'd27);
+      0:   o_instr <= gen_instr(`ADDI_OP, 1, 1, 0, 32'd1);
+      4:   o_instr <= gen_instr(`ADDI_OP, 2, 2, 0, 32'd1);
+      // 8:   o_instr <= gen_instr(`ADDI_OP, 8, 8, 0, 32'd53);
+      8:   o_instr <= gen_instr(`LUI_OP, 8, 0, 0, 32'h00_AB_F0_00);
+      12:  o_instr <= gen_instr(`ADDI_OP, 7, 7, 0, 32'd27);
       16:  o_instr <= gen_instr(`ADD_OP, 7, 7, 9, 0);
       20:  o_instr <= gen_instr(`ADD_OP, 9, 8, 7, 0);
       24:  o_instr <= gen_instr(`SUB_OP, 9, 9, 8, 0);
       28:  o_instr <= gen_instr(`SLL_OP, 9, 9, 2, 0);
       32:  o_instr <= gen_instr(`SUB_OP, 1, 1, 2, 0);
       36:  o_instr <= gen_instr(`BEQ_OP, 0, 1, 0, -20);
-      40:  o_instr <= gen_instr(`SW_OP, 0, 0, 9, 13'd4);
-      44:  o_instr <= gen_instr(`LW_OP, 10, 0, 0, 13'd4);
-      48:  o_instr <= gen_instr(`ADDI_OP, 1, 0, 0, 13'd1);
+      40:  o_instr <= gen_instr(`SW_OP, 0, 0, 9, 32'd4);
+      44:  o_instr <= gen_instr(`LW_OP, 10, 0, 0, 32'd4);
+      48:  o_instr <= gen_instr(`ADDI_OP, 1, 0, 0, 32'd1);
       52:  o_instr <= gen_instr(`ADD_OP, 2, 1, 0, 0);
       56:  o_instr <= gen_instr(`ADD_OP, 3, 2, 1, 0);
       60:  o_instr <= gen_instr(`ADD_OP, 4, 3, 2, 0);

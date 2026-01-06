@@ -97,6 +97,23 @@ module id_control (
                 o_ctrlWB[4:0] = 5'b00000;
             end
 
+            7'b0110111: begin
+                // U-Type Instruction (LUI)
+                // Register Reads
+                o_rdReg1[4:0] = 5'b00000;
+                o_rdReg2[4:0] = 5'b00000;
+                // EX Control
+                o_ctrlEX[12:11] = 2'b00;
+                o_ctrlEX[10] = 1'b1;
+                o_ctrlEX[9:7] = 3'b000;
+                o_ctrlEX[6:0] = 7'b000_0000;
+                // MEM Control
+                o_ctrlMEM[2:0] = 3'b000;
+                // WB Control
+                o_ctrlWB[6:5] = 2'b10;
+                o_ctrlWB[4:0] = i_instr[11:7];
+            end
+
             default: begin
                 // R-Type Instruction (NOP)
                 // Register Reads
