@@ -15,7 +15,7 @@ module top (
     logic zero;
     logic [31:0] readData;
     logic [31:0] wrData;
-    logic [12:0] ex;
+    logic [13:0] ex;
     logic [2:0] mem;
     logic [6:0] wb;
     logic [31:0] outAddr;
