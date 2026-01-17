@@ -16,8 +16,21 @@ module ex_alu (
             2'b00:      // Load/Store
                 o_result = i_A + i_B;
             2'b01:      // Branch
+            begin
+                case (i_ctrlALU[9:7])
+                    3'b000: o_zero = (i_A == i_B);  // BEQ
+                    3'b001: o_zero = (i_A != i_B);  // BNE
+                    3'b100: o_zero = ($signed(i_A) < $signed(i_B));  // BLT
+                    3'b101: o_zero = ($signed(i_A) >= $signed(i_B)); // BGE
+                    3'b110: o_zero = (i_A < i_B);    // BLTU
+                    3'b111: o_zero = (i_A >= i_B);   // BGEU
+                    default:
+                        o_zero = 1'b0;
+                endcase
                 o_result = i_A - i_B;
+            end
             2'b10:      // OP instruction
+            begin
                 case (i_ctrlALU[9:7])
                     3'b000:   // ADD / SUB
                         case (i_ctrlALU[6:0])
@@ -33,13 +46,16 @@ module ex_alu (
                         o_result = i_A & i_B;
                     default : o_result = 32'b0;
                 endcase
+            end
             default : o_result = 32'b0;
         endcase
         // Zero Flag
-        if(o_result == 32'b0) begin
-            o_zero = 1'b1;
-        end else begin
-            o_zero = 1'b0;
+        if(i_ctrlALU[11:10] != 2'b01) begin
+            if(o_result == 32'b0) begin
+                o_zero = 1'b1;
+            end else begin
+                o_zero = 1'b0;
+            end
         end
     end
 
