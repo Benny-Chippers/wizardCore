@@ -9,7 +9,7 @@ module mem_top (
     input logic i_reset_n;
     input logic [31:0] i_memAddr;
     input logic [31:0] i_wrData;
-    input logic [2:0] i_ctrlMEM;
+    input logic [3:0] i_ctrlMEM;
     input logic i_zero;
     output logic [31:0] o_readData;
     output logic o_PCSrc;
@@ -32,7 +32,7 @@ module mem_top (
     // Combinational Logic
     always_comb begin
         // Conditional Branch
-        o_PCSrc = i_ctrlMEM[2] & i_zero;
+        o_PCSrc = (i_ctrlMEM[2] & i_zero) | (i_ctrlMEM[3]);
     end
 
 

@@ -16,7 +16,7 @@ module top (
     logic [31:0] readData;
     logic [31:0] wrData;
     logic [13:0] ex;
-    logic [2:0] mem;
+    logic [3:0] mem;
     logic [6:0] wb;
     logic [31:0] outAddr;
     logic [31:0] resultALU;
@@ -69,6 +69,7 @@ module top (
             .i_regData2    (regData2),
             .i_immediate   (immediate),
             .i_ctrlEX      (ex),
+            .i_ctrlMEM     (mem[3:2]),
             .o_outAddr     (outAddr),
             .o_zero        (zero),
             .o_resultALU   (resultALU)

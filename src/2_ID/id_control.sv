@@ -7,7 +7,7 @@ module id_control (
     output logic [4:0] o_rdReg1;
     output logic [4:0] o_rdReg2;
     output logic [13:0] o_ctrlEX;       // ALUop(2), ALUSrc(2), func3, func7
-    output logic [2:0] o_ctrlMEM;       // Branch, Mem-Read, mem-Write
+    output logic [3:0] o_ctrlMEM;       // Jump, Branch, Mem-Read, mem-Write
     output logic [6:0] o_ctrlWB;        // Reg-Write, Memto-Reg, Write Register
 
     always_comb begin
@@ -23,7 +23,7 @@ module id_control (
                 o_ctrlEX[9:7] = i_instr[14:12];
                 o_ctrlEX[6:0] = i_instr[31:25];
                 // MEM Control
-                o_ctrlMEM[2:0] = 3'b000;
+                o_ctrlMEM[3:0] = 4'b0000;
                 // WB Control
                 o_ctrlWB[6:5] = 2'b10;
                 o_ctrlWB[4:0] = i_instr[11:7];
@@ -40,7 +40,7 @@ module id_control (
                 o_ctrlEX[9:7] = i_instr[14:12];
                 o_ctrlEX[6:0] = 7'b000_0000;
                 // MEM Control
-                o_ctrlMEM[2:0] = 3'b000;
+                o_ctrlMEM[3:0] = 4'b0000;
                 // WB Control
                 o_ctrlWB[6:5] = 2'b10;
                 o_ctrlWB[4:0] = i_instr[11:7];
@@ -57,7 +57,7 @@ module id_control (
                 o_ctrlEX[9:7] = i_instr[14:12];
                 o_ctrlEX[6:0] = 7'b000_0000;
                 // MEM Control
-                o_ctrlMEM[2:0] = 3'b010;
+                o_ctrlMEM[3:0] = 4'b0010;
                 // WB Control
                 o_ctrlWB[6:5] = 2'b11;
                 o_ctrlWB[4:0] = i_instr[11:7];
@@ -74,7 +74,7 @@ module id_control (
                 o_ctrlEX[9:7] = i_instr[14:12];
                 o_ctrlEX[6:0] = 7'b000_0000;
                 // MEM Control
-                o_ctrlMEM[2:0] = 3'b001;
+                o_ctrlMEM[3:0] = 4'b0001;
                 // WB Control
                 o_ctrlWB[6:5] = 2'b00;
                 o_ctrlWB[4:0] = 5'b00000;
@@ -91,7 +91,7 @@ module id_control (
                 o_ctrlEX[9:7] = i_instr[14:12];
                 o_ctrlEX[6:0] = 7'b000_0000;
                 // MEM Control
-                o_ctrlMEM[2:0] = 3'b100;
+                o_ctrlMEM[3:0] = 4'b0100;
                 // WB Control
                 o_ctrlWB[6:5] = 2'b00;
                 o_ctrlWB[4:0] = 5'b00000;
@@ -108,7 +108,7 @@ module id_control (
                 o_ctrlEX[9:7] = 3'b000;
                 o_ctrlEX[6:0] = 7'b000_0000;
                 // MEM Control
-                o_ctrlMEM[2:0] = 3'b000;
+                o_ctrlMEM[3:0] = 4'b0000;
                 // WB Control
                 o_ctrlWB[6:5] = 2'b10;
                 o_ctrlWB[4:0] = i_instr[11:7];
@@ -125,7 +125,24 @@ module id_control (
                 o_ctrlEX[9:7] = 3'b000;
                 o_ctrlEX[6:0] = 7'b000_0000;
                 // MEM Control
-                o_ctrlMEM[2:0] = 3'b100;
+                o_ctrlMEM[3:0] = 4'b1000;
+                // WB Control
+                o_ctrlWB[6:5] = 2'b10;
+                o_ctrlWB[4:0] = i_instr[11:7];
+            end
+
+            7'b1101111: begin
+                // J-Type Instruction (JAL)
+                // Register Reads
+                o_rdReg1[4:0] = 5'b00000;
+                o_rdReg2[4:0] = 5'b00000;
+                // EX Control
+                o_ctrlEX[13:12] = 2'b00;
+                o_ctrlEX[11:10] = 2'b10;
+                o_ctrlEX[9:7] = 3'b000;
+                o_ctrlEX[6:0] = 7'b000_0000;
+                // MEM Control
+                o_ctrlMEM[3:0] = 4'b1000;
                 // WB Control
                 o_ctrlWB[6:5] = 2'b10;
                 o_ctrlWB[4:0] = i_instr[11:7];
@@ -142,7 +159,7 @@ module id_control (
                 o_ctrlEX[9:7] = i_instr[14:12];
                 o_ctrlEX[6:0] = i_instr[31:25];
                 // MEM Control
-                o_ctrlMEM[2:0] = 3'b100;
+                o_ctrlMEM[3:0] = 4'b0000;
                 // WB Control
                 o_ctrlWB[6:5] = 2'b00;
                 o_ctrlWB[4:0] = 5'b00000;

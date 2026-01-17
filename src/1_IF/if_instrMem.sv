@@ -1,5 +1,6 @@
 `define LUI_OP 0
 `define AUIPC_OP 11
+`define JAL_OP 12
 `define ADD_OP 1
 `define SUB_OP 2
 `define ADDI_OP 3
@@ -25,6 +26,7 @@ module if_instrMem (
       case (op)
         `LUI_OP:  gen_instr = {imm[31:12], rd, 7'b0110111};
         `AUIPC_OP:gen_instr = {imm[31:12], rd, 7'b0010111};
+        `JAL_OP:  gen_instr = {imm[20], imm[10:1], imm[11], imm[19:12], rd, 7'b1101111};
         `ADD_OP:  gen_instr = {7'b0000000, rs2, rs1, 3'b000, rd, 7'b0110011};
         `SUB_OP:  gen_instr = {7'b0100000, rs2, rs1, 3'b000, rd, 7'b0110011};
         `ADDI_OP: gen_instr = {imm[11:0], rs1, 3'b000, rd, 7'b0010011};
@@ -83,7 +85,7 @@ module if_instrMem (
       160: o_instr <= gen_instr(`SUB_OP, 29, 28, 27, 0);
       164: o_instr <= gen_instr(`SUB_OP, 30, 29, 28, 0);
       168: o_instr <= gen_instr(`ADD_OP, 31, 30, 29, 0);
-      172: o_instr <= gen_instr(`AUIPC_OP, 8, 0, 0, 32'h00_AB_F0_00);
+      172: o_instr <= gen_instr(`JAL_OP, 8, 0, 0, 32'h00_0B_FA_00);
 
       default: o_instr <= gen_instr(`ADD_OP, 0, 0, 0, 0);
     endcase

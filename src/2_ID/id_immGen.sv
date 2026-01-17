@@ -37,6 +37,10 @@ module id_immGen (
         // U-Type Instruction (Add upper immediate to PC)
         o_imm = {i_instr[31:12], 12'b0};
       end
+      7'b1101111: begin
+        // J-Type Instruction (Jump and link)
+        o_imm = {{11{i_instr[31]}}, i_instr[31], i_instr[19:12], i_instr[20], i_instr[30:21], 1'b0};
+      end
 
       default: begin
         // R-Type Instruction (NOP)

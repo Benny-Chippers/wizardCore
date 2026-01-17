@@ -15,7 +15,7 @@ module id_top (
     output logic [31:0] o_rdData2;
     output logic [31:0] o_immediate;
     output logic [13:0] o_ctrlEX;       // ALUop(2), ALU src(2), func3, func7
-    output logic [2:0] o_ctrlMEM;       // Branch, Mem-Read, mem-Write
+    output logic [3:0] o_ctrlMEM;       // Branch, Mem-Read, mem-Write
     output logic [6:0] o_ctrlWB;        // Reg-Write, Memto-Reg
 
     // Internal wires
