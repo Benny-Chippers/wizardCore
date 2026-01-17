@@ -18,6 +18,11 @@ module id_immGen (
         o_imm = {{20{i_instr[31]}}, i_instr[31:20]};
       end
 
+      7'b1100111: begin
+        // I-Type Instruction (JALR)
+        o_imm = {{20{i_instr[31]}}, i_instr[31:20]};
+      end
+
       7'b0100011: begin
         // S-Type Instruction (STORE)
         o_imm = {{20{i_instr[31]}}, i_instr[31:25], i_instr[11:7]};

@@ -63,6 +63,23 @@ module id_control (
                 o_ctrlWB[4:0] = i_instr[11:7];
             end
 
+            7'b1100111: begin
+                // I-Type Instruction (JALR)
+                // Register Reads
+                o_rdReg1[4:0] = i_instr[19:15];
+                o_rdReg2[4:0] = 5'b00000;
+                // EX Control
+                o_ctrlEX[13:12] = 2'b00;
+                o_ctrlEX[11:10] = 2'b10;
+                o_ctrlEX[9:7] = i_instr[14:12];
+                o_ctrlEX[6:0] = 7'b000_0000;
+                // MEM Control
+                o_ctrlMEM[3:0] = 4'b1100;
+                // WB Control
+                o_ctrlWB[6:5] = 2'b10;
+                o_ctrlWB[4:0] = i_instr[11:7];
+            end
+
             7'b0100011: begin
                 // S-Type Instruction (STORE)
                 // Register Reads
