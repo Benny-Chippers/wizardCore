@@ -26,7 +26,7 @@ module top (
     logic clk_mem;
 
 
-
+    (* keep_hierarchy = "yes" *)
     top_clk CLK_GEN
         (
             .i_clk      (clk),
@@ -35,7 +35,7 @@ module top (
             .o_clk_id   (clk_id),
             .o_clk_mem  (clk_mem)
         );
-
+    (* keep_hierarchy = "yes" *)
     if_top IF
         (
             .i_clk        (clk_if),
@@ -45,7 +45,7 @@ module top (
             .o_outAddr    (inAddr),
             .o_instruction(instruction)
         );
-
+    (* keep_hierarchy = "yes" *)
     id_top ID
         (
             .i_clk          (clk_id),
@@ -61,7 +61,7 @@ module top (
             .o_ctrlMEM      (mem),
             .o_ctrlWB       (wb)
         );
-
+    (* keep_hierarchy = "yes" *)
     ex_top EX
         (
             .i_inAddr       (inAddr),
@@ -74,7 +74,7 @@ module top (
             .o_zero        (zero),
             .o_resultALU   (resultALU)
         );
-
+    (* keep_hierarchy = "yes" *)
     mem_top MEM
         (
             .i_clk        (clk_mem),
@@ -88,7 +88,7 @@ module top (
             .mem_addr     (mem_addr),
             .mem_data     (mem_data)
         );
-
+    (* keep_hierarchy = "yes" *)
     wb_top WB
         (
             .i_ctrlWB     (wb[5]),
