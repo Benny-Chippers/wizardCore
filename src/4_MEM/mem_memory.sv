@@ -15,7 +15,8 @@ module mem_memory (
     output logic [31:0] mem_data;
 
     // Memory Array
-    logic [31:0] mem_array [256];
+    logic [31:0] mem_array [2048];
+
 
 
 
@@ -24,7 +25,7 @@ module mem_memory (
         if (!i_reset_n) begin
             o_readData <= 32'b0;
         end else if (i_ctrlMEM[1]) begin
-            o_readData <= mem_array[i_memAddr[9:2]]; // Word-aligned access
+            o_readData <= mem_array[i_memAddr[12:2]]; // Word-aligned access
         end
     end
 
@@ -35,7 +36,7 @@ module mem_memory (
                 mem_array[i] <= 32'b0;
             end
         end else if (i_ctrlMEM[0]) begin
-            mem_array[i_memAddr[9:2]] <= i_writeData; // Word-aligned access
+            mem_array[i_memAddr[12:2]] <= i_writeData; // Word-aligned access
         end
     end
 

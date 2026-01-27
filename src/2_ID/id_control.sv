@@ -142,7 +142,7 @@ module id_control (
                 o_ctrlEX[9:7] = 3'b000;
                 o_ctrlEX[6:0] = 7'b000_0000;
                 // MEM Control
-                o_ctrlMEM[3:0] = 4'b1000;
+                o_ctrlMEM[3:0] = 4'b0000;
                 // WB Control
                 o_ctrlWB[6:5] = 2'b10;
                 o_ctrlWB[4:0] = i_instr[11:7];

@@ -41,7 +41,7 @@ module testBench
 
     initial
      begin
-         #3000 $dumpflush;
+         #36000 $dumpflush;
          $finish;
      end
 
