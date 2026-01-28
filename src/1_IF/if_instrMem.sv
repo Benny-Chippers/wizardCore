@@ -1,19 +1,36 @@
 `define LUI_OP 0
-`define AUIPC_OP 11
-`define JAL_OP 12
-`define JALR_OP 13
+`define AUIPC_OP 1
+`define JAL_OP 2
+`define JALR_OP 3
 `define BEQ_OP 10
-`define BNE_OP 14
-`define BLT_OP 15
-`define BGE_OP 16
-`define BLTU_OP 17
-`define BGEU_OP 18
-`define ADD_OP 1
-`define SUB_OP 2
-`define ADDI_OP 3
-`define SLL_OP 4
-`define SW_OP 20
-`define LW_OP 21
+`define BNE_OP 11
+`define BLT_OP 12
+`define BGE_OP 13
+`define BLTU_OP 14
+`define BGEU_OP 15
+`define LW_OP 20
+`define SW_OP 21
+`define ADDI_OP 30
+`define SLTI_OP 31
+`define SLTIU_OP 32
+`define XORI_OP 33
+`define ORI_OP 34
+`define ANDI_OP 35
+`define SLLI_OP 36
+`define SRLI_OP 37
+`define SRAI_OP 38
+`define ADD_OP 40
+`define SUB_OP 41
+`define SLL_OP 42
+`define SLT_OP 43
+`define SLTU_OP 44
+`define XOR_OP 45
+`define SRL_OP 46
+`define SRA_OP 47
+`define OR_OP 48
+`define AND_OP 49
+
+
 
 module if_instrMem (
   input  logic        i_clk,
@@ -40,12 +57,23 @@ module if_instrMem (
         `BGE_OP:  gen_instr = {imm[12], imm[10:5], rs2, rs1, 3'b101, imm[4:1], imm[11], 7'b1100011};
         `BLTU_OP: gen_instr = {imm[12], imm[10:5], rs2, rs1, 3'b110, imm[4:1], imm[11], 7'b1100011};
         `BGEU_OP: gen_instr = {imm[12], imm[10:5], rs2, rs1, 3'b111, imm[4:1], imm[11], 7'b1100011};
+        `LW_OP:   gen_instr = {imm[11:0], rs1, 3'b010, rd, 7'b0000011};
+        `SW_OP:   gen_instr = {imm[11:5], rs2, rs1, 3'b010, imm[4:0], 7'b0100011};
+        `ADDI_OP: gen_instr = {imm[11:0], rs1, 3'b000, rd, 7'b0010011};
+        `SLTI_OP: gen_instr = {imm[11:0], rs1, 3'b010, rd, 7'b0010011};
+        `SLTIU_OP: gen_instr = {imm[11:0], rs1, 3'b011, rd, 7'b0010011};
+        `XORI_OP: gen_instr = {imm[11:0], rs1, 3'b100, rd, 7'b0010011};
+        `ORI_OP:  gen_instr = {imm[11:0], rs1, 3'b110, rd, 7'b0010011};
+        `ANDI_OP: gen_instr = {imm[11:0], rs1, 3'b111, rd, 7'b0010011};
+        `SLLI_OP: gen_instr = {7'b0000000, imm[4:0], rs1, 3'b001, rd, 7'b0010011};
+        `SRLI_OP: gen_instr = {7'b0000000, imm[4:0], rs1, 3'b101, rd, 7'b0010011};
+        `SRAI_OP: gen_instr = {7'b0100000, imm[4:0], rs1, 3'b101, rd, 7'b0010011};
         `ADD_OP:  gen_instr = {7'b0000000, rs2, rs1, 3'b000, rd, 7'b0110011};
         `SUB_OP:  gen_instr = {7'b0100000, rs2, rs1, 3'b000, rd, 7'b0110011};
-        `ADDI_OP: gen_instr = {imm[11:0], rs1, 3'b000, rd, 7'b0010011};
         `SLL_OP:  gen_instr = {7'b0000000, rs2, rs1, 3'b001, rd, 7'b0110011};
-        `SW_OP:   gen_instr = {imm[11:5], rs2, rs1, 3'b010, imm[4:0], 7'b0100011};
-        `LW_OP:   gen_instr = {imm[11:0], rs1, 3'b010, rd, 7'b0000011};
+        `SLT_OP:  gen_instr = {7'b0000000, rs2, rs1, 3'b010, rd, 7'b0110011};
+        `SLTU_OP:  gen_instr = {7'b0000000, rs2, rs1, 3'b011, rd, 7'b0110011};
+        `XOR_OP:  gen_instr = {7'b0000000, rs2, rs1, 3'b100, rd, 7'b0110011};
         default:  gen_instr = 32'h00000000;
       endcase
     end

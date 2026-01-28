@@ -16,7 +16,6 @@ module ex_top (
     // Internal Wires
     logic [31:0] w_A;
     logic [31:0] w_B;
-    logic w_zero;
 
     // ALU
     ex_alu ALU (
@@ -24,7 +23,7 @@ module ex_top (
         .i_B       (w_B),
         .i_ctrlALU ({i_ctrlEX[13:12],i_ctrlEX[9:0]}),
         .o_result  (o_resultALU),
-        .o_zero    (w_zero)
+        .o_zero    (o_zero)
     );
 
     // Combinational Logic
@@ -36,8 +35,6 @@ module ex_top (
             o_outAddr = i_inAddr + i_immediate;    // JAL, and branches
         end
 
-        // Zero Flag (delete if remains unchanged)
-        o_zero = w_zero;
 
         // ALU Src
         if(i_ctrlEX[11] == 0) begin

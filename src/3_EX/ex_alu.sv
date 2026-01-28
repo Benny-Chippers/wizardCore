@@ -40,6 +40,26 @@ module ex_alu (
                         endcase
                     3'b001:   // SLL
                         o_result = i_A << i_B[4:0];
+                    3'b010:   // SLT
+                        if( $signed(i_A) < $signed(i_B) ) begin
+                            o_result = 32'd1;
+                        end else begin
+                            o_result = 32'b0;
+                        end
+                    3'b011:
+                        if( i_A < i_B ) begin
+                            o_result = 32'd1;
+                        end else begin
+                            o_result = 32'b0;
+                        end
+                    3'b100:   // XOR
+                        o_result = i_A ^ i_B;
+                    3'b101:   // SRL / SRA
+                        case (i_ctrlALU[6:0])
+                            7'b000_0000: o_result = i_A >> i_B[4:0];    // SRL
+                            7'b010_0000: o_result = $signed(i_A) >>> i_B[4:0]; // SRA
+                            default : o_result = 32'b0;
+                        endcase
                     3'b110:   // OR
                         o_result = i_A | i_B;
                     3'b111:   // AND

@@ -32,7 +32,7 @@ module mem_memory (
     // Memory Write
     always_ff @(posedge i_clk or negedge i_reset_n) begin
         if (!i_reset_n) begin
-            for (int i = 0; i < 256; i++) begin
+            for (int i = 0; i < 2048; i++) begin
                 mem_array[i] <= 32'b0;
             end
         end else if (i_ctrlMEM[0]) begin

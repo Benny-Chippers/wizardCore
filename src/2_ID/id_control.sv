@@ -30,20 +30,37 @@ module id_control (
             end
 
             7'b0010011: begin
-                // I-Type Instruction (OP IMM)
-                // Register Reads
-                o_rdReg1[4:0] = i_instr[19:15];
-                o_rdReg2[4:0] = 5'b00000;
-                // EX Control
-                o_ctrlEX[13:12] = 2'b10;
-                o_ctrlEX[11:10] = 2'b01;
-                o_ctrlEX[9:7] = i_instr[14:12];
-                o_ctrlEX[6:0] = 7'b000_0000;
-                // MEM Control
-                o_ctrlMEM[3:0] = 4'b0000;
-                // WB Control
-                o_ctrlWB[6:5] = 2'b10;
-                o_ctrlWB[4:0] = i_instr[11:7];
+                if(i_instr[14:12] == 3'b101 || i_instr[14:12] == 3'b001) begin
+                    // I-Type Instruction (SLLI, SRLI, SRAI)
+                    // Register Reads
+                    o_rdReg1[4:0] = i_instr[19:15];
+                    o_rdReg2[4:0] = 5'b00000;
+                    // EX Control
+                    o_ctrlEX[13:12] = 2'b10;
+                    o_ctrlEX[11:10] = 2'b01;
+                    o_ctrlEX[9:7] = i_instr[14:12];
+                    o_ctrlEX[6:0] = i_instr[31:25];
+                    // MEM Control
+                    o_ctrlMEM[3:0] = 4'b0000;
+                    // WB Control
+                    o_ctrlWB[6:5] = 2'b10;
+                    o_ctrlWB[4:0] = i_instr[11:7];
+                end else begin
+                    // I-Type Instruction (OP IMM)
+                    // Register Reads
+                    o_rdReg1[4:0] = i_instr[19:15];
+                    o_rdReg2[4:0] = 5'b00000;
+                    // EX Control
+                    o_ctrlEX[13:12] = 2'b10;
+                    o_ctrlEX[11:10] = 2'b01;
+                    o_ctrlEX[9:7] = i_instr[14:12];
+                    o_ctrlEX[6:0] = 7'b000_0000;
+                    // MEM Control
+                    o_ctrlMEM[3:0] = 4'b0000;
+                    // WB Control
+                    o_ctrlWB[6:5] = 2'b10;
+                    o_ctrlWB[4:0] = i_instr[11:7];
+                end
             end
 
             7'b0000011: begin
