@@ -1,3 +1,5 @@
+(* keep_hierarchy = "yes" *)
+(* max_fanout = 20 *)
 module top (
     input clk,    // Clock
     input reset_n,  // Asynchronous reset active low
@@ -15,9 +17,9 @@ module top (
     logic zero;
     logic [31:0] readData;
     logic [31:0] wrData;
-    logic [13:0] ex;
-    logic [3:0] mem;
-    logic [6:0] wb;
+    ex_ctrl_t ex;
+    mem_ctrl_t mem;
+    wb_ctrl_t wb;
     logic [31:0] outAddr;
     logic [31:0] resultALU;
 
@@ -26,7 +28,6 @@ module top (
     logic clk_mem;
 
 
-    (* keep_hierarchy = "yes" *)
     top_clk CLK_GEN
         (
             .i_clk      (clk),
@@ -35,7 +36,7 @@ module top (
             .o_clk_id   (clk_id),
             .o_clk_mem  (clk_mem)
         );
-    (* keep_hierarchy = "yes" *)
+
     if_top IF
         (
             .i_clk        (clk_if),
@@ -45,14 +46,14 @@ module top (
             .o_outAddr    (inAddr),
             .o_instruction(instruction)
         );
-    (* keep_hierarchy = "yes" *)
+
     id_top ID
         (
             .i_clk          (clk_id),
             .i_reset_n      (reset_n),
             .i_instr        (instruction),
-            .i_wrSig        (wb[6]),
-            .i_wrReg        (wb[4:0]),
+            .i_wrSig        (wb.regWrite),
+            .i_wrReg        (wb.writeReg),
             .i_wrData       (wrData),
             .o_rdData1      (regData1),
             .o_rdData2      (regData2),
@@ -61,7 +62,7 @@ module top (
             .o_ctrlMEM      (mem),
             .o_ctrlWB       (wb)
         );
-    (* keep_hierarchy = "yes" *)
+
     ex_top EX
         (
             .i_inAddr       (inAddr),
@@ -69,12 +70,12 @@ module top (
             .i_regData2    (regData2),
             .i_immediate   (immediate),
             .i_ctrlEX      (ex),
-            .i_ctrlMEM     (mem[3:2]),
+            .i_ctrlMEM     ({mem.jump,mem.branch}),
             .o_outAddr     (outAddr),
             .o_zero        (zero),
             .o_resultALU   (resultALU)
         );
-    (* keep_hierarchy = "yes" *)
+
     mem_top MEM
         (
             .i_clk        (clk_mem),
@@ -88,10 +89,10 @@ module top (
             .mem_addr     (mem_addr),
             .mem_data     (mem_data)
         );
-    (* keep_hierarchy = "yes" *)
+
     wb_top WB
         (
-            .i_ctrlWB     (wb[5]),
+            .i_ctrlWB     (wb.memToReg),
             .i_readData   (readData),
             .i_resultALU  (resultALU),
             .o_wrData     (wrData)

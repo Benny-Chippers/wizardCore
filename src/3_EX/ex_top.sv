@@ -7,7 +7,7 @@ module ex_top (
     input logic [31:0] i_regData1;
     input logic [31:0] i_regData2;
     input logic [31:0] i_immediate;
-    input logic [13:0] i_ctrlEX;
+    input ex_ctrl_t i_ctrlEX;
     input logic [1:0] i_ctrlMEM;
     output logic [31:0] o_outAddr;
     output logic o_zero;
@@ -21,7 +21,7 @@ module ex_top (
     ex_alu ALU (
         .i_A       (w_A),
         .i_B       (w_B),
-        .i_ctrlALU ({i_ctrlEX[13:12],i_ctrlEX[9:0]}),
+        .i_ctrlALU ({i_ctrlEX.aluOp,i_ctrlEX.func3,i_ctrlEX.func7}),
         .o_result  (o_resultALU),
         .o_zero    (o_zero)
     );

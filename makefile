@@ -9,7 +9,7 @@ OUT_DIR  	:= $(PROJ_DIR)/output
 SRC_DIRS 	:= $(wildcard $(SRC_DIR)/*/)
 INC_FLAGS 	:= $(addprefix -I, $(SRC_DIRS))
 
-VER_FLAGS 	:= $(INC_FLAGS) -Isrc --binary --trace
+VER_FLAGS 	:= $(INC_FLAGS) -Isrc --binary --trace $(SRC_DIR)/COM/macro.sv
 
 
 
