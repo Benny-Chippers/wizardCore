@@ -70,7 +70,7 @@ module top (
             .i_regData2    (regData2),
             .i_immediate   (immediate),
             .i_ctrlEX      (ex),
-            .i_ctrlMEM     ({mem.jump,mem.branch}),
+            .i_ctrlMEM     ({mem.Jump,mem.Branch}),
             .o_outAddr     (outAddr),
             .o_zero        (zero),
             .o_resultALU   (resultALU)

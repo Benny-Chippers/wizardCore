@@ -9,7 +9,7 @@ module mem_top (
     input logic i_reset_n;
     input logic [31:0] i_memAddr;
     input logic [31:0] i_wrData;
-    input logic [3:0] i_ctrlMEM;
+    input mem_ctrl_t i_ctrlMEM;
     input logic i_zero;
     output logic [31:0] o_readData;
     output logic o_PCSrc;
@@ -17,22 +17,29 @@ module mem_top (
     output logic [31:0] mem_data;
 
 
-    // Memory
+    // Simulation Memory
+    `ifdef SIMULATION
     mem_memory Memory (
         .i_clk       (i_clk),
         .i_reset_n   (i_reset_n),
         .i_memAddr   (i_memAddr),
         .i_writeData (i_wrData),
-        .i_ctrlMEM   (i_ctrlMEM[1:0]),
+        .i_ctrlMEM   (i_ctrlMEM),
         .o_readData  (o_readData),
         .mem_addr    (mem_addr),
         .mem_data    (mem_data)
     );
+    `endif
+
+    // Real Memory
+    `ifndef SIMULATION
+
+    `endif
 
     // Combinational Logic
     always_comb begin
         // Conditional Branch
-        o_PCSrc = (i_ctrlMEM[2] & i_zero) | (i_ctrlMEM[3]);
+        o_PCSrc = (i_ctrlMEM.Branch & i_zero) | (i_ctrlMEM.Jump);
     end
 
 

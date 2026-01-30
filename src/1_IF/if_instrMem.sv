@@ -8,8 +8,14 @@
 `define BGE_OP 13
 `define BLTU_OP 14
 `define BGEU_OP 15
-`define LW_OP 20
-`define SW_OP 21
+`define LB_OP 20
+`define LH_OP 21
+`define LW_OP 22
+`define LBU_OP 23
+`define LHU_OP 24
+`define SB_OP 25
+`define SH_OP 26
+`define SW_OP 27
 `define ADDI_OP 30
 `define SLTI_OP 31
 `define SLTIU_OP 32
@@ -57,11 +63,17 @@ module if_instrMem (
         `BGE_OP:  gen_instr = {imm[12], imm[10:5], rs2, rs1, 3'b101, imm[4:1], imm[11], 7'b1100011};
         `BLTU_OP: gen_instr = {imm[12], imm[10:5], rs2, rs1, 3'b110, imm[4:1], imm[11], 7'b1100011};
         `BGEU_OP: gen_instr = {imm[12], imm[10:5], rs2, rs1, 3'b111, imm[4:1], imm[11], 7'b1100011};
+        `LB_OP:   gen_instr = {imm[11:0], rs1, 3'b000, rd, 7'b0000011};
+        `LH_OP:   gen_instr = {imm[11:0], rs1, 3'b001, rd, 7'b0000011};
         `LW_OP:   gen_instr = {imm[11:0], rs1, 3'b010, rd, 7'b0000011};
+        `LBU_OP:  gen_instr = {imm[11:0], rs1, 3'b100, rd, 7'b0000011};
+        `LHU_OP:  gen_instr = {imm[11:0], rs1, 3'b101, rd, 7'b0000011};
+        `SB_OP:   gen_instr = {imm[11:5], rs2, rs1, 3'b000, imm[4:0], 7'b0100011};
+        `SH_OP:   gen_instr = {imm[11:5], rs2, rs1, 3'b001, imm[4:0], 7'b0100011};
         `SW_OP:   gen_instr = {imm[11:5], rs2, rs1, 3'b010, imm[4:0], 7'b0100011};
         `ADDI_OP: gen_instr = {imm[11:0], rs1, 3'b000, rd, 7'b0010011};
         `SLTI_OP: gen_instr = {imm[11:0], rs1, 3'b010, rd, 7'b0010011};
-        `SLTIU_OP: gen_instr = {imm[11:0], rs1, 3'b011, rd, 7'b0010011};
+        `SLTIU_OP:gen_instr = {imm[11:0], rs1, 3'b011, rd, 7'b0010011};
         `XORI_OP: gen_instr = {imm[11:0], rs1, 3'b100, rd, 7'b0010011};
         `ORI_OP:  gen_instr = {imm[11:0], rs1, 3'b110, rd, 7'b0010011};
         `ANDI_OP: gen_instr = {imm[11:0], rs1, 3'b111, rd, 7'b0010011};
@@ -72,7 +84,7 @@ module if_instrMem (
         `SUB_OP:  gen_instr = {7'b0100000, rs2, rs1, 3'b000, rd, 7'b0110011};
         `SLL_OP:  gen_instr = {7'b0000000, rs2, rs1, 3'b001, rd, 7'b0110011};
         `SLT_OP:  gen_instr = {7'b0000000, rs2, rs1, 3'b010, rd, 7'b0110011};
-        `SLTU_OP:  gen_instr = {7'b0000000, rs2, rs1, 3'b011, rd, 7'b0110011};
+        `SLTU_OP: gen_instr = {7'b0000000, rs2, rs1, 3'b011, rd, 7'b0110011};
         `XOR_OP:  gen_instr = {7'b0000000, rs2, rs1, 3'b100, rd, 7'b0110011};
         default:  gen_instr = 32'h00000000;
       endcase
@@ -122,9 +134,15 @@ module if_instrMem (
       152: o_instr <= gen_instr(`SUB_OP, 27, 26, 25, 0);
       156: o_instr <= gen_instr(`SUB_OP, 28, 27, 26, 0);
       160: o_instr <= gen_instr(`SUB_OP, 29, 28, 27, 0);
-      164: o_instr <= gen_instr(`SUB_OP, 30, 29, 28, 0);
-      168: o_instr <= gen_instr(`ADD_OP, 31, 30, 29, 0);
-      172: o_instr <= gen_instr(`JAL_OP, 8, 0, 0, 32'h00_0B_FA_00);
+      164: o_instr <= gen_instr(`LUI_OP, 5, 0, 0, 32'hCD_AA_BA_AA);
+      168: o_instr <= gen_instr(`ADDI_OP, 5, 5, 0, -1247);
+      172: o_instr <= gen_instr(`SW_OP, 0, 0, 5, 32'd8);
+      // LB
+      176: o_instr <= gen_instr(`LB_OP, 6, 0, 0, 32'd8);
+      180: o_instr <= gen_instr(`LB_OP, 7, 0, 0, 32'd9);
+      184: o_instr <= gen_instr(`LB_OP, 8, 0, 0, 32'd10);
+      188: o_instr <= gen_instr(`LB_OP, 9, 0, 0, 32'd11);
+
       785068: o_instr <= gen_instr(`JALR_OP, 1, 8, 0, 32'd0);
 
       default: o_instr <= gen_instr(`ADD_OP, 0, 0, 0, 0);

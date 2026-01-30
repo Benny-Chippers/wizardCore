@@ -12,8 +12,10 @@ typedef struct packed {
 } alu_ctrl_t;
 
 typedef struct packed {
-	logic jump;
-	logic branch;
+	logic sign;			// Signed (0), Unsigned (1)
+	logic [1:0] size;   // Byte (00), Half (01), Word (10)
+	logic Jump;
+	logic Branch;
 	logic memRead;
 	logic memWrite;
 } mem_ctrl_t;

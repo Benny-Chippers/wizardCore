@@ -23,6 +23,7 @@ module id_control (
                 o_ctrlEX.func3 = `FUNCT3;
                 o_ctrlEX.func7 = `FUNCT7;
                 // MEM Control
+                o_ctrlMEM[6:4] = 3'b000;
                 o_ctrlMEM[3:0] = 4'b0000;
                 // WB Control
                 o_ctrlWB[6:5] = 2'b10;
@@ -41,6 +42,7 @@ module id_control (
                     o_ctrlEX.func3 = `FUNCT3;
                     o_ctrlEX.func7 = `FUNCT7;
                     // MEM Control
+                    o_ctrlMEM[6:4] = 3'b000;
                     o_ctrlMEM[3:0] = 4'b0000;
                     // WB Control
                     o_ctrlWB[6:5] = 2'b10;
@@ -56,6 +58,7 @@ module id_control (
                     o_ctrlEX.func3 = `FUNCT3;
                     o_ctrlEX.func7 = 7'b000_0000;
                     // MEM Control
+                    o_ctrlMEM[6:4] = 3'b000;
                     o_ctrlMEM[3:0] = 4'b0000;
                     // WB Control
                     o_ctrlWB[6:5] = 2'b10;
@@ -74,6 +77,7 @@ module id_control (
                 o_ctrlEX.func3 = `FUNCT3;
                 o_ctrlEX.func7 = 7'b000_0000;
                 // MEM Control
+                o_ctrlMEM[6:4] = `FUNCT3;
                 o_ctrlMEM[3:0] = 4'b0010;
                 // WB Control
                 o_ctrlWB[6:5] = 2'b11;
@@ -91,6 +95,7 @@ module id_control (
                 o_ctrlEX.func3 = `FUNCT3;
                 o_ctrlEX.func7 = 7'b000_0000;
                 // MEM Control
+                o_ctrlMEM[6:4] = 3'b000;
                 o_ctrlMEM[3:0] = 4'b1100;
                 // WB Control
                 o_ctrlWB[6:5] = 2'b10;
@@ -108,6 +113,7 @@ module id_control (
                 o_ctrlEX.func3 = `FUNCT3;
                 o_ctrlEX.func7 = 7'b000_0000;
                 // MEM Control
+                o_ctrlMEM[6:4] = `FUNCT3;
                 o_ctrlMEM[3:0] = 4'b0001;
                 // WB Control
                 o_ctrlWB[6:5] = 2'b00;
@@ -125,6 +131,7 @@ module id_control (
                 o_ctrlEX.func3 = `FUNCT3;
                 o_ctrlEX.func7 = 7'b000_0000;
                 // MEM Control
+                o_ctrlMEM[6:4] = 3'b000;
                 o_ctrlMEM[3:0] = 4'b0100;
                 // WB Control
                 o_ctrlWB[6:5] = 2'b00;
@@ -142,6 +149,7 @@ module id_control (
                 o_ctrlEX.func3 = 3'b000;
                 o_ctrlEX.func7 = 7'b000_0000;
                 // MEM Control
+                o_ctrlMEM[6:4] = 3'b000;
                 o_ctrlMEM[3:0] = 4'b0000;
                 // WB Control
                 o_ctrlWB[6:5] = 2'b10;
@@ -159,6 +167,7 @@ module id_control (
                 o_ctrlEX.func3 = 3'b000;
                 o_ctrlEX.func7 = 7'b000_0000;
                 // MEM Control
+                o_ctrlMEM[6:4] = 3'b000;
                 o_ctrlMEM[3:0] = 4'b0000;
                 // WB Control
                 o_ctrlWB[6:5] = 2'b10;
@@ -176,6 +185,7 @@ module id_control (
                 o_ctrlEX.func3 = 3'b000;
                 o_ctrlEX.func7 = 7'b000_0000;
                 // MEM Control
+                o_ctrlMEM[6:4] = 3'b000;
                 o_ctrlMEM[3:0] = 4'b1000;
                 // WB Control
                 o_ctrlWB[6:5] = 2'b10;
@@ -193,6 +203,7 @@ module id_control (
                 o_ctrlEX.func3 = `FUNCT3;
                 o_ctrlEX.func7 = `FUNCT7;
                 // MEM Control
+                o_ctrlMEM[6:4] = 3'b000;
                 o_ctrlMEM[3:0] = 4'b0000;
                 // WB Control
                 o_ctrlWB[6:5] = 2'b00;
