@@ -9,6 +9,8 @@ module top (
 
     // Internal signals
     logic PCSrc;
+    logic [31:0] mem_instr;
+    logic [31:0] mem_instrAddr;
     logic [31:0] inAddr;
     logic [31:0] instruction;
     logic [31:0] immediate;
@@ -43,8 +45,10 @@ module top (
             .i_reset_n    (reset_n),
             .i_PCSrc      (PCSrc),
             .i_inAddr     (outAddr),
+            .i_mem_instr  (mem_instr),
             .o_outAddr    (inAddr),
-            .o_instruction(instruction)
+            .o_instruction(instruction),
+            .o_mem_instrAddr(mem_instrAddr)
         );
 
     id_top ID
@@ -79,12 +83,15 @@ module top (
     mem_top MEM
         (
             .i_clk        (clk_mem),
+            .i_clk_if      (clk_if),
             .i_reset_n    (reset_n),
             .i_memAddr    (resultALU),
+            .i_if_instrAddr(mem_instrAddr),
             .i_wrData     (regData2),
             .i_ctrlMEM    (mem),
             .i_zero       (zero),
             .o_readData   (readData),
+            .o_if_instr   (mem_instr),
             .o_PCSrc      (PCSrc),
             .mem_addr     (mem_addr),
             .mem_data     (mem_data)

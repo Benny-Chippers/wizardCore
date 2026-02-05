@@ -27,6 +27,7 @@ typedef struct packed {
 } wb_ctrl_t;
 
 
+// Control Signal Definitions
 `define OPCODE  i_instr[6:0]
 `define RD      i_instr[11:7]
 `define RS1     i_instr[19:15]

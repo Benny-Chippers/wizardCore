@@ -36,12 +36,16 @@
 `define OR_OP 48
 `define AND_OP 49
 
+// `define SCRIPT_TEST
+
 
 
 module if_instrMem (
   input  logic        i_clk,
   input  logic [31:0] i_addr,
-  output logic [31:0] o_instr
+  input  logic [31:0] i_mem_instr,
+  output logic [31:0] o_instr,
+  output logic [31:0] o_mem_instrAddr
 );
 
   // Function to generate a 32-bit instruction
@@ -91,6 +95,21 @@ module if_instrMem (
     end
   endfunction
 
+`ifndef SCRIPT_TEST
+
+  // Route to main memory
+  // gets latched in PC
+  assign o_mem_instrAddr = i_addr;
+
+  // Should latch when accessing block RAM
+  // always_ff @(negedge i_clk) begin
+  //   o_instr <= i_mem_instr;
+  // end
+
+  assign o_instr = i_mem_instr;
+
+`else
+
   always_ff @(negedge i_clk) begin
     case (i_addr)
       0:   o_instr <= gen_instr(`ADDI_OP, 1, 1, 0, 32'd1);
@@ -112,41 +131,18 @@ module if_instrMem (
       64:  o_instr <= gen_instr(`ADD_OP, 5, 4, 3, 0);
       68:  o_instr <= gen_instr(`ADD_OP, 6, 5, 4, 0);
       72:  o_instr <= gen_instr(`SUB_OP, 7, 6, 5, 0);
-      76:  o_instr <= gen_instr(`SUB_OP, 8, 7, 6, 0);
-      80:  o_instr <= gen_instr(`SUB_OP, 9, 8, 7, 0);
-      84:  o_instr <= gen_instr(`SUB_OP, 10, 9, 8, 0);
-      88:  o_instr <= gen_instr(`SUB_OP, 11, 10, 9, 0);
-      92:  o_instr <= gen_instr(`SUB_OP, 12, 11, 10, 0);
-      96:  o_instr <= gen_instr(`SUB_OP, 13, 12, 11, 0);
-      100: o_instr <= gen_instr(`SUB_OP, 14, 13, 12, 0);
-      104: o_instr <= gen_instr(`SUB_OP, 15, 14, 13, 0);
-      108: o_instr <= gen_instr(`SUB_OP, 16, 15, 14, 0);
-      112: o_instr <= gen_instr(`SUB_OP, 17, 16, 15, 0);
-      116: o_instr <= gen_instr(`SUB_OP, 18, 17, 16, 0);
-      120: o_instr <= gen_instr(`SUB_OP, 19, 18, 17, 0);
-      124: o_instr <= gen_instr(`SUB_OP, 20, 19, 18, 0);
-      128: o_instr <= gen_instr(`SUB_OP, 21, 20, 19, 0);
-      132: o_instr <= gen_instr(`SUB_OP, 22, 21, 20, 0);
-      136: o_instr <= gen_instr(`SUB_OP, 23, 22, 21, 0);
-      140: o_instr <= gen_instr(`SUB_OP, 24, 23, 22, 0);
-      144: o_instr <= gen_instr(`SUB_OP, 25, 24, 23, 0);
-      148: o_instr <= gen_instr(`SUB_OP, 26, 25, 24, 0);
-      152: o_instr <= gen_instr(`SUB_OP, 27, 26, 25, 0);
-      156: o_instr <= gen_instr(`SUB_OP, 28, 27, 26, 0);
-      160: o_instr <= gen_instr(`SUB_OP, 29, 28, 27, 0);
-      164: o_instr <= gen_instr(`LUI_OP, 5, 0, 0, 32'hCD_AA_BA_AA);
-      168: o_instr <= gen_instr(`ADDI_OP, 5, 5, 0, -1247);
-      172: o_instr <= gen_instr(`SW_OP, 0, 0, 5, 32'd8);
-      // LB
-      176: o_instr <= gen_instr(`LB_OP, 6, 0, 0, 32'd8);
-      180: o_instr <= gen_instr(`LB_OP, 7, 0, 0, 32'd9);
-      184: o_instr <= gen_instr(`LB_OP, 8, 0, 0, 32'd10);
-      188: o_instr <= gen_instr(`LB_OP, 9, 0, 0, 32'd11);
-
-      785068: o_instr <= gen_instr(`JALR_OP, 1, 8, 0, 32'd0);
+      76: o_instr <= gen_instr(`LUI_OP, 5, 0, 0, 32'hCD_AA_BA_AA);
+      80: o_instr <= gen_instr(`ADDI_OP, 5, 5, 0, -1247);
+      84: o_instr <= gen_instr(`SW_OP, 0, 0, 5, 32'd8);
+      88: o_instr <= gen_instr(`LB_OP, 6, 0, 0, 32'd8);
+      92: o_instr <= gen_instr(`LB_OP, 7, 0, 0, 32'd9);
+      96: o_instr <= gen_instr(`LB_OP, 8, 0, 0, 32'd10);
+      100: o_instr <= gen_instr(`LB_OP, 9, 0, 0, 32'd11);
 
       default: o_instr <= gen_instr(`ADD_OP, 0, 0, 0, 0);
     endcase
   end
+
+  `endif
 
 endmodule : if_instrMem

@@ -1,21 +1,52 @@
 module mem_memory (
-    i_clk, i_reset_n,
-    i_memAddr, i_writeData, i_ctrlMEM,
-    o_readData,
-    mem_addr, mem_data
+    i_clk, i_clk_if, i_reset_n,
+    i_memAddr, i_instrAddr, i_writeData, i_ctrlMEM,
+    o_readData, o_instr
 );
     // I/O
     input logic i_clk;
+    input logic i_clk_if;
     input logic i_reset_n;
     input logic [31:0] i_memAddr;
+    input logic [31:0] i_instrAddr;
     input logic [31:0] i_writeData;
     input mem_ctrl_t i_ctrlMEM;
     output logic [31:0] o_readData;
-    output logic [31:0] mem_addr;
-    output logic [31:0] mem_data;
+    output logic [31:0] o_instr;
 
     // Memory Array
     logic [31:0] mem_array [2048];
+    initial begin
+        int fd;
+        $display("Loading rom.");
+        fd = $fopen("../scripts/test_rv32i.bin", "rb");
+        if(fd == 0) begin
+            $display("Failed to open test.bin");
+            $finish;
+        end
+        $display("Opened test.bin");
+
+        $fread(mem_array, fd);
+        $fclose(fd);
+        
+        // Swap bytes because $fread loads Little Endian file
+        // into Big Endian word positions
+        foreach (mem_array[i]) begin
+            mem_array[i] = {<<8{mem_array[i]}};
+        end
+
+        $display("%h",mem_array[0]);
+    end
+
+
+    // Instruction Fetch
+    always_ff @(negedge i_clk_if or negedge i_reset_n) begin
+        if (!i_reset_n) begin
+            o_instr <= 32'b0;
+        end else begin
+            o_instr <= mem_array[i_instrAddr[12:2]]; // Word-aligned access for instruction fetch
+        end
+    end
 
 
     // Memory Read
@@ -122,19 +153,6 @@ module mem_memory (
         end
     end
 
-    // Memory spying outputs (not needed??)
-    assign mem_addr = i_memAddr;
-    always_comb begin
-        if (i_ctrlMEM.memWrite) begin
-            mem_data = i_writeData;
-        end else if (i_ctrlMEM.memRead) begin
-            mem_data = o_readData;
-        end else begin
-            mem_data = 32'b0;
-        end
-    end
-
-    `ifdef SIMULATION
     mem_memlog mm (
             .i_clk      (i_clk),
             .i_reset_n  (i_reset_n),
@@ -143,7 +161,6 @@ module mem_memory (
             .i_ctrlMEM  (i_ctrlMEM),
             .i_readData (o_readData)
         );
-    `endif
 
 
 
