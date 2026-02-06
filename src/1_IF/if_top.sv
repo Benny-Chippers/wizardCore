@@ -1,11 +1,15 @@
-module if_top (i_clk, i_reset_n, i_PCSrc, i_inAddr, o_outAddr, o_instruction);
+module if_top (i_clk, i_reset_n, i_PCSrc, i_inAddr, i_mem_instr,
+               o_outAddr, o_instruction, o_mem_instrAddr);
     // I/O
     input logic i_clk;
     input logic i_reset_n;
     input logic i_PCSrc;
     input logic [31:0] i_inAddr;
+    input logic [31:0] i_mem_instr;
     output logic [31:0] o_outAddr;
     output logic [31:0] o_instruction;
+    output logic [31:0] o_mem_instrAddr;
+
 
     // Internal wires
     logic [31:0] PCin;
@@ -34,7 +38,9 @@ module if_top (i_clk, i_reset_n, i_PCSrc, i_inAddr, o_outAddr, o_instruction);
         (
             .i_clk    (i_clk),
             .i_addr   (PCout),
-            .o_instr  (o_instruction)
+            .i_mem_instr (i_mem_instr),
+            .o_instr  (o_instruction),
+            .o_mem_instrAddr (o_mem_instrAddr)
         );
 
     /////////////////////

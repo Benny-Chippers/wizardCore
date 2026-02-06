@@ -8,8 +8,9 @@ SRC_DIR  	:= $(PROJ_DIR)/src
 OUT_DIR  	:= $(PROJ_DIR)/output
 SRC_DIRS 	:= $(wildcard $(SRC_DIR)/*/)
 INC_FLAGS 	:= $(addprefix -I, $(SRC_DIRS))
+DEF_FLAGS 	:= +define+SIMULATION
 
-VER_FLAGS 	:= $(INC_FLAGS) -Isrc --binary --trace
+VER_FLAGS 	:= $(INC_FLAGS) -Isrc --binary --trace  $(DEF_FLAGS)
 
 
 
@@ -18,7 +19,7 @@ VER_FLAGS 	:= $(INC_FLAGS) -Isrc --binary --trace
 all: build
 
 build:
-	verilator $(VER_FLAGS) $(TESTBENCH)
+	verilator $(VER_FLAGS) $(TESTBENCH) $(SRC_DIR)/COM/macro.sv
 
 sim: build
 	cd $(OUT_DIR) && ../obj_dir/$(TOP)

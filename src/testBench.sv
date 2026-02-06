@@ -37,11 +37,14 @@ module testBench
          $dumpfile("dump.vcd");
          $dumpvars();
          $display("[%0t] Model running...\n",$time);
+         `ifdef SIMULATION
+         $display("[%0t] Simulation mode enabled.\n",$time);
+         `endif
      end
 
     initial
      begin
-         #3000 $dumpflush;
+         #48000 $dumpflush;
          $finish;
      end
 
