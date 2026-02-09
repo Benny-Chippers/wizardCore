@@ -36,6 +36,9 @@ jobs:
           verilator --version
           make --version
 
+      - name: Prepare simulation workspace
+        run: mkdir -p output
+
       - name: Clean workspace
         run: make clean
 
