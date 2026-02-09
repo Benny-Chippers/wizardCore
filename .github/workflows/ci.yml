@@ -1,0 +1,67 @@
+name: RTL CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: rtl-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+# Note:
+# - This workflow intentionally runs on one OS only (ubuntu-latest).
+# - If needed later, expand to a matrix for verification modes
+#   (for example: different test binaries, SCRIPT_TEST, pipeline configs).
+# - Do not add cross-OS matrix unless there is a concrete portability need.
+
+jobs:
+  build-and-sim:
+    name: Build and simulate (Verilator)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y verilator make
+
+      - name: Show tool versions
+        run: |
+          verilator --version
+          make --version
+
+      - name: Prepare simulation workspace
+        run: mkdir -p output
+
+      - name: Clean workspace
+        run: make clean
+
+      - name: Build
+        run: make build
+
+      - name: Run simulation
+        run: make sim
+
+      - name: Validate expected simulation outputs
+        run: |
+          test -f output/dump.vcd
+          test -s output/dump.vcd
+          if [ -f output/mem.log ]; then
+            test -s output/mem.log
+          fi
+
+      - name: Upload simulation artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sim-artifacts-${{ github.run_id }}
+          path: |
+            output/dump.vcd
+            output/mem.log
+          if-no-files-found: ignore

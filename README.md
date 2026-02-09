@@ -30,6 +30,11 @@ This project uses **Verilator** for fast, pre-synthesis simulation.
 
 - Install Verilator (and a C++ toolchain).
 - Install GTKWave for waveform viewing.
+- Create the simulation output directory once before running:
+
+```bash
+mkdir -p output
+```
 
 ### Common commands
 

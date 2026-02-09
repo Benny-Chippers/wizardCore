@@ -2,9 +2,7 @@
 (* max_fanout = 20 *)
 module top (
     input clk,    // Clock
-    input reset_n,  // Asynchronous reset active low
-    output logic [31:0] mem_addr,
-    output logic [31:0] mem_data
+    input reset_n  // Asynchronous reset active low
 );
 
     // Internal signals
@@ -92,9 +90,7 @@ module top (
             .i_zero       (zero),
             .o_readData   (readData),
             .o_if_instr   (mem_instr),
-            .o_PCSrc      (PCSrc),
-            .mem_addr     (mem_addr),
-            .mem_data     (mem_data)
+            .o_PCSrc      (PCSrc)
         );
 
     wb_top WB

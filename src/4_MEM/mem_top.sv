@@ -1,8 +1,7 @@
 module mem_top (
     i_clk, i_clk_if, i_reset_n,
     i_memAddr, i_if_instrAddr, i_wrData, i_ctrlMEM, i_zero,
-    o_readData, o_if_instr, o_PCSrc,
-    mem_addr, mem_data
+    o_readData, o_if_instr, o_PCSrc
 );
     // I/O
     input logic i_clk;

@@ -1,8 +1,4 @@
-module testBench
-    (
-        output logic [31:0] mem_addr,
-        output logic [31:0] mem_data
-    );
+module testBench();
 
     reg clk;
     reg reset_n;
@@ -51,9 +47,7 @@ module testBench
     top top_instance
         (
             .clk        (clk),
-            .reset_n    (reset_n),
-            .mem_addr   (mem_addr),
-            .mem_data   (mem_data)
+            .reset_n    (reset_n)
         );
 
 
