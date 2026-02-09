@@ -16,8 +16,6 @@ module mem_top (
     output logic [31:0] o_readData;
     output logic [31:0] o_if_instr;
     output logic o_PCSrc;
-    output logic [31:0] mem_addr;
-    output logic [31:0] mem_data;
 
 
     // Simulation Memory

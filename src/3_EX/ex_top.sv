@@ -30,7 +30,7 @@ module ex_top (
     always_comb begin
         // PC + Immediate (+ regData1 for JALR)
         if(i_ctrlMEM == 2'b11) begin
-            o_outAddr =  i_regData1 + i_immediate; // JALR
+            o_outAddr =  (i_regData1 + i_immediate) & ~1; // JALR
         end else begin
             o_outAddr = i_inAddr + i_immediate;    // JAL, and branches
         end

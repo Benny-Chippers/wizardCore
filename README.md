@@ -20,6 +20,7 @@ WizardCore is a SystemVerilog CPU implementation targeting the **RISC-V RV32I** 
 - `src/TOP/` — Top-level wiring
 - `src/COM/` — Common/shared components
 - `src/testBench.sv` — Top-level testbench used by the Makefile
+- `scripts/` — Runtime program binaries loaded by simulation (for example, `test_rv32i.bin`)
 
 ## Simulate (before synthesis) using the Makefile
 
@@ -28,7 +29,7 @@ This project uses **Verilator** for fast, pre-synthesis simulation.
 ### Prerequisites
 
 - Install Verilator (and a C++ toolchain).
-- Optional: GTKWave for waveform viewing.
+- Install GTKWave for waveform viewing.
 
 ### Common commands
 
@@ -66,6 +67,29 @@ make clean
 
 - The Makefile selects the top-level testbench via `TESTBENCH` (currently `src/testBench.sv`).
 - Simulation output is written to `output/` (including `dump.vcd`).
+- Use `make view` to open `output/dump.vcd` in GTKWave after a simulation run.
+- Use `make simview` to run simulation and open the waveform viewer in one command.
+
+### Simulating custom compiled C programs (Spellbook flow)
+
+To run your own compiled RV32I program in this repository:
+
+1. Build the program using the **Spellbook** repository toolchain.
+2. Ensure the produced binary is named `test_rv32i.bin` (or rename it accordingly).
+3. Place the binary at `scripts/test_rv32i.bin` in this repository.
+4. Run:
+
+```bash
+make sim
+```
+
+or to run and immediately inspect waveforms:
+
+```bash
+make simview
+```
+
+The memory model loads this binary at runtime from `../scripts/test_rv32i.bin` (relative to `output/` when `make sim` runs).
 
 ## AI usage policy (Spellbook / Wizard Core)
 
