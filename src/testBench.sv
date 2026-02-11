@@ -1,19 +1,27 @@
+timeunit 1ns;
+timeprecision 1ns;
+
 module testBench();
 
-    reg clk;
+    reg clk, vga_clk;
     reg reset_n;
     reg hit_reset;
+    reg [13:0] vgaData;
 
     initial
      begin
         clk = 0;
+        vga_clk = 0;
         reset_n = 0;
         hit_reset = 0;
      end
 
-    always
-     begin
-        #5 clk <= ~clk;
+    always begin
+        #250ns clk <= ~clk;
+     end
+
+     always begin
+         #20ns vga_clk <= ~vga_clk;
      end
 
     always @(posedge clk)
@@ -40,14 +48,16 @@ module testBench();
 
     initial
      begin
-         #48000 $dumpflush;
+         #2500us $dumpflush;
          $finish;
      end
 
     top top_instance
         (
             .clk        (clk),
-            .reset_n    (reset_n)
+            .vga_clk  (vga_clk),
+            .reset_n    (reset_n),
+            .vgaData    (vgaData)
         );
 
 

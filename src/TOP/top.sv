@@ -1,8 +1,10 @@
 (* keep_hierarchy = "yes" *)
 (* max_fanout = 20 *)
 module top (
-    input clk,    // Clock
-    input reset_n  // Asynchronous reset active low
+    input clk,      // Clock
+    input vga_clk,  // Clock for vga circuit
+    input reset_n,  // Asynchronous reset active low
+    output vga_out_t vgaData
 );
 
     // Internal signals
@@ -99,6 +101,19 @@ module top (
             .i_readData   (readData),
             .i_resultALU  (resultALU),
             .o_wrData     (wrData)
+        );
+
+
+
+    // VGA output circuit
+    vga_top VGA
+        (
+            .i_clk        (vga_clk),
+            .i_reset_n    (reset_n),
+            .i_pxlAddr(regData2),
+            .i_pxlData(resultALU),
+            .i_ctrlVGA(mem),
+            .o_vgaData(vgaData)
         );
 
 endmodule : top

@@ -28,7 +28,7 @@ module mem_memory (
 
         $fread(mem_array, fd);
         $fclose(fd);
-        
+
         // Swap bytes because $fread loads Little Endian file
         // into Big Endian word positions
         foreach (mem_array[i]) begin
