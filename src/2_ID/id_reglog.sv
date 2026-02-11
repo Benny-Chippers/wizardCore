@@ -1,6 +1,6 @@
 // Implemetation
 
-// mem_memlog mm (
+// id_reglog mm (
 //         .i_clk      (i_clk),
 //         .i_reset_n  (i_reset_n),
 //         .i_memAddr  (i_memAddr),
@@ -9,15 +9,17 @@
 //         .i_readData (o_readData)
 //     );
 
-module mem_memlog #(
-    parameter string LOG_FILENAME = "mem.log"
+module id_reglog #(
+    parameter string LOG_FILENAME = "reg.log"
 ) (
-    input  logic        i_clk,
-    input  logic        i_reset_n,
-    input  logic [31:0] i_memAddr,
-    input  logic [31:0] i_writeData,
-    input  mem_ctrl_t  i_ctrlMEM,   // [1]=read, [0]=write
-    input  logic [31:0] i_readData
+    input   logic           i_clk,
+    input   logic           i_reset_n,
+    input   logic [4:0]     rdReg1,
+    input   logic [4:0]     rdReg2,
+    input   logic [31:0]    i_writeData,
+    input   logic           i_wrSig,
+    input   logic [4:0]     i_wrReg,
+    input   logic [31:0]    i_wrData
 );
     integer fd;
 
