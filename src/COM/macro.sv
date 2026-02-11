@@ -52,5 +52,9 @@ typedef struct packed {
 	logic [3:0] blue;
 } vga_out_t;
 
-
+typedef struct packed {
+	logic [3:0] red;
+	logic [3:0] green;
+	logic [3:0] blue;
+} vga_color_t;
 

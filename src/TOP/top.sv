@@ -108,12 +108,13 @@ module top (
     // VGA output circuit
     vga_top VGA
         (
-            .i_clk        (vga_clk),
-            .i_reset_n    (reset_n),
-            .i_pxlAddr(regData2),
-            .i_pxlData(resultALU),
-            .i_ctrlVGA(mem),
-            .o_vgaData(vgaData)
+            .i_clk          (clk_mem),
+            .i_vga_clk      (vga_clk),
+            .i_reset_n      (reset_n),
+            .i_pxlAddr      (regData2),
+            .i_pxlData      (resultALU),
+            .i_ctrlVGA      (mem),
+            .o_vgaData      (vgaData)
         );
 
 endmodule : top
