@@ -15,9 +15,6 @@ module vga_top (
 	// Outputs
 	output vga_out_t o_vgaData;
 
-	// Wires
-	mem_ctrl_t w_ctrlVGA;
-
 	logic [7:0] w_pxlX;
 	logic [7:0] w_pxlY;
 
@@ -28,7 +25,7 @@ module vga_top (
 		.i_reset_n(i_reset_n),
 		.i_pxlAddr(i_pxlAddr),
 		.i_pxlData(i_pxlData),
-		.i_ctrlVGA(w_ctrlVGA),
+		.i_ctrlVGA(i_ctrlVGA),
 		.i_pxlX   (w_pxlX),
 		.i_pxlY   (w_pxlY),
 		.o_color  (o_vgaData[11:0])

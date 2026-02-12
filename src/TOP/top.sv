@@ -98,7 +98,7 @@ module top (
             .i_memAddr    (resultALU),
             .i_if_instrAddr(mem_instrAddr),
             .i_wrData     (regData2),
-            .i_ctrlMEM    (mem),
+            .i_ctrlMEM    (ctrlMEM),
             .i_zero       (zero),
             .o_readData   (readData),
             .o_if_instr   (mem_instr),
@@ -123,7 +123,7 @@ module top (
             .i_reset_n      (reset_n),
             .i_pxlAddr      (resultALU),
             .i_pxlData      (regData2),
-            .i_ctrlVGA      (mem),
+            .i_ctrlVGA      (ctrlVGA),
             .o_vgaData      (vgaData)
         );
 
@@ -131,18 +131,18 @@ module top (
     always_comb begin
         if(mem.memRead | mem.memWrite) begin
             if(resultALU[29:28] == 2'b00) begin
-                assign ctrlMEM = mem;
-                assign ctrlVGA = '0;
+                ctrlMEM = mem;
+                ctrlVGA = '0;
             end else if (resultALU[29:28] == 2'b01) begin
-                assign ctrlMEM = '0;
-                assign ctrlVGA = mem;
+                ctrlMEM = '0;
+                ctrlVGA = mem;
             end else begin
-                assign ctrlMEM = mem;
-                assign ctrlVGA = '0;
+                ctrlMEM = mem;
+                ctrlVGA = '0;
             end
         end else begin
-            assign ctrlMEM = mem;
-            assign ctrlVGA = '0;
+            ctrlMEM = mem;
+            ctrlVGA = '0;
         end
     end
 

@@ -49,7 +49,7 @@ module testBench();
     initial
      begin
          // #2500us $dumpflush;
-         #30ms $dumpflush;
+         #900ms $dumpflush;
          $finish;
      end
 

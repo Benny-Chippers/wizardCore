@@ -69,17 +69,17 @@ module vga_memory (
 				w_pxlAddr_0 = i_pxlAddr;
 				w_pxlData_0 = i_pxlData;
 				w_ctrlVGA_0 = i_ctrlVGA;
-				w_pxlX_0 = i_pxlX;
-				w_pxlY_0 = i_pxlY;
-				o_color = w_color_0;
+				w_pxlX_1 = i_pxlX;
+				w_pxlY_1 = i_pxlY;
+				o_color = w_color_1;
 			end
 			1 : begin
 				w_pxlAddr_1 = i_pxlAddr;
 				w_pxlData_1 = i_pxlData;
 				w_ctrlVGA_1 = i_ctrlVGA;
-				w_pxlX_1 = i_pxlX;
-				w_pxlY_1 = i_pxlY;
-				o_color = w_color_1;
+				w_pxlX_0 = i_pxlX;
+				w_pxlY_0 = i_pxlY;
+				o_color = w_color_0;
 			end
 			default : /* Nothing */;
 		endcase
