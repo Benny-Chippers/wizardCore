@@ -11,19 +11,29 @@ module top (
     logic PCSrc;
     logic [31:0] mem_instr;
     logic [31:0] mem_instrAddr;
+
     logic [31:0] inAddr;
     logic [31:0] instruction;
     logic [31:0] immediate;
     logic [31:0] regData1;
     logic [31:0] regData2;
+
     logic zero;
-    logic [31:0] readData;
     logic [31:0] wrData;
-    ex_ctrl_t ex;
-    mem_ctrl_t mem;
-    wb_ctrl_t wb;
     logic [31:0] outAddr;
+
     logic [31:0] resultALU;
+    logic [31:0] readData;
+
+    // Control Signals
+    ex_ctrl_t ex;
+    wb_ctrl_t wb;
+
+    // Memory Routing Signals
+    mem_ctrl_t mem;
+    mem_ctrl_t ctrlMEM;
+    mem_ctrl_t ctrlVGA;
+
 
     logic clk_if;
     logic clk_id;
@@ -111,10 +121,29 @@ module top (
             .i_clk          (clk_mem),
             .i_vga_clk      (vga_clk),
             .i_reset_n      (reset_n),
-            .i_pxlAddr      (regData2),
-            .i_pxlData      (resultALU),
+            .i_pxlAddr      (resultALU),
+            .i_pxlData      (regData2),
             .i_ctrlVGA      (mem),
             .o_vgaData      (vgaData)
         );
+
+    // Memory Routing Logic
+    always_comb begin
+        if(mem.memRead | mem.memWrite) begin
+            if(resultALU[29:28] == 2'b00) begin
+                assign ctrlMEM = mem;
+                assign ctrlVGA = '0;
+            end else if (resultALU[29:28] == 2'b01) begin
+                assign ctrlMEM = '0;
+                assign ctrlVGA = mem;
+            end else begin
+                assign ctrlMEM = mem;
+                assign ctrlVGA = '0;
+            end
+        end else begin
+            assign ctrlMEM = mem;
+            assign ctrlVGA = '0;
+        end
+    end
 
 endmodule : top
