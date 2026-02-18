@@ -19,7 +19,9 @@ module mem_top (
 
     // Simulation Memory
     `ifdef SIMULATION
-    mem_memory Memory (
+    mem_memory #(
+        .INIT_FILENAME("test_vga.bin")
+    ) Memory (
         .i_clk       (i_clk),
         .i_clk_if    (i_clk_if),
         .i_reset_n   (1),

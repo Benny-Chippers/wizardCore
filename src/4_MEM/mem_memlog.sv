@@ -10,7 +10,9 @@
 
 // Implemetation
 
-// mem_memlog mm (
+// mem_memlog # (
+//          .LOG_FILENAME("mem.log")
+//          ) mm (
 //         .i_clk      (i_clk),
 //         .i_reset_n  (i_reset_n),
 //         .i_memAddr  (i_memAddr),

@@ -1,3 +1,7 @@
+/////////////////////
+// Control Signals //
+/////////////////////
+
 typedef struct packed {
 	logic [1:0] aluOp;
 	logic [1:0] aluSrc;
@@ -35,3 +39,22 @@ typedef struct packed {
 `define FUNCT3  i_instr[14:12]
 `define FUNCT7  i_instr[31:25]
 `define IMM     i_instr[31:20]
+
+/////////////////
+// VGA Signals //
+/////////////////
+
+typedef struct packed {
+	logic vSync;
+	logic hSync;
+	logic [3:0] red;
+	logic [3:0] green;
+	logic [3:0] blue;
+} vga_out_t;
+
+typedef struct packed {
+	logic [3:0] red;
+	logic [3:0] green;
+	logic [3:0] blue;
+} vga_color_t;
+

@@ -1,4 +1,6 @@
-module mem_memory (
+module mem_memory #(
+    parameter string INIT_FILENAME = "test_rv32i.bin"
+) (
     i_clk, i_clk_if, i_reset_n,
     i_memAddr, i_instrAddr, i_writeData, i_ctrlMEM,
     o_readData, o_instr
@@ -18,17 +20,18 @@ module mem_memory (
     logic [31:0] mem_array [2048];
     initial begin
         int fd;
+        string path = {"../scripts/", INIT_FILENAME};
         $display("Loading rom.");
-        fd = $fopen("../scripts/test_rv32i.bin", "rb");
+        fd = $fopen(path, "rb");
         if(fd == 0) begin
             $display("Failed to open test.bin");
             $finish;
         end
-        $display("Opened test.bin");
+        $display("Opened %s", INIT_FILENAME);
 
         $fread(mem_array, fd);
         $fclose(fd);
-        
+
         // Swap bytes because $fread loads Little Endian file
         // into Big Endian word positions
         foreach (mem_array[i]) begin
