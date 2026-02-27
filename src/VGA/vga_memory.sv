@@ -115,7 +115,6 @@ module vga_memory (
 		.LOG_FILENAME("vga_mem.log")
 	) mm_vga (
             .i_clk      (i_clk),
-            .i_reset_n  (1),
             .i_memAddr  ({buffer_select,i_pxlAddr[30:0]}),
             .i_writeData(i_pxlData),
             .i_ctrlMEM  (i_ctrlVGA),

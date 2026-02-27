@@ -17,7 +17,7 @@ module mem_top (
 
 
     mem_memory #(
-        .INIT_FILENAME("test_mem_hammer.bin")
+        .INIT_FILENAME("test_vga.bin")
     ) Memory (
         .i_clk       (i_clk),
         .i_reset_n   (1),

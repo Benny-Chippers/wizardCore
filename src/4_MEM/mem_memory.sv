@@ -159,7 +159,6 @@ module mem_memory #(
     `ifdef SIMULATION
     mem_memlog mm (
             .i_clk      (i_clk),
-            .i_reset_n  (i_reset_n),
             .i_memAddr  (i_memAddr),
             .i_writeData(i_writeData),
             .i_ctrlMEM  (i_ctrlMEM),

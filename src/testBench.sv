@@ -57,7 +57,7 @@ module testBench();
         (
             .clk        (clk),
             .vga_clk  (vga_clk),
-            .reset_n    (reset_n),
+            .reset_n_out    (reset_n),
             .vgaData    (vgaData)
         );
 

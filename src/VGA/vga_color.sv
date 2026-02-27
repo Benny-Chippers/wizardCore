@@ -77,88 +77,86 @@
 
 //endmodule
 
-
 module vga_color (
-    input  logic        i_clk,        // CPU clock (slow)
-    input  logic        i_vga_clk,    // VGA clock (fast)
-
-    input  logic [31:0] i_pxlAddr,
-    input  logic [31:0] i_pxlData,
-    input  mem_ctrl_t   i_ctrlVGA,
-
-    input  logic [7:0]  i_pxlX,
-    input  logic [7:0]  i_pxlY,
-
-    output logic [3:0]  o_value
+    i_clk, i_vga_clk,
+    i_pxlAddr, i_pxlData, i_ctrlVGA,
+    i_pxlX, i_pxlY,
+    o_value
 );
+
+    // Inputs
+    input logic i_clk;
+    input logic i_vga_clk;
+    input logic [31:0] i_pxlAddr;
+    input logic [31:0] i_pxlData;
+    input mem_ctrl_t i_ctrlVGA;
+    input logic [7:0] i_pxlX;
+    input logic [7:0] i_pxlY;
+
+    // Output
+    output logic [3:0] o_value;
 
     // ==========================================================
     // Framebuffer Parameters
     // ==========================================================
-    localparam WIDTH  = 160;
-    localparam HEIGHT = 60;
+    localparam WIDTH  = 80;
+    localparam HEIGHT = 120;
     localparam PIXELS = WIDTH * HEIGHT;    // 9600
-    localparam WORDS  = PIXELS / 8;        // 1200
 
-    // ==========================================================
-    // 32-bit True Dual-Port BRAM
-    // ==========================================================
+    // 32-bit True Dual-Port m_BRAM
     (* ram_style = "block" *)
-    logic [31:0] fb_mem [0:WORDS-1];
+    logic [7:0] m_BRAM [PIXELS];
 
-    // ==========================================================
-    // CPU WRITE PORT (RV32I compliant)
-    // ==========================================================
-    logic [3:0] byte_we;
-    logic [31:0] cpu_rdata;
+    // pixel index = y * 80 + x (since each x is two 4-bits for 160px wide)
+    logic [13:0] w_WrPxl;
+    logic [13:0] w_RdPxl;
+    logic w_validRD, w_validWR;
+
+    //bounds checking
+    always_comb begin
+        w_validWR = (i_pxlAddr[14:8] < 120) & (i_pxlAddr[6:0] < 80);
+        w_validRD = (i_pxlY < 120) & (i_pxlX < 80);
+    end
 
     always_comb begin
-        byte_we = 4'b0000;
-
-        if (i_ctrlVGA.memWrite) begin
-            unique case (i_ctrlVGA.size)
-                2'b00: byte_we = 4'b0001 << i_pxlAddr[1:0];   // SB
-                2'b01: byte_we = 4'b0011 << {i_pxlAddr[1],1'b0}; // SH
-                2'b10: byte_we = 4'b1111;                     // SW
-                default: byte_we = 4'b0000;
-            endcase
-        end
+        w_WrPxl = {i_pxlAddr[14:8],6'b0} + {2'b0,i_pxlAddr[14:8],4'b0} + {6'b0,i_pxlAddr[6:0]};
+        w_RdPxl = {i_pxlY,6'b0} + {2'b0,i_pxlY,4'b0} + {6'b0,i_pxlX[6:0]};
+        // w_RdPxl = (i_pxlY << 6) + (i_pxlY << 4) + i_pxlX;
     end
 
     always_ff @(posedge i_clk) begin
-        logic [31:0] w = fb_mem[i_pxlAddr[12:2]];
-
-        if (byte_we[0]) w[7:0]   = i_pxlData[7:0];
-        if (byte_we[1]) w[15:8]  = i_pxlData[15:8];
-        if (byte_we[2]) w[23:16] = i_pxlData[23:16];
-        if (byte_we[3]) w[31:24] = i_pxlData[31:24];
-
-        if (i_ctrlVGA.memWrite)
-            fb_mem[i_pxlAddr[12:2]] <= w;
-
-        cpu_rdata <= fb_mem[i_pxlAddr[12:2]];
+        if (i_ctrlVGA.memWrite & w_validWR) begin
+           unique case (i_ctrlVGA.size)
+               2'b00: begin
+                    m_BRAM[w_WrPxl] <= i_pxlData[7:0];
+               end
+               2'b01: begin
+                    m_BRAM[{w_WrPxl[13:1],1'b0}] <= i_pxlData[7:0];
+                    m_BRAM[{w_WrPxl[13:1],1'b1}] <= i_pxlData[15:8];
+               end
+               2'b10: begin
+                    m_BRAM[{w_WrPxl[13:2],2'b00}] <= i_pxlData[7:0];
+                    m_BRAM[{w_WrPxl[13:2],2'b01}] <= i_pxlData[15:8];
+                    m_BRAM[{w_WrPxl[13:2],2'b10}] <= i_pxlData[23:16];
+                    m_BRAM[{w_WrPxl[13:2],2'b11}] <= i_pxlData[31:24];
+               end
+               default: begin
+                   //nothing
+               end
+           endcase
+       end
     end
 
-    // ==========================================================
-    // VGA READ PORT (fast clock)
-    // ==========================================================
-    logic [10:0] word_addr;
-    logic [31:0] vga_word;
-    logic [2:0]  pixel_in_word;
 
-    // pixel_index = y * 160 + x
-    logic [13:0] pixel_index;
-
-    always_comb begin
-        pixel_index   = (i_pxlY << 7) + (i_pxlY << 5) + i_pxlX;
-        word_addr     = pixel_index / 8;
-        pixel_in_word = pixel_index[2:0];
-    end
-
+    // Color Read
     always_ff @(posedge i_vga_clk) begin
-        vga_word <= fb_mem[word_addr];
-
-        o_value <= vga_word >> (pixel_in_word * 4);
+        if (w_validRD) begin
+            o_value <= (i_pxlX[0])?m_BRAM[w_RdPxl][7:4]:
+                                m_BRAM[w_RdPxl][3:0];
+        end else begin
+            o_value <= 0;
+        end
     end
+
 
 endmodule
