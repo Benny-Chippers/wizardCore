@@ -1,11 +1,10 @@
 module mem_top (
-    i_clk, i_clk_if, i_reset_n,
+    i_clk, i_reset_n,
     i_memAddr, i_if_instrAddr, i_wrData, i_ctrlMEM, i_zero,
     o_readData, o_if_instr, o_PCSrc
 );
     // I/O
     input logic i_clk;
-    input logic i_clk_if;
     input logic i_reset_n;
     input logic [31:0] i_memAddr;
     input logic [31:0] i_if_instrAddr;
@@ -17,13 +16,10 @@ module mem_top (
     output logic o_PCSrc;
 
 
-    // Simulation Memory
-    `ifdef SIMULATION
     mem_memory #(
-        .INIT_FILENAME("test_vga.bin")
+        .INIT_FILENAME("test_mem_hammer.bin")
     ) Memory (
         .i_clk       (i_clk),
-        .i_clk_if    (i_clk_if),
         .i_reset_n   (1),
         .i_memAddr   (i_memAddr),
         .i_instrAddr (i_if_instrAddr),
@@ -32,12 +28,6 @@ module mem_top (
         .o_readData  (o_readData),
         .o_instr      (o_if_instr)
     );
-    `endif
-
-    // Real Memory
-    `ifndef SIMULATION
-
-    `endif
 
     // Combinational Logic
     always_comb begin

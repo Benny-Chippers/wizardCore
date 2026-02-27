@@ -92,8 +92,7 @@ module top (
 
     mem_top MEM
         (
-            .i_clk        (clk_mem),
-            .i_clk_if      (clk_if),
+            .i_clk        (clk),
             .i_reset_n    (reset_n),
             .i_memAddr    (resultALU),
             .i_if_instrAddr(mem_instrAddr),

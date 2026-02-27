@@ -20,6 +20,7 @@ module vga_color #(
 	output logic [3:0] o_value;
 
 	// Memory Array
+    (* ram_style = "block" *)
 	logic [7:0] color_array [120] [80];	// storing 120x160 4-bit chunks,
 										// since byte addressible, width is 80 bytes
 	initial begin
