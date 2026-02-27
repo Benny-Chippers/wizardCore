@@ -7,6 +7,8 @@ module vga_color #(
 	o_value
 );
 
+	// Need to add logic to prevent out of bounds addressing
+
 	// Inputs
 	input logic i_clk;
 	input logic i_vga_clk;

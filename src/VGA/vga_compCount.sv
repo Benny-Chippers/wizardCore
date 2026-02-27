@@ -7,6 +7,9 @@ module vga_compCount #(
 	i_clk, i_reset_n,
 	o_comp, o_value
 );
+	// Currently Experiencing a bug were compare and value outputs appear a cycle
+	// after the count reaches key markers
+
 
 	// Inputs
 	input logic i_clk;
@@ -36,11 +39,12 @@ module vga_compCount #(
 	end
 
 	// Compare
-	always_comb begin
-		assign o_comp = (w_count >= COMPARE);
+	assign w_inter = ((w_count - OUTPUT_OFFSET) >> OUTPUT_SHIFT);
 
-		assign w_inter = ((w_count - OUTPUT_OFFSET) >> OUTPUT_SHIFT);
-		assign o_value = w_inter[7:0];
+	always_ff @(negedge i_clk) begin
+		o_comp <= (w_count >= COMPARE);
+
+		o_value <= w_inter[7:0];
 	end
 
 endmodule
