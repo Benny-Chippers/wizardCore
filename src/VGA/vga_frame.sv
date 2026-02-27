@@ -80,9 +80,7 @@ module vga_frame (
 			.i_pxlY   (i_pxlY),
 			.o_value  (o_color.green)
 		);
-	vga_color #(
-			.INIT_FILENAME("test.bin")
-		) blueColor (
+	vga_color blueColor (
 			.i_clk    (i_clk),
 			.i_vga_clk(i_vga_clk),
 			.i_pxlAddr(w_blueAddr),

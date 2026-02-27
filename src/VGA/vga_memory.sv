@@ -39,7 +39,7 @@ module vga_memory (
 	// Buffer Select
 	initial buffer_select = 0;
 
-	always_ff @(posedge i_clk or negedge i_reset_n) begin
+	always_ff @(posedge i_clk) begin
 		if(i_reset_n) begin
 			if(i_pxlAddr == 32'h1003_0000 && i_ctrlVGA.memWrite)
 			buffer_select <= ~buffer_select;
@@ -110,6 +110,7 @@ module vga_memory (
 
 
 	// Logging
+	`ifdef SIMULATION
 	mem_memlog #(
 		.LOG_FILENAME("vga_mem.log")
 	) mm_vga (
@@ -120,5 +121,6 @@ module vga_memory (
             .i_ctrlMEM  (i_ctrlVGA),
             .i_readData (0)
         );
-
+    
+    `endif
 endmodule

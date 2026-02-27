@@ -37,10 +37,10 @@ module vga_compCount #(
 
 	// Compare
 	always_comb begin
-		assign o_comp = (w_count >= COMPARE);
+		o_comp = (w_count >= COMPARE);
 
-		assign w_inter = ((w_count - OUTPUT_OFFSET) >> OUTPUT_SHIFT);
-		assign o_value = w_inter[7:0];
+		w_inter = ((w_count - OUTPUT_OFFSET) >> OUTPUT_SHIFT);
+		o_value = w_inter[7:0];
 	end
 
 endmodule

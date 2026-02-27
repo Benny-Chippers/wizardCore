@@ -1,9 +1,9 @@
-(* keep_hierarchy = "yes" *)
+//(* keep_hierarchy = "yes" *)
 (* max_fanout = 20 *)
 module top (
     input clk,      // Clock
     input vga_clk,  // Clock for vga circuit
-    input reset_n,  // Asynchronous reset active low
+    input reset_n_out,  // Asynchronous reset active low
     output vga_out_t vgaData
 );
 
@@ -38,6 +38,11 @@ module top (
     logic clk_if;
     logic clk_id;
     logic clk_mem;
+    
+    logic reset_n;
+    always @(posedge clk) begin
+        reset_n <= reset_n_out;
+    end
 
 
     top_clk CLK_GEN
@@ -117,7 +122,7 @@ module top (
     // VGA output circuit
     vga_top VGA
         (
-            .i_clk          (clk_mem),
+            .i_clk          (clk),
             .i_vga_clk      (vga_clk),
             .i_reset_n      (reset_n),
             .i_pxlAddr      (resultALU),
