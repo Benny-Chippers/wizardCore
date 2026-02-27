@@ -49,7 +49,7 @@ module vga_memory (
 	end
 
 	// Muxes
-	always begin
+	always @(*) begin
 		w_pxlAddr_0 = 0;
 		w_pxlData_0 = 0;
 		w_ctrlVGA_0 = 0;
