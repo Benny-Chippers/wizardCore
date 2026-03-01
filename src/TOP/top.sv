@@ -1,12 +1,26 @@
 //(* keep_hierarchy = "yes" *)
 //(* max_fanout = 20 *)
 module top (
-    (* max_fanout = 20 *)
-    input clk,      // Clock
+    `ifdef SIMULATION
+    input clk,      // System/CPU Clock
     input vga_clk,  // Clock for vga circuit
+    `else
+    input osc_clk,
+    `endif
     input reset_n_out,  // Asynchronous reset active low
     output vga_out_t vgaData
 );
+
+    `ifndef SIMULATION
+    // VIVADO CLOCKING
+    logic clk, vga_clk;
+    clk_wiz_0 WIZ (
+        .clk_out1       (vga_clk),
+        .clk_out2       (clk),
+        .resetn         (reset_n_out),
+        .clk_in1        (osc_clk)
+        );
+    `endif
 
     // Internal signals
     logic PCSrc;

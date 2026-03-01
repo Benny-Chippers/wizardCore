@@ -1,5 +1,5 @@
 module mem_memory #(
-    parameter string INIT_FILENAME = "test_rv32i.mem"
+    parameter INIT_FILENAME = "test_rv32i.mem"
 ) (
     i_clk, i_reset_n,
     i_memAddr, i_instrAddr, i_writeData, i_ctrlMEM,
@@ -29,21 +29,25 @@ module mem_memory #(
     logic [31:0] mem_array [MEMORY_SIZE];
     initial begin : init_mem_from_hex
         integer i;
-        `ifdef SIMULATION
-        string path = {"../scripts/", INIT_FILENAME};
-        `else
-        string path = {INIT_FILENAME};
-        `endif
-
+        
         // Optional: clear all memory first
         for (i = 0; i < MEMORY_SIZE; i++) begin
             mem_array[i] = 32'h00000000;
         end
+        
+        `ifdef SIMULATION
+        string path = {"../scripts/", INIT_FILENAME};
+        $display("Loading memory image: %s", path);
+        $readmemh(path, mem_array);
+        `else
+        $display("Loading memory image: %s", INIT_FILENAME);
+        $readmemh(INIT_FILENAME, mem_array);
+        `endif
+
+        
 
         // INIT_FILENAME should point to a Verilog-style hex/mem file
         // e.g. "test_rv32i.mem" generated via objcopy -O verilog
-        $display("Loading memory image: %s", path);
-        $readmemh(path, mem_array);
 
         $display("mem_array[0] = %08h", mem_array[0]);
     end

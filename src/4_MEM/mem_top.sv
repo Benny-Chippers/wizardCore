@@ -25,7 +25,11 @@ module mem_top (
     logic oB_PCSrc;
 
     mem_memory #(
+    `ifdef SIMULATION
         .INIT_FILENAME("test_isa_vga.mem")
+    `else
+        .INIT_FILENAME("C:/Users/Donov/Projects/theTower/wizardCore/scripts/test_isa_vga.mem")
+    `endif
     ) Memory (
         .i_clk       (i_clk),
         .i_reset_n   (1),

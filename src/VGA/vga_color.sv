@@ -32,6 +32,14 @@ module vga_color (
     // 32-bit True Dual-Port m_BRAM
     (* ram_style = "block" *)
     logic [31:0] m_BRAM [WORDS];
+    
+    // Wiping for start
+    initial begin
+        integer i;
+        for (i = 0; i < WORDS; i++) begin
+            m_BRAM[i] = 32'h00000000;
+        end
+    end
 
     // pixel index = y * 80 + x (since each x is two 4-bits for 160px wide)
     logic [11:0] w_WrPxl;
