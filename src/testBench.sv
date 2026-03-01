@@ -1,16 +1,21 @@
-//timeunit 1ns;
-//timeprecision 1ns;
+`ifdef SIMULATION
+timeunit 1ns;
+timeprecision 1ns;
+`else
 `timescale 1ns/1ns;
+`endif
 
 module testBench(
     `ifdef SIMULATION
-    input clk,      // System/CPU Clock
-    input vga_clk,  // Clock for vga circuit
+    output [13:0] vgaData
     `else
     input osc_clk,
-    `endif
     output vga_out_t vgaData
+    `endif
 );
+
+    reg clk;      // System/CPU Clock
+    reg vga_clk;  // Clock for vga circuit
 
     reg hit_reset;
     reg reset_n;
@@ -66,7 +71,7 @@ module testBench(
     initial
      begin
          // #2500us $dumpflush;
-         #900ms $dumpflush;
+         #600ms $dumpflush;
          $finish;
      end
 

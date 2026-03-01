@@ -21,6 +21,8 @@ module vga_top (
 
 	logic [7:0] w_pxlX;
 	logic [7:0] w_pxlY;
+	logic w_x_y;
+	logic w_yy;
 
 
 	vga_memory VGA_MEM (
@@ -38,13 +40,16 @@ module vga_top (
 
 	vga_compCount #(
 		.COMPARE(96),
+		.COMPARE2(799),
 		.RESET(800),
 		.OUTPUT_SHIFT(2),
 		.OUTPUT_OFFSET(144)
 	) VGA_X (
 		.i_clk    (i_vga_clk),
 		.i_reset_n(i_reset_n),
+		.en       (1),
 		.o_comp   (o_vgaData.hSync),
+		.o_comp2  (w_x_y),
 		.o_value  (w_pxlX)
 	);
 
@@ -54,9 +59,11 @@ module vga_top (
 		.OUTPUT_SHIFT(2),
 		.OUTPUT_OFFSET(31)
 	) VGA_Y (
-		.i_clk    (o_vgaData.hSync),
+		.i_clk    (i_vga_clk),
 		.i_reset_n(i_reset_n),
+		.en       (w_x_y),
 		.o_comp   (o_vgaData.vSync),
+		.o_comp2  (w_yy),
 		.o_value  (w_pxlY)
 	);
 

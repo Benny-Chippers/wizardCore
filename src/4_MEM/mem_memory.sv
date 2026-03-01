@@ -29,22 +29,22 @@ module mem_memory #(
     logic [31:0] mem_array [MEMORY_SIZE];
     initial begin : init_mem_from_hex
         integer i;
-        
+
         // Optional: clear all memory first
         for (i = 0; i < MEMORY_SIZE; i++) begin
             mem_array[i] = 32'h00000000;
         end
-        
+
         `ifdef SIMULATION
-        string path = {"../scripts/", INIT_FILENAME};
-        $display("Loading memory image: %s", path);
-        $readmemh(path, mem_array);
+        // string path = {"../scripts/", INIT_FILENAME};
+        $display("Loading memory image: %s", {"../scripts/", INIT_FILENAME});
+        $readmemh({"../scripts/", INIT_FILENAME}, mem_array);
         `else
         $display("Loading memory image: %s", INIT_FILENAME);
         $readmemh(INIT_FILENAME, mem_array);
         `endif
 
-        
+
 
         // INIT_FILENAME should point to a Verilog-style hex/mem file
         // e.g. "test_rv32i.mem" generated via objcopy -O verilog

@@ -1,19 +1,24 @@
 module vga_compCount #(
 	parameter int COMPARE = 2,
+	parameter int COMPARE2 = 519,
 	parameter int RESET = 521,
 	parameter int OUTPUT_SHIFT = 2,
 	parameter int OUTPUT_OFFSET = 31
 ) (
 	i_clk, i_reset_n,
-	o_comp, o_value
+	en,
+	o_comp, o_comp2, o_value
 );
 
 	// Inputs
 	input logic i_clk;
 	input logic i_reset_n;
 
+	input logic en;
+
 	// Outputs
 	output logic o_comp;
+	output logic o_comp2;
 	output logic [7:0] o_value;
 
 	// Internal
@@ -27,10 +32,12 @@ module vga_compCount #(
 		if(~i_reset_n) begin
 			w_count <= 0;
 		end else begin
-			if (w_count + 1 < RESET) begin
-				w_count <= w_count + 1;
-			end else begin
-				w_count <= 0;
+			if(en) begin
+				if (w_count + 1 < RESET) begin
+					w_count <= w_count + 1;
+				end else begin
+					w_count <= 0;
+				end
 			end
 		end
 	end
@@ -38,6 +45,7 @@ module vga_compCount #(
 	// Compare
 	always_comb begin
 		o_comp = (w_count >= COMPARE);
+		o_comp2 = (w_count >= COMPARE2);
 
 		w_inter = ((w_count - OUTPUT_OFFSET) >> OUTPUT_SHIFT);
 		o_value = w_inter[7:0];
