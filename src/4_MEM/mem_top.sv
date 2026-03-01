@@ -25,7 +25,7 @@ module mem_top (
     logic oB_PCSrc;
 
     mem_memory #(
-        .INIT_FILENAME("test_rv32i.bin")
+        .INIT_FILENAME("test_isa_vga.mem")
     ) Memory (
         .i_clk       (i_clk),
         .i_reset_n   (1),

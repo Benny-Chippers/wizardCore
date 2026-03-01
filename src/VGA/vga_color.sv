@@ -41,12 +41,12 @@ module vga_color (
 
     //bounds checking
     always_comb begin
-        w_validWR = (i_pxlAddr[14:8] < 120) & (i_pxlAddr[6:0] < 80);
+        w_validWR = (i_pxlAddr[14:8] < 120) & (i_pxlAddr[7:0] < 80);
         w_validRD = (i_pxlY < 120) & (i_pxlX < 160);
     end
 
     always_comb begin
-        w_WrPxl = {i_pxlAddr[14:8],4'b0} + {2'b0,i_pxlAddr[14:8],2'b0} + {6'b0,i_pxlAddr[6:2]};
+        w_WrPxl = {i_pxlAddr[14:8],4'b0} + {2'b0,i_pxlAddr[14:8],2'b0} + {6'b0,i_pxlAddr[7:2]};
         w_WrByte = i_pxlAddr[1:0];
         w_RdPxl = {i_pxlY,6'b0} + {2'b0,i_pxlY,4'b0} + {6'b0,i_pxlX[7:0]};
         // w_RdPxl = (i_pxlY << 6) + (i_pxlY << 4) + i_pxlX;

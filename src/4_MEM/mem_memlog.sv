@@ -54,7 +54,7 @@ module mem_memlog #(
     always @(negedge i_clk) begin
         if (i_ctrlMEM[0] & en_MEM) begin
             $fdisplay(fd, "%0t,WRITE,0x%08h,%0d,0x%08h",
-                      $time-250, i_memAddr, i_memAddr[14:2], i_writeData);
+                      $time, i_memAddr, i_memAddr[14:2], i_writeData);
             $fflush(fd);
         end
     end
@@ -63,7 +63,7 @@ module mem_memlog #(
     always @(negedge i_clk) begin
         if (i_ctrlMEM[1] & en_WB) begin
             $fdisplay(fd, "%0t,READ,0x%08h,%0d,0x%08h",
-                      $time-250, i_memAddr, i_memAddr[14:2], i_readData);
+                      $time, i_memAddr, i_memAddr[14:2], i_readData);
             $fflush(fd);
         end
     end

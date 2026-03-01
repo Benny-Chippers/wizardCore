@@ -17,7 +17,7 @@ module testBench();
      end
 
     always begin
-        #250ns clk <= ~clk;
+        #20ns clk <= ~clk;
      end
 
      always begin
@@ -49,7 +49,7 @@ module testBench();
     initial
      begin
          // #2500us $dumpflush;
-         #90ms $dumpflush;
+         #900ms $dumpflush;
          $finish;
      end
 
