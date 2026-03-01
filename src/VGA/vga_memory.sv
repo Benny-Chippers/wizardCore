@@ -2,6 +2,7 @@ module vga_memory (
 	i_clk, i_vga_clk, i_reset_n,
 	i_pxlAddr, i_pxlData, i_ctrlVGA,
 	i_pxlX, i_pxlY,
+	en_MEM,
 	o_color
 );
 
@@ -14,6 +15,9 @@ module vga_memory (
 	input mem_ctrl_t i_ctrlVGA;
 	input logic [7:0] i_pxlX;
 	input logic [7:0] i_pxlY;
+
+	// Enables
+	input logic en_MEM;
 
 	// Output
 	output vga_color_t o_color;
@@ -115,6 +119,7 @@ module vga_memory (
 		.LOG_FILENAME("vga_mem.log")
 	) mm_vga (
             .i_clk      (i_clk),
+            .en_MEM     (en_MEM),
             .i_memAddr  ({buffer_select,i_pxlAddr[30:0]}),
             .i_writeData(i_pxlData),
             .i_ctrlMEM  (i_ctrlVGA),

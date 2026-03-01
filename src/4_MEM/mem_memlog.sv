@@ -25,6 +25,7 @@ module mem_memlog #(
     parameter string LOG_FILENAME = "mem.log"
 ) (
     input  logic        i_clk,
+    input  logic        en_MEM,
     input  logic [31:0] i_memAddr,
     input  logic [31:0] i_writeData,
     input  mem_ctrl_t  i_ctrlMEM,   // [1]=read, [0]=write
@@ -50,7 +51,7 @@ module mem_memlog #(
 
     // Log writes
     always @(posedge i_clk) begin
-        if (i_ctrlMEM[0]) begin
+        if (i_ctrlMEM[0] & en_MEM) begin
             $fdisplay(fd, "%0t,WRITE,0x%08h,%0d,0x%08h",
                       $time, i_memAddr, i_memAddr[14:2], i_writeData);
             $fflush(fd);
@@ -59,7 +60,7 @@ module mem_memlog #(
 
     // Log reads
     always @(posedge i_clk) begin
-        if (i_ctrlMEM[1]) begin
+        if (i_ctrlMEM[1] & en_MEM) begin
             $fdisplay(fd, "%0t,READ,0x%08h,%0d,0x%08h",
                       $time, i_memAddr, i_memAddr[14:2], i_readData);
             $fflush(fd);

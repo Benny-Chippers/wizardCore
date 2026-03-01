@@ -1,6 +1,7 @@
 module vga_top (
 	i_clk, i_vga_clk, i_reset_n,
 	i_pxlAddr, i_pxlData, i_ctrlVGA,
+	en_MEM,
 	o_vgaData
 );
 
@@ -11,6 +12,9 @@ module vga_top (
 	input [31:0] i_pxlAddr;
 	input [31:0] i_pxlData;
 	input mem_ctrl_t i_ctrlVGA;		// Pixel writing signals
+
+	// Enables
+	input logic en_MEM;
 
 	// Outputs
 	output vga_out_t o_vgaData;
@@ -28,6 +32,7 @@ module vga_top (
 		.i_ctrlVGA(i_ctrlVGA),
 		.i_pxlX   (w_pxlX),
 		.i_pxlY   (w_pxlY),
+		.en_MEM   (en_MEM),
 		.o_color  (o_vgaData[11:0])
 		);
 

@@ -1,6 +1,7 @@
 //(* keep_hierarchy = "yes" *)
-(* max_fanout = 20 *)
+//(* max_fanout = 20 *)
 module top (
+    (* max_fanout = 20 *)
     input clk,      // Clock
     input vga_clk,  // Clock for vga circuit
     input reset_n_out,  // Asynchronous reset active low
@@ -35,10 +36,14 @@ module top (
     mem_ctrl_t ctrlVGA;
 
 
+    // Clocking
+    (* max_fanout = 20 *)
+    reg en_IF, en_ID, en_EX, en_MEM, en_WB;
+
     logic clk_if;
     logic clk_id;
     logic clk_mem;
-    
+
     logic reset_n;
     always @(posedge clk) begin
         reset_n <= reset_n_out;
@@ -54,26 +59,40 @@ module top (
             .o_clk_mem  (clk_mem)
         );
 
+    top_en enable
+        (
+            .i_clk    	(clk),
+            .i_reset_n	(reset_n),
+            .o_en_IF  	(en_IF),
+            .o_en_ID  	(en_ID),
+            .o_en_EX  	(en_EX),
+            .o_en_MEM  	(en_MEM),
+            .o_en_WB  	(en_WB)
+        );
+
     if_top IF
         (
-            .i_clk        (clk_if),
-            .i_reset_n    (reset_n),
-            .i_PCSrc      (PCSrc),
-            .i_inAddr     (outAddr),
-            .i_mem_instr  (mem_instr),
-            .o_outAddr    (inAddr),
-            .o_instruction(instruction),
-            .o_mem_instrAddr(mem_instrAddr)
+            .i_clk        		(clk),
+            .i_reset_n    		(reset_n),
+            .i_PCSrc      		(PCSrc),
+            .i_inAddr     		(outAddr),
+            .i_mem_instr  		(mem_instr),
+            .en_WB        		(en_WB),
+            .o_outAddr    		(inAddr),
+            .o_instruction		(instruction),
+            .o_mem_instrAddr	(mem_instrAddr)
         );
 
     id_top ID
         (
-            .i_clk          (clk_id),
+            .i_clk          (clk),
             .i_reset_n      (reset_n),
             .i_instr        (instruction),
             .i_wrSig        (wb.regWrite),
             .i_wrReg        (wb.writeReg),
             .i_wrData       (wrData),
+            .en_ID 			(en_ID),
+            .en_WB        	(en_WB),
             .o_rdData1      (regData1),
             .o_rdData2      (regData2),
             .o_immediate    (immediate),
@@ -84,29 +103,34 @@ module top (
 
     ex_top EX
         (
-            .i_inAddr       (inAddr),
-            .i_regData1    (regData1),
-            .i_regData2    (regData2),
-            .i_immediate   (immediate),
-            .i_ctrlEX      (ex),
-            .i_ctrlMEM     ({mem.Jump,mem.Branch}),
-            .o_outAddr     (outAddr),
-            .o_zero        (zero),
-            .o_resultALU   (resultALU)
+        	.i_clk		   	(clk),
+        	.i_reset_n		(reset_n),
+            .i_inAddr      	(inAddr),
+            .i_regData1    	(regData1),
+            .i_regData2    	(regData2),
+            .i_immediate   	(immediate),
+            .i_ctrlEX      	(ex),
+            .i_ctrlMEM     	({mem.Jump,mem.Branch}),
+            .en_EX      	(en_EX),
+            .o_outAddr     	(outAddr),
+            .o_zero        	(zero),
+            .o_resultALU   	(resultALU)
         );
 
     mem_top MEM
         (
-            .i_clk        (clk),
-            .i_reset_n    (reset_n),
-            .i_memAddr    (resultALU),
-            .i_if_instrAddr(mem_instrAddr),
-            .i_wrData     (regData2),
-            .i_ctrlMEM    (ctrlMEM),
-            .i_zero       (zero),
-            .o_readData   (readData),
-            .o_if_instr   (mem_instr),
-            .o_PCSrc      (PCSrc)
+            .i_clk          (clk),
+            .i_reset_n      (reset_n),
+            .i_memAddr      (resultALU),
+            .i_if_instrAddr (mem_instrAddr),
+            .i_wrData       (regData2),
+            .i_ctrlMEM      (ctrlMEM),
+            .i_zero         (zero),
+            .en_IF          (en_IF),
+            .en_MEM         (en_MEM),
+            .o_readData     (readData),
+            .o_if_instr     (mem_instr),
+            .o_PCSrc        (PCSrc)
         );
 
     wb_top WB
@@ -128,6 +152,7 @@ module top (
             .i_pxlAddr      (resultALU),
             .i_pxlData      (regData2),
             .i_ctrlVGA      (ctrlVGA),
+            .en_MEM   		(en_MEM),
             .o_vgaData      (vgaData)
         );
 
