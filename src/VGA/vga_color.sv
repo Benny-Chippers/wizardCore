@@ -82,20 +82,23 @@ module vga_color (
     always_ff @(posedge i_vga_clk) begin
         if (w_validRD) begin
             w_tempRD <= m_BRAM[{1'b0,w_RdPxl[13:3]}];
-            case (w_RdPxl[2:0])
-                0: o_value <= w_tempRD[3:0];
-                1: o_value <= w_tempRD[7:4];
-                2: o_value <= w_tempRD[11:8];
-                3: o_value <= w_tempRD[15:12];
-                4: o_value <= w_tempRD[19:16];
-                5: o_value <= w_tempRD[23:20];
-                6: o_value <= w_tempRD[27:24];
-                7: o_value <= w_tempRD[31:28];
-                default : o_value <= 0;
-            endcase
         end else begin
-            o_value <= 0;
+            w_tempRD <= 0;
         end
+    end
+
+    always_comb begin
+        case (w_RdPxl[2:0])
+            0: o_value = w_tempRD[3:0];
+            1: o_value = w_tempRD[7:4];
+            2: o_value = w_tempRD[11:8];
+            3: o_value = w_tempRD[15:12];
+            4: o_value = w_tempRD[19:16];
+            5: o_value = w_tempRD[23:20];
+            6: o_value = w_tempRD[27:24];
+            7: o_value = w_tempRD[31:28];
+            default : o_value = 0;
+        endcase
     end
 
 

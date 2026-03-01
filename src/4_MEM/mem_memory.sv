@@ -60,98 +60,99 @@ module mem_memory #(
         end else begin
             if(en_IF) begin
                 o_instr <= mem_array[i_instrAddr[14:2]]; // Word-aligned access for instruction fetch
-            end else begin
-                o_instr <= o_instr;
             end
         end
     end
 
 
     // Memory Read
-    always_ff @(posedge i_clk) begin
-        if (!i_reset_n) begin
-            o_readData <= 32'b0;
-        end else if (i_ctrlMEM.memRead & en_MEM) begin
-            unique case (i_ctrlMEM.size)
-                2'b00: begin
-                    unique case (i_memAddr[1:0]) // Byte-aligned access, LB/LBU
-                        2'b00: begin
-                            o_readData <= {
-                                    (!i_ctrlMEM.sign)?{24{mem_array[i_memAddr[14:2]][7]}}:{24'b0},
-                                    mem_array[i_memAddr[14:2]][7:0]
-                                    };
-                        end
-                        2'b01: begin
-                            o_readData <= {
-                                    (!i_ctrlMEM.sign)?{24{mem_array[i_memAddr[14:2]][15]}}:{24'b0},
-                                    mem_array[i_memAddr[14:2]][15:8]
-                                    };
-                        end
-                        2'b10: begin
-                            o_readData <= {
-                                    (!i_ctrlMEM.sign)?{24{mem_array[i_memAddr[14:2]][23]}}:{24'b0},
-                                    mem_array[i_memAddr[14:2]][23:16]
-                                    };
-                        end
-                        2'b11: begin
-                            o_readData <= {
-                                    (!i_ctrlMEM.sign)?{24{mem_array[i_memAddr[14:2]][31]}}:{24'b0},
-                                    mem_array[i_memAddr[14:2]][31:24]
-                                    };
-                        end
-                    endcase
-                end
-                2'b01: begin
-                    unique case (i_memAddr[1]) // Halfword-aligned access, LH/LHU
-                        1'b0: begin
-                            o_readData <= {
-                                    (!i_ctrlMEM.sign)?{16{mem_array[i_memAddr[14:2]][15]}}:{16'b0},
-                                    mem_array[i_memAddr[14:2]][15:0]
-                                    };
-                        end
-                        1'b1: begin
-                            o_readData <= {
-                                    (!i_ctrlMEM.sign)?{16{mem_array[i_memAddr[14:2]][31]}}:{16'b0},
-                                    mem_array[i_memAddr[14:2]][31:16]
-                                    };
-                        end
-                    endcase
-                end
-                2'b10: begin
-                    o_readData <= mem_array[i_memAddr[14:2]]; // Word-aligned access
-                end
-                default: begin
-                    o_readData <= 32'b0;
-                end
-            endcase
-        end
+    logic [31:0] w_tempRD;
+
+    always_comb begin
+        unique case (i_ctrlMEM.size)
+            2'b00: begin
+                unique case (i_memAddr[1:0]) // Byte-aligned access, LB/LBU
+                    2'b00: begin
+                        o_readData = {
+                                (!i_ctrlMEM.sign)?{24{w_tempRD[7]}}:{24'b0},
+                                w_tempRD[7:0]
+                                };
+                    end
+                    2'b01: begin
+                        o_readData = {
+                                (!i_ctrlMEM.sign)?{24{w_tempRD[15]}}:{24'b0},
+                                w_tempRD[15:8]
+                                };
+                    end
+                    2'b10: begin
+                        o_readData = {
+                                (!i_ctrlMEM.sign)?{24{w_tempRD[23]}}:{24'b0},
+                                w_tempRD[23:16]
+                                };
+                    end
+                    2'b11: begin
+                        o_readData = {
+                                (!i_ctrlMEM.sign)?{24{w_tempRD[31]}}:{24'b0},
+                                w_tempRD[31:24]
+                                };
+                    end
+                endcase
+            end
+            2'b01: begin
+                unique case (i_memAddr[1]) // Halfword-aligned access, LH/LHU
+                    1'b0: begin
+                        o_readData = {
+                                (!i_ctrlMEM.sign)?{16{w_tempRD[15]}}:{16'b0},
+                                w_tempRD[15:0]
+                                };
+                    end
+                    1'b1: begin
+                        o_readData = {
+                                (!i_ctrlMEM.sign)?{16{w_tempRD[31]}}:{16'b0},
+                                w_tempRD[31:16]
+                                };
+                    end
+                endcase
+            end
+            2'b10: begin
+                o_readData = w_tempRD; // Word-aligned access
+            end
+            default: begin
+                o_readData = 32'b0;
+            end
+        endcase
     end
 
-    // Memory Write
+    // Memory Port Access
     always_ff @(posedge i_clk) begin
         if (!i_reset_n) begin
-            // Nothing
-        end else if (i_ctrlMEM.memWrite & en_MEM) begin
-            unique case (i_ctrlMEM.size)
-                2'b00: begin
-                    unique case (i_memAddr[1:0]) // Byte-aligned access
-                        2'b00: mem_array[i_memAddr[14:2]][7:0] <= i_writeData[7:0];
-                        2'b01: mem_array[i_memAddr[14:2]][15:8] <= i_writeData[7:0];
-                        2'b10: mem_array[i_memAddr[14:2]][23:16] <= i_writeData[7:0];
-                        2'b11: mem_array[i_memAddr[14:2]][31:24] <= i_writeData[7:0];
-                    endcase
-                end
-                2'b01: begin
-                    unique case (i_memAddr[1]) // Halfword-aligned access
-                        1'b0: mem_array[i_memAddr[14:2]][15:0] <= i_writeData[15:0];
-                        1'b1: mem_array[i_memAddr[14:2]][31:16] <= i_writeData[15:0];
-                    endcase
-                end
-                2'b10: mem_array[i_memAddr[14:2]] <= i_writeData; // Word-aligned access
-                default: begin
-                    //nothing
-                end
-            endcase
+            w_tempRD <= 32'b0;
+        end else if (en_MEM) begin
+            // Write
+            if (i_ctrlMEM.memWrite) begin
+                unique case (i_ctrlMEM.size)
+                    2'b00: begin
+                        unique case (i_memAddr[1:0]) // Byte-aligned access
+                            2'b00: mem_array[i_memAddr[14:2]][7:0] <= i_writeData[7:0];
+                            2'b01: mem_array[i_memAddr[14:2]][15:8] <= i_writeData[7:0];
+                            2'b10: mem_array[i_memAddr[14:2]][23:16] <= i_writeData[7:0];
+                            2'b11: mem_array[i_memAddr[14:2]][31:24] <= i_writeData[7:0];
+                        endcase
+                    end
+                    2'b01: begin
+                        unique case (i_memAddr[1]) // Halfword-aligned access
+                            1'b0: mem_array[i_memAddr[14:2]][15:0] <= i_writeData[15:0];
+                            1'b1: mem_array[i_memAddr[14:2]][31:16] <= i_writeData[15:0];
+                        endcase
+                    end
+                    2'b10: mem_array[i_memAddr[14:2]] <= i_writeData; // Word-aligned access
+                    default: begin
+                        //nothing
+                    end
+                endcase
+            end
+            // Read
+            w_tempRD <= mem_array[i_memAddr[14:2]];
         end
     end
 
