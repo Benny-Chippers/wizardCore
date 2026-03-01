@@ -2,6 +2,7 @@ module vga_frame (
 	i_clk, i_vga_clk,
 	i_pxlAddr, i_pxlData, i_ctrlVGA,
 	i_pxlX, i_pxlY,
+	en_MEM,
 	o_color
 );
 
@@ -13,6 +14,9 @@ module vga_frame (
 	input mem_ctrl_t i_ctrlVGA;
 	input logic [7:0] i_pxlX;			// Controls output
 	input logic [7:0] i_pxlY;			//
+
+	// Enables
+    input logic en_MEM;
 
 	// Output
 	output vga_color_t o_color;
@@ -68,6 +72,7 @@ module vga_frame (
 			.i_ctrlVGA(w_redCtrl),
 			.i_pxlX   (i_pxlX),
 			.i_pxlY   (i_pxlY),
+			.en_MEM   (en_MEM),
 			.o_value  (o_color.red)
 		);
 	vga_color greenColor (
@@ -78,6 +83,7 @@ module vga_frame (
 			.i_ctrlVGA(w_greenCtrl),
 			.i_pxlX   (i_pxlX),
 			.i_pxlY   (i_pxlY),
+			.en_MEM   (en_MEM),
 			.o_value  (o_color.green)
 		);
 	vga_color blueColor (
@@ -88,6 +94,7 @@ module vga_frame (
 			.i_ctrlVGA(w_blueCtrl),
 			.i_pxlX   (i_pxlX),
 			.i_pxlY   (i_pxlY),
+			.en_MEM   (en_MEM),
 			.o_value  (o_color.blue)
 		);
 endmodule

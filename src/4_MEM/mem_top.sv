@@ -1,7 +1,7 @@
 module mem_top (
     i_clk, i_reset_n,
     i_memAddr, i_if_instrAddr, i_wrData, i_ctrlMEM, i_zero,
-    en_IF, en_MEM,
+    en_IF, en_MEM, en_WB,
     o_readData, o_if_instr, o_PCSrc
 );
     // I/O
@@ -15,6 +15,7 @@ module mem_top (
 
     input logic en_IF;
     input logic en_MEM;
+    input logic en_WB; // for mem logging
 
     output logic [31:0] o_readData;
     output logic [31:0] o_if_instr;
@@ -24,7 +25,7 @@ module mem_top (
     logic oB_PCSrc;
 
     mem_memory #(
-        .INIT_FILENAME("test_vga.bin")
+        .INIT_FILENAME("test_rv32i.bin")
     ) Memory (
         .i_clk       (i_clk),
         .i_reset_n   (1),
@@ -34,6 +35,7 @@ module mem_top (
         .i_ctrlMEM   (i_ctrlMEM),
         .en_IF      (en_IF),
         .en_MEM     (en_MEM),
+        .en_WB      (en_WB),
         .o_readData  (o_readData),
         .o_instr      (o_if_instr)
     );

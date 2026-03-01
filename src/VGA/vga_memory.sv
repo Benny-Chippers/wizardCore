@@ -98,6 +98,7 @@ module vga_memory (
 			.i_ctrlVGA 	(w_ctrlVGA_0),
 			.i_pxlX   	(w_pxlX_0),
 			.i_pxlY   	(w_pxlY_0),
+			.en_MEM   	(en_MEM),
 			.o_color  	(w_color_0)
 		);
 
@@ -109,6 +110,7 @@ module vga_memory (
 			.i_ctrlVGA 	(w_ctrlVGA_1),
 			.i_pxlX   	(w_pxlX_1),
 			.i_pxlY   	(w_pxlY_1),
+			.en_MEM   	(en_MEM),
 			.o_color  	(w_color_1)
 		);
 
@@ -120,6 +122,7 @@ module vga_memory (
 	) mm_vga (
             .i_clk      (i_clk),
             .en_MEM     (en_MEM),
+            .en_WB 		(0),
             .i_memAddr  ({buffer_select,i_pxlAddr[30:0]}),
             .i_writeData(i_pxlData),
             .i_ctrlMEM  (i_ctrlVGA),

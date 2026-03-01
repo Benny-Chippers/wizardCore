@@ -110,11 +110,13 @@ module top (
             .i_regData2    	(regData2),
             .i_immediate   	(immediate),
             .i_ctrlEX      	(ex),
-            .i_ctrlMEM     	({mem.Jump,mem.Branch}),
+            .i_ctrlMEM     	(mem),
             .en_EX      	(en_EX),
             .o_outAddr     	(outAddr),
             .o_zero        	(zero),
-            .o_resultALU   	(resultALU)
+            .o_resultALU   	(resultALU),
+            .o_ctrlMEM      (ctrlMEM),
+            .o_ctrlVGA      (ctrlVGA)
         );
 
     mem_top MEM
@@ -128,6 +130,7 @@ module top (
             .i_zero         (zero),
             .en_IF          (en_IF),
             .en_MEM         (en_MEM),
+            .en_WB          (en_WB),
             .o_readData     (readData),
             .o_if_instr     (mem_instr),
             .o_PCSrc        (PCSrc)
@@ -155,24 +158,5 @@ module top (
             .en_MEM   		(en_MEM),
             .o_vgaData      (vgaData)
         );
-
-    // Memory Routing Logic
-    always_comb begin
-        if(mem.memRead | mem.memWrite) begin
-            if(resultALU[29:28] == 2'b00) begin
-                ctrlMEM = mem;
-                ctrlVGA = '0;
-            end else if (resultALU[29:28] == 2'b01) begin
-                ctrlMEM = '0;
-                ctrlVGA = mem;
-            end else begin
-                ctrlMEM = mem;
-                ctrlVGA = '0;
-            end
-        end else begin
-            ctrlMEM = mem;
-            ctrlVGA = '0;
-        end
-    end
 
 endmodule : top

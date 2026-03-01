@@ -3,7 +3,7 @@ module mem_memory #(
 ) (
     i_clk, i_reset_n,
     i_memAddr, i_instrAddr, i_writeData, i_ctrlMEM,
-    en_IF, en_MEM,
+    en_IF, en_MEM, en_WB,
     o_readData, o_instr
 );
     // Params
@@ -19,6 +19,7 @@ module mem_memory #(
 
     input logic en_IF;
     input logic en_MEM;
+    input logic en_WB; // for mem logging
 
     output logic [31:0] o_readData;
     output logic [31:0] o_instr;
@@ -158,6 +159,7 @@ module mem_memory #(
     mem_memlog mm (
             .i_clk      (i_clk),
             .en_MEM     (en_MEM),
+            .en_WB      (en_WB),
             .i_memAddr  (i_memAddr),
             .i_writeData(i_writeData),
             .i_ctrlMEM  (i_ctrlMEM),

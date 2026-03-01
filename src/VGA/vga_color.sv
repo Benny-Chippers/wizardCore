@@ -2,6 +2,7 @@ module vga_color (
     i_clk, i_vga_clk,
     i_pxlAddr, i_pxlData, i_ctrlVGA,
     i_pxlX, i_pxlY,
+    en_MEM,
     o_value
 );
 
@@ -13,6 +14,9 @@ module vga_color (
     input mem_ctrl_t i_ctrlVGA;
     input logic [7:0] i_pxlX;
     input logic [7:0] i_pxlY;
+
+    // Enables
+    input logic en_MEM;
 
     // Output
     output logic [3:0] o_value;
@@ -49,7 +53,7 @@ module vga_color (
     end
 
     always_ff @(posedge i_clk) begin
-        if (i_ctrlVGA.memWrite & w_validWR) begin
+        if (i_ctrlVGA.memWrite & w_validWR & en_MEM) begin
            unique case (i_ctrlVGA.size)
                2'b00: begin
                     if(w_WrByte == 0) m_BRAM[w_WrPxl][7:0] <= i_pxlData[7:0];

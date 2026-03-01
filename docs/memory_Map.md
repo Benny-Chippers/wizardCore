@@ -11,6 +11,7 @@ Addr[29:28] will be used for internal routing areas
 | `0b00` | `0x0` | Standard on Chip Memory |
 | `0b01` | `0x1` | VGA Frame Memory |
 | `0b10` | `0x2` | Northbridge communication |
+| `0b11` | `0x3` | Internal Config Registers |
 
 Addr[25:0] will be actual memory addresses, but still need to fit in the ranges availible to each Area
 
