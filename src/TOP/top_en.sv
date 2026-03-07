@@ -1,5 +1,6 @@
 module top_en (
 	i_clk, i_reset_n,
+	stall_IF, stall_ID, stall_EX, stall_MEM, stall_WB,
 	o_en_IF, o_en_ID, o_en_EX,
 	o_en_MEM, o_en_WB
 );
@@ -7,6 +8,12 @@ module top_en (
 	//I/O
 	input logic i_clk;
 	input logic i_reset_n;
+
+	input logic stall_IF;
+	input logic stall_ID;
+	input logic stall_EX;
+	input logic stall_MEM;
+	input logic stall_WB;
 
 	output logic o_en_IF;
 	output logic o_en_ID;
@@ -61,7 +68,7 @@ module top_en (
 				end
 				IF_STATE: begin
 					o_en_IF = 1;
-					if (count_inc >= IF_CYCLES) begin
+					if (count_inc >= IF_CYCLES && !stall_IF) begin
 						next_state = ID_STATE;
 						count_rst = 1;
 					end else begin
@@ -71,7 +78,7 @@ module top_en (
 				end
 				ID_STATE: begin
 					o_en_ID = 1;
-					if (count_inc >= ID_CYCLES) begin
+					if (count_inc >= ID_CYCLES && !stall_ID) begin
 						next_state = EX_STATE;
 						count_rst = 1;
 					end else begin
@@ -81,7 +88,7 @@ module top_en (
 				end
 				EX_STATE: begin
 					o_en_EX = 1;
-					if (count_inc >= EX_CYCLES) begin
+					if (count_inc >= EX_CYCLES && !stall_EX) begin
 						next_state = MEM_STATE;
 						count_rst = 1;
 					end else begin
@@ -91,7 +98,7 @@ module top_en (
 				end
 				MEM_STATE: begin
 					o_en_MEM = 1;
-					if (count_inc >= MEM_CYCLES) begin
+					if (count_inc >= MEM_CYCLES && !stall_MEM) begin
 						next_state = WB_STATE;
 						count_rst = 1;
 					end else begin
@@ -101,7 +108,7 @@ module top_en (
 				end
 				WB_STATE: begin
 					o_en_WB = 1;
-					if (count_inc >= WB_CYCLES) begin
+					if (count_inc >= WB_CYCLES && !stall_WB) begin
 						next_state = IF_STATE;
 						count_rst = 1;
 					end else begin

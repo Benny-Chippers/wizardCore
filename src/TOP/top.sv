@@ -52,7 +52,8 @@ module top (
 
     // Clocking
     (* max_fanout = 20 *)
-    reg en_IF, en_ID, en_EX, en_MEM, en_WB;
+    logic en_IF, en_ID, en_EX, en_MEM, en_WB;
+    logic stall_IF, stall_ID, stall_EX, stall_MEM, stall_WB;
 
     logic clk_if;
     logic clk_id;
@@ -63,20 +64,24 @@ module top (
         reset_n <= reset_n_out;
     end
 
+    initial begin
+        stall_IF = 0;
+        stall_ID = 0;
+        stall_EX = 0;
+        stall_MEM = 0;
+        stall_WB = 0;
+    end
 
-    top_clk CLK_GEN
-        (
-            .i_clk      (clk),
-            .i_reset_n  (reset_n),
-            .o_clk_if   (clk_if),
-            .o_clk_id   (clk_id),
-            .o_clk_mem  (clk_mem)
-        );
 
     top_en enable
         (
             .i_clk    	(clk),
             .i_reset_n	(reset_n),
+            .stall_IF   (stall_IF),
+            .stall_ID   (stall_ID),
+            .stall_EX   (stall_EX),
+            .stall_MEM   (stall_MEM),
+            .stall_WB   (stall_WB),
             .o_en_IF  	(en_IF),
             .o_en_ID  	(en_ID),
             .o_en_EX  	(en_EX),
