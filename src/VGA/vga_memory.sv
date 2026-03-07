@@ -2,6 +2,7 @@ module vga_memory (
 	i_clk, i_vga_clk, i_reset_n,
 	i_pxlAddr, i_pxlData, i_ctrlVGA,
 	i_pxlX, i_pxlY,
+	en_MEM,
 	o_color
 );
 
@@ -14,6 +15,9 @@ module vga_memory (
 	input mem_ctrl_t i_ctrlVGA;
 	input logic [7:0] i_pxlX;
 	input logic [7:0] i_pxlY;
+
+	// Enables
+	input logic en_MEM;
 
 	// Output
 	output vga_color_t o_color;
@@ -39,7 +43,7 @@ module vga_memory (
 	// Buffer Select
 	initial buffer_select = 0;
 
-	always_ff @(posedge i_clk or negedge i_reset_n) begin
+	always_ff @(posedge i_clk) begin
 		if(i_reset_n) begin
 			if(i_pxlAddr == 32'h1003_0000 && i_ctrlVGA.memWrite)
 			buffer_select <= ~buffer_select;
@@ -94,6 +98,7 @@ module vga_memory (
 			.i_ctrlVGA 	(w_ctrlVGA_0),
 			.i_pxlX   	(w_pxlX_0),
 			.i_pxlY   	(w_pxlY_0),
+			.en_MEM   	(en_MEM),
 			.o_color  	(w_color_0)
 		);
 
@@ -105,20 +110,24 @@ module vga_memory (
 			.i_ctrlVGA 	(w_ctrlVGA_1),
 			.i_pxlX   	(w_pxlX_1),
 			.i_pxlY   	(w_pxlY_1),
+			.en_MEM   	(en_MEM),
 			.o_color  	(w_color_1)
 		);
 
 
 	// Logging
+	`ifdef SIMULATION
 	mem_memlog #(
 		.LOG_FILENAME("vga_mem.log")
 	) mm_vga (
             .i_clk      (i_clk),
-            .i_reset_n  (1),
+            .en_MEM     (en_MEM),
+            .en_WB 		(0),
             .i_memAddr  ({buffer_select,i_pxlAddr[30:0]}),
             .i_writeData(i_pxlData),
             .i_ctrlMEM  (i_ctrlVGA),
             .i_readData (0)
         );
-
+    
+    `endif
 endmodule

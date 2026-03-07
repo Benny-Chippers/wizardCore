@@ -4,7 +4,7 @@ module d_ff32 (clk, reset_n, d, q);
     input logic [31:0] d;
     output logic [31:0] q;
 
-    always_ff @(posedge clk or negedge reset_n) begin
+    always_ff @(posedge clk) begin
         if(~reset_n) begin
             q <= 0;
         end else begin

@@ -1,30 +1,52 @@
+`ifdef SIMULATION
 timeunit 1ns;
 timeprecision 1ns;
+`else
+`timescale 1ns/1ns;
+`endif
 
-module testBench();
+module testBench(
+    `ifdef SIMULATION
+    output [13:0] vgaData
+    `else
+    input osc_clk,
+    output vga_out_t vgaData
+    `endif
+);
 
-    reg clk, vga_clk;
-    reg reset_n;
+    reg clk;      // System/CPU Clock
+    reg vga_clk;  // Clock for vga circuit
+
     reg hit_reset;
-    reg [13:0] vgaData;
+    reg reset_n;
 
     initial
      begin
+        `ifdef SIMULATION
         clk = 0;
         vga_clk = 0;
+        `endif
         reset_n = 0;
         hit_reset = 0;
      end
 
     always begin
-        #250ns clk <= ~clk;
+        `ifdef SIMULATION
+        #20ns clk <= ~clk;
+        `endif
      end
 
      always begin
+        `ifdef SIMULATION
          #20ns vga_clk <= ~vga_clk;
+        `endif
      end
 
+    `ifdef SIMULATION
     always @(posedge clk)
+    `else
+    always @(posedge osc_clk)
+    `endif
     begin
         if(hit_reset === 1'b1) begin
             reset_n <= 0;
@@ -49,15 +71,19 @@ module testBench();
     initial
      begin
          // #2500us $dumpflush;
-         #900ms $dumpflush;
+         #600ms $dumpflush;
          $finish;
      end
 
     top top_instance
         (
+            `ifdef SIMULATION
             .clk        (clk),
             .vga_clk  (vga_clk),
-            .reset_n    (reset_n),
+            `else
+            .osc_clk    (osc_clk),
+            `endif
+            .reset_n_out    (reset_n),
             .vgaData    (vgaData)
         );
 

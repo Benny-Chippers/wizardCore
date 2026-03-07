@@ -1,11 +1,13 @@
 module if_top (i_clk, i_reset_n, i_PCSrc, i_inAddr, i_mem_instr,
-               o_outAddr, o_instruction, o_mem_instrAddr);
+                en_WB,
+                o_outAddr, o_instruction, o_mem_instrAddr);
     // I/O
     input logic i_clk;
     input logic i_reset_n;
     input logic i_PCSrc;
     input logic [31:0] i_inAddr;
     input logic [31:0] i_mem_instr;
+    input logic en_WB;
     output logic [31:0] o_outAddr;
     output logic [31:0] o_instruction;
     output logic [31:0] o_mem_instrAddr;
@@ -15,25 +17,26 @@ module if_top (i_clk, i_reset_n, i_PCSrc, i_inAddr, i_mem_instr,
     logic [31:0] PCin;
     logic [31:0] PCout;
 
-    /////////////////////
-    // Program Counter //
-    /////////////////////
-    // resets to zero i_reset_n falling edge
-    // latches PCin address on clk rising edge
-    // outputs to PCout
-    d_ff32 PC
-        (
-            .clk    (i_clk),
-            .reset_n(i_reset_n),
-            .d      (PCin),
-            .q      (PCout)
-        );
+    // /////////////////////
+    // // Program Counter //
+    // /////////////////////
+    // Uses write back signal to identify end of previous instruction
+    always_ff @(posedge i_clk) begin
+        if(~i_reset_n) begin
+            PCout <= 0;
+        end else begin
+            if(en_WB) begin
+                PCout <= PCin;
+            end
+        end
+    end
 
     ////////////////////////
     // Instruction Memory //
     ////////////////////////
     // to let PCout propagate,takes PCout at clk falling edge
     // insturction fetch starts then and outputs to o_instruction[31:0]
+    // Data Path buffering is in MEM block at instruction mem stage
     if_instrMem IM
         (
             .i_clk    (i_clk),

@@ -8,6 +8,8 @@ module wb_top (
     input logic [31:0] i_resultALU;
     output logic [31:0] o_wrData;
 
+    // Data Path staging is in ID_REG write back on en_WB signal
+
     // Combinational Logic
     always_comb begin
         // Write Back Data Select

@@ -10,7 +10,12 @@ Addr[29:28] will be used for internal routing areas
 | --- | --- | --- |
 | `0b00` | `0x0` | Standard on Chip Memory |
 | `0b01` | `0x1` | VGA Frame Memory |
-| `0b10` | `0x2` | Northbridge communication |
+| `0b10` | `0x2,0x6,0xA,0xE` | Northbridge communication |
+| `0b11` | `0x3` | Internal Config Registers |
+
+Accesses will be aligned to size
+
+## VGA Memory
 
 Addr[25:0] will be actual memory addresses, but still need to fit in the ranges availible to each Area
 
@@ -53,3 +58,20 @@ Addr[29:26] will be overwritten on dispatch to north bridge as meta data for Byt
 | `0b100` | Second Byte |
 | `0b101` | Third Byte |
 | `0b110` | Fourth Byte |
+
+Addr[26] will indicate if the access is a read or a write
+
+| Addr[26] | Byte Adressing |
+| --- | --- |
+| `0b0` | Read |
+| `0b1` | Write |
+
+## Internal Config Registers
+
+
+
+
+
+
+
+
