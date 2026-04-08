@@ -7,15 +7,17 @@ timeprecision 1ns;
 
 module testBench(
     `ifdef SIMULATION
-    output [13:0] vgaData
+    output [13:0] vgaData,
     `else
     input osc_clk,
-    output macro_pkg::vga_out_t vgaData
+    output macro_pkg::vga_out_t vgaData,
     `endif
+    inout [5:0] spi
 );
     reg osc_clk;
     reg clk;      // System/CPU Clock
     reg vga_clk;  // Clock for vga circuit
+    reg spi_clk;
 
     reg hit_reset;
     reg reset_n;
@@ -25,6 +27,7 @@ module testBench(
         `ifdef SIMULATION
         clk = 0;
         vga_clk = 0;
+        spi_clk = 0;
         `endif
         osc_clk = 0;
         reset_n = 0;
@@ -37,7 +40,7 @@ module testBench(
     always begin
         #20ns clk <= ~clk;
      end
-    
+
      always begin
          #20ns vga_clk <= ~vga_clk;
      end
@@ -46,6 +49,12 @@ module testBench(
         #5ns osc_clk <= ~osc_clk;
      end
     `endif
+
+     always begin
+        `ifdef SIMULATION
+         #500ns spi_clk <= ~spi_clk;
+        `endif
+     end
 
     `ifdef SIMULATION
     always @(posedge clk)
@@ -89,7 +98,8 @@ module testBench(
             .osc_clk    (osc_clk),
             `endif
             .reset_n    (reset_n),
-            .vgaData    (vgaData)
+            .vgaData    (vgaData),
+            .spi        (spi)
         );
 
 

@@ -7,18 +7,19 @@ module top (
     `else
     input osc_clk,
     `endif
-    input reset_n,  // Asynchronous reset active low
-    output macro_pkg::vga_out_t vgaData
+    input reset_n,  // Synchronous reset active low
+    output macro_pkg::vga_out_t vgaData,
+    inout [5:0] spi
 );
 
     `ifndef SIMULATION
     logic osc_reset_n;
-    
+
     initial begin
         #0 osc_reset_n = 0;
         #50ns osc_reset_n = 1;
     end
-    
+
     // VIVADO CLOCKING
     logic clk, vga_clk;
     clk_wiz_0 WIZ (
@@ -46,6 +47,9 @@ module top (
 
     logic [31:0] resultALU;
     logic [31:0] readData;
+
+    logic [7:0] shift_reg; //DELETE
+    xmem_ctrl_t spi_ctrl;
 
     // Control Signals
     macro_pkg::ex_ctrl_t ex;
@@ -152,6 +156,15 @@ module top (
             .o_readData     (readData),
             .o_if_instr     (mem_instr),
             .o_PCSrc        (PCSrc)
+        );
+
+    xmem_fsm SPIFSM
+        (
+            .i_clk      (clk),
+            .i_reset_n  (reset_n),
+            .i_ctrlMEM (ctrlMEM),
+            .i_shift_reg(shift_reg),
+            .o_spi_ctrl (spi_ctrl)
         );
 
     wb_top WB

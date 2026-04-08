@@ -26,17 +26,17 @@ module top_en (
 	logic count_rst;
 
 	// Local Params
-	localparam IF_CYCLES = 1;
-	localparam ID_CYCLES = 1;
-	localparam EX_CYCLES = 1;
-	localparam MEM_CYCLES = 1;
-	localparam WB_CYCLES = 1;
+	localparam logic [3:0] IF_CYCLES = 1;
+	localparam logic [3:0] ID_CYCLES = 1;
+	localparam logic [3:0] EX_CYCLES = 1;
+	localparam logic [3:0] MEM_CYCLES = 1;
+	localparam logic [3:0] WB_CYCLES = 1;
 
-	localparam IF_STATE = 3'b001;
-	localparam ID_STATE = 3'b010;
-	localparam EX_STATE = 3'b011;
-	localparam MEM_STATE = 3'b100;
-	localparam WB_STATE = 3'b101;
+	localparam logic [2:0] IF_STATE = 3'b001;
+	localparam logic [2:0] ID_STATE = 3'b010;
+	localparam logic [2:0] EX_STATE = 3'b011;
+	localparam logic [2:0] MEM_STATE = 3'b100;
+	localparam logic [2:0] WB_STATE = 3'b101;
 
 	initial begin
 		current_state = 0;
