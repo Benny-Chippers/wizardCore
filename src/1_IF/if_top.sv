@@ -1,16 +1,18 @@
-module if_top (i_clk, i_reset_n, i_PCSrc, i_inAddr, i_mem_instr,
-                en_WB,
-                o_outAddr, o_instruction, o_mem_instrAddr);
-    // I/O
-    input logic i_clk;
-    input logic i_reset_n;
-    input logic i_PCSrc;
-    input logic [31:0] i_inAddr;
-    input logic [31:0] i_mem_instr;
-    input logic en_WB;
-    output logic [31:0] o_outAddr;
-    output logic [31:0] o_instruction;
-    output logic [31:0] o_mem_instrAddr;
+module if_top (
+    // Input
+    input logic i_clk,
+    input logic i_reset_n,
+    input logic i_PCSrc,
+    input logic [31:0] i_inAddr,
+    input logic [31:0] i_mem_instr,
+    input logic en_WB,
+
+    // Output
+    output logic [31:0] o_outAddr,
+    output logic [31:0] o_instruction,
+    output logic [31:0] o_mem_instrAddr
+    );
+    
 
 
     // Internal wires

@@ -7,17 +7,24 @@ module top (
     `else
     input osc_clk,
     `endif
-    input reset_n_out,  // Asynchronous reset active low
-    output vga_out_t vgaData
+    input reset_n,  // Asynchronous reset active low
+    output macro_pkg::vga_out_t vgaData
 );
 
     `ifndef SIMULATION
+    logic osc_reset_n;
+    
+    initial begin
+        #0 osc_reset_n = 0;
+        #50ns osc_reset_n = 1;
+    end
+    
     // VIVADO CLOCKING
     logic clk, vga_clk;
     clk_wiz_0 WIZ (
         .clk_out1       (vga_clk),
         .clk_out2       (clk),
-        .resetn         (reset_n_out),
+        .resetn         (osc_reset_n),
         .clk_in1        (osc_clk)
         );
     `endif
@@ -41,13 +48,13 @@ module top (
     logic [31:0] readData;
 
     // Control Signals
-    ex_ctrl_t ex;
-    wb_ctrl_t wb;
+    macro_pkg::ex_ctrl_t ex;
+    macro_pkg::wb_ctrl_t wb;
 
     // Memory Routing Signals
-    mem_ctrl_t mem;
-    mem_ctrl_t ctrlMEM;
-    mem_ctrl_t ctrlVGA;
+    macro_pkg::mem_ctrl_t mem;
+    macro_pkg::mem_ctrl_t ctrlMEM;
+    macro_pkg::mem_ctrl_t ctrlVGA;
 
 
     // Clocking
@@ -55,14 +62,6 @@ module top (
     logic en_IF, en_ID, en_EX, en_MEM, en_WB;
     logic stall_IF, stall_ID, stall_EX, stall_MEM, stall_WB;
 
-    logic clk_if;
-    logic clk_id;
-    logic clk_mem;
-
-    logic reset_n;
-    always @(posedge clk) begin
-        reset_n <= reset_n_out;
-    end
 
     initial begin
         stall_IF = 0;

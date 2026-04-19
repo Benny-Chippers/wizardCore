@@ -1,13 +1,14 @@
 module top_clk (
-    i_clk, i_reset_n,
-    o_clk_if, o_clk_id, o_clk_mem
+    // Input
+    input logic i_clk,
+    input logic i_reset_n,
+
+    // Output
+    output logic o_clk_if,
+    output logic o_clk_id,
+    output logic o_clk_mem
 );
-    // I/O
-    input logic i_clk;
-    input logic i_reset_n;
-    output logic o_clk_if;
-    output logic o_clk_id;
-    output logic o_clk_mem;
+
 
     // Internal Signals
     logic [15:0] w_clkData_out;

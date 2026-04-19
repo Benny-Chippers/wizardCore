@@ -1,13 +1,13 @@
 module ex_alu (
-    i_A, i_B, i_ctrlALU,
-    o_result, o_zero
+    // Input
+    input logic [31:0] i_A,
+    input logic [31:0] i_B,
+    input macro_pkg::alu_ctrl_t i_ctrlALU,  //ALU OP(2), Func3(3), Func7(7)
+
+    //Output
+    output logic [31:0] o_result,
+    output logic o_zero
 );
-    // I/O
-    input logic [31:0] i_A;
-    input logic [31:0] i_B;
-    input alu_ctrl_t i_ctrlALU; //ALU OP(2), Func3(3), Func7(7)
-    output logic [31:0] o_result;
-    output logic o_zero;
 
 
     // Combinational Logic
