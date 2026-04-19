@@ -1,25 +1,20 @@
 module vga_frame (
-	i_clk, i_vga_clk,
-	i_pxlAddr, i_pxlData, i_ctrlVGA,
-	i_pxlX, i_pxlY,
-	en_MEM,
-	o_color
-);
-
 	// Inputs
-    input logic i_clk;
-    input logic i_vga_clk;
-	input logic [31:0] i_pxlAddr;		// [23:16] selects color, [15:8] selects Y, [7:0] selects X
-	input logic [31:0] i_pxlData;
-	input mem_ctrl_t i_ctrlVGA;
-	input logic [7:0] i_pxlX;			// Controls output
-	input logic [7:0] i_pxlY;			//
+    input logic i_clk,
+    input logic i_vga_clk,
+	input logic [31:0] i_pxlAddr,		// [23:16] selects color, [15:8] selects Y, [7:0] selects X
+	input logic [31:0] i_pxlData,
+	input macro_pkg::mem_ctrl_t i_ctrlVGA,
+	input logic [7:0] i_pxlX,			// Controls output
+	input logic [7:0] i_pxlY,			//
 
 	// Enables
-    input logic en_MEM;
+    input logic en_MEM,
 
 	// Output
-	output vga_color_t o_color;
+	output macro_pkg::vga_color_t o_color
+);
+
 
 	// Internal signals
 	logic [31:0] w_redAddr;
@@ -28,11 +23,11 @@ module vga_frame (
 	logic [31:0] w_redData;
 	logic [31:0] w_greenData;
 	logic [31:0] w_blueData;
-	mem_ctrl_t w_redCtrl;
-	mem_ctrl_t w_greenCtrl;
-	mem_ctrl_t w_blueCtrl;
+	macro_pkg::mem_ctrl_t w_redCtrl;
+	macro_pkg::mem_ctrl_t w_greenCtrl;
+	macro_pkg::mem_ctrl_t w_blueCtrl;
 
-	vga_color_t w_color;
+	macro_pkg::vga_color_t w_color;
 
 	always_comb begin
 		w_redAddr = 0;

@@ -1,28 +1,24 @@
 module mem_memory #(
     parameter INIT_FILENAME = "test_rv32i.mem"
 ) (
-    i_clk, i_reset_n,
-    i_memAddr, i_instrAddr, i_writeData, i_ctrlMEM,
-    en_IF, en_MEM, en_WB,
-    o_readData, o_instr
+    // I/O
+    input logic i_clk,
+    input logic i_reset_n,
+    input logic [31:0] i_memAddr,
+    input logic [31:0] i_instrAddr,
+    input logic [31:0] i_writeData,
+    input macro_pkg::mem_ctrl_t i_ctrlMEM,
+
+    input logic en_IF,
+    input logic en_MEM,
+    input logic en_WB,      // for mem logging
+
+    output logic [31:0] o_readData,
+    output logic [31:0] o_instr
 );
+
     // Params
     localparam MEMORY_SIZE = 8192;
-
-    // I/O
-    input logic i_clk;
-    input logic i_reset_n;
-    input logic [31:0] i_memAddr;
-    input logic [31:0] i_instrAddr;
-    input logic [31:0] i_writeData;
-    input mem_ctrl_t i_ctrlMEM;
-
-    input logic en_IF;
-    input logic en_MEM;
-    input logic en_WB; // for mem logging
-
-    output logic [31:0] o_readData;
-    output logic [31:0] o_instr;
 
     // Memory Array
     (* ram_style = "block" *)

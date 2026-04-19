@@ -1,10 +1,11 @@
 module id_immGen (
-   i_instr,
-   o_imm
+  // Input
+  input logic [31:0] i_instr,
+
+  // Output
+  output logic [31:0] o_imm
 );
-  // I/O
-  input logic [31:0] i_instr;
-  output logic [31:0] o_imm;
+
 
   always_comb begin
     unique case (i_instr[6:0])

@@ -1,27 +1,24 @@
 module id_top (
-        i_clk, i_reset_n, i_instr, i_wrSig, i_wrReg, i_wrData,
-        en_ID, en_WB,
-        o_rdData1, o_rdData2, o_immediate,
-        o_ctrlEX, o_ctrlMEM, o_ctrlWB
+        // Input
+        input logic i_clk,
+        input logic i_reset_n,
+        input logic [31:0] i_instr,
+        input logic i_wrSig,
+        input logic [4:0] i_wrReg,
+        input logic [31:0] i_wrData,
+
+        // Enable
+        input logic en_ID,
+        input logic en_WB,
+
+        // Output
+        output logic [31:0] o_rdData1,
+        output logic [31:0] o_rdData2,
+        output logic [31:0] o_immediate,
+        output macro_pkg::ex_ctrl_t o_ctrlEX,       // ALUop(2), ALU src(2), func3, func7
+        output macro_pkg::mem_ctrl_t o_ctrlMEM,     // Branch, Mem-Read, mem-Write
+        output macro_pkg::wb_ctrl_t o_ctrlWB        // Reg-Write, Memto-Reg
     );
-
-    // I/O
-    input logic i_clk;
-    input logic i_reset_n;
-    input logic [31:0] i_instr;
-    input logic i_wrSig;
-    input logic [4:0] i_wrReg;
-    input logic [31:0] i_wrData;
-
-    input logic en_ID;
-    input logic en_WB;
-
-    output logic [31:0] o_rdData1;
-    output logic [31:0] o_rdData2;
-    output logic [31:0] o_immediate;
-    output ex_ctrl_t o_ctrlEX;       // ALUop(2), ALU src(2), func3, func7
-    output mem_ctrl_t o_ctrlMEM;       // Branch, Mem-Read, mem-Write
-    output wb_ctrl_t o_ctrlWB;        // Reg-Write, Memto-Reg
 
     // Internal wires
     logic [4:0] w_rdReg1;
@@ -31,9 +28,9 @@ module id_top (
     logic [31:0] oB_rdData1;
     logic [31:0] oB_rdData2;
     logic [31:0] oB_immediate;
-    ex_ctrl_t oB_ctrlEX;       // ALUop(2), ALU src(2), func3, func7
-    mem_ctrl_t oB_ctrlMEM;       // Branch, Mem-Read, mem-Write
-    wb_ctrl_t oB_ctrlWB;        // Reg-Write, Memto-Reg
+    macro_pkg::ex_ctrl_t oB_ctrlEX;       // ALUop(2), ALU src(2), func3, func7
+    macro_pkg::mem_ctrl_t oB_ctrlMEM;       // Branch, Mem-Read, mem-Write
+    macro_pkg::wb_ctrl_t oB_ctrlWB;        // Reg-Write, Memto-Reg
 
     id_control Ctrl (
         .i_instr (i_instr),

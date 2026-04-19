@@ -1,22 +1,21 @@
 module id_reg (
-    i_clk, i_reset_n, i_rdReg1, i_rdReg2, i_wrSig, i_wrReg, i_wrData,
-    en_WB,
-    o_rdData1, o_rdData2
+    // Input
+    input logic i_clk,
+    input logic i_reset_n,
+    input logic [4:0] i_rdReg1,
+    input logic [4:0] i_rdReg2,
+    input logic i_wrSig,
+    input logic [4:0] i_wrReg,
+    input logic [31:0] i_wrData,
+
+    // Enable
+    input logic en_WB,
+
+    // Output
+    output logic [31:0] o_rdData1,
+    output logic [31:0] o_rdData2
 );
 
-    // I/O
-    input logic i_clk;
-    input logic i_reset_n;
-    input logic [4:0] i_rdReg1;
-    input logic [4:0] i_rdReg2;
-    input logic i_wrSig;
-    input logic [4:0] i_wrReg;
-    input logic [31:0] i_wrData;
-
-    input logic en_WB;
-
-    output logic [31:0] o_rdData1;
-    output logic [31:0] o_rdData2;
 
     // 32 registers of 32 bits each
     logic [31:0] regs [32];

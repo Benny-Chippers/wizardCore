@@ -1,26 +1,25 @@
 module ex_top (
-    i_clk, i_reset_n,
-    i_inAddr, i_regData1, i_regData2, i_immediate, i_ctrlEX, i_ctrlMEM,
-    en_EX,
-    o_outAddr, o_zero, o_resultALU, o_ctrlMEM, o_ctrlVGA
+    // Input
+    input logic i_clk,
+    input logic i_reset_n,
+    input logic [31:0] i_inAddr,
+    input logic [31:0] i_regData1,
+    input logic [31:0] i_regData2,
+    input logic [31:0] i_immediate,
+    input macro_pkg::ex_ctrl_t i_ctrlEX,
+    input macro_pkg::mem_ctrl_t i_ctrlMEM,
+
+    // Enable
+    input logic en_EX,
+
+    // Output
+    output logic [31:0] o_outAddr,
+    output logic o_zero,
+    output logic [31:0] o_resultALU,
+    output macro_pkg::mem_ctrl_t o_ctrlMEM,
+    output macro_pkg::mem_ctrl_t o_ctrlVGA
 );
-    // I/O
-    input logic i_clk;
-    input logic i_reset_n;
-    input logic [31:0] i_inAddr;
-    input logic [31:0] i_regData1;
-    input logic [31:0] i_regData2;
-    input logic [31:0] i_immediate;
-    input ex_ctrl_t i_ctrlEX;
-    input mem_ctrl_t i_ctrlMEM;
 
-    input logic en_EX;
-
-    output logic [31:0] o_outAddr;
-    output logic o_zero;
-    output logic [31:0] o_resultALU;
-    output mem_ctrl_t o_ctrlMEM;
-    output mem_ctrl_t o_ctrlVGA;
 
     // Internal Wires
     logic [31:0] w_A;
@@ -30,8 +29,8 @@ module ex_top (
     logic [31:0] oB_outAddr;
     logic oB_zero;
     logic [31:0] oB_resultALU;
-    mem_ctrl_t oB_ctrlMEM;
-    mem_ctrl_t oB_ctrlVGA;
+    macro_pkg::mem_ctrl_t oB_ctrlMEM;
+    macro_pkg::mem_ctrl_t oB_ctrlVGA;
 
     // ALU
     ex_alu ALU (

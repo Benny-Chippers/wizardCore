@@ -29,7 +29,7 @@ module mem_memlog #(
     input  logic        en_WB,
     input  logic [31:0] i_memAddr,
     input  logic [31:0] i_writeData,
-    input  mem_ctrl_t  i_ctrlMEM,   // [1]=read, [0]=write
+    input  macro_pkg::mem_ctrl_t  i_ctrlMEM,   // [1]=read, [0]=write
     input  logic [31:0] i_readData
 );
     integer fd;
@@ -67,5 +67,5 @@ module mem_memlog #(
             $fflush(fd);
         end
     end
-endmodule
+endmodule : mem_memlog
 
