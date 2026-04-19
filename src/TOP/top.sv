@@ -8,7 +8,7 @@ module top (
     input osc_clk,
     `endif
     input reset_n_out,  // Asynchronous reset active low
-    output vga_out_t vgaData
+    output macro_pkg::vga_out_t vgaData
 );
 
     `ifndef SIMULATION
@@ -41,23 +41,20 @@ module top (
     logic [31:0] readData;
 
     // Control Signals
-    ex_ctrl_t ex;
-    wb_ctrl_t wb;
+    macro_pkg::ex_ctrl_t ex;
+    macro_pkg::wb_ctrl_t wb;
 
     // Memory Routing Signals
-    mem_ctrl_t mem;
-    mem_ctrl_t ctrlMEM;
-    mem_ctrl_t ctrlVGA;
+    macro_pkg::mem_ctrl_t mem;
+    macro_pkg::mem_ctrl_t ctrlMEM;
+    macro_pkg::mem_ctrl_t ctrlVGA;
 
 
     // Clocking
     (* max_fanout = 20 *)
     logic en_IF, en_ID, en_EX, en_MEM, en_WB;
     logic stall_IF, stall_ID, stall_EX, stall_MEM, stall_WB;
-
-    logic clk_if;
-    logic clk_id;
-    logic clk_mem;
+    
 
     logic reset_n;
     always @(posedge clk) begin

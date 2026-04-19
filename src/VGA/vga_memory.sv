@@ -1,43 +1,38 @@
 module vga_memory (
-	i_clk, i_vga_clk, i_reset_n,
-	i_pxlAddr, i_pxlData, i_ctrlVGA,
-	i_pxlX, i_pxlY,
-	en_MEM,
-	o_color
-);
-
 	// Inputs
-	input logic i_clk;
-	input logic i_vga_clk;
-	input logic i_reset_n;
-	input logic [31:0] i_pxlAddr;
-	input logic [31:0] i_pxlData;
-	input mem_ctrl_t i_ctrlVGA;
-	input logic [7:0] i_pxlX;
-	input logic [7:0] i_pxlY;
+	input logic i_clk,
+	input logic i_vga_clk,
+	input logic i_reset_n,
+	input logic [31:0] i_pxlAddr,
+	input logic [31:0] i_pxlData,
+	input macro_pkg::mem_ctrl_t i_ctrlVGA,
+	input logic [7:0] i_pxlX,
+	input logic [7:0] i_pxlY,
 
 	// Enables
-	input logic en_MEM;
+	input logic en_MEM,
 
 	// Output
-	output vga_color_t o_color;
+	output macro_pkg::vga_color_t o_color
+);
+
 
 	// Internal Signals
 	reg buffer_select;
 
 	logic [31:0] w_pxlAddr_0;
 	logic [31:0] w_pxlData_0;
-	mem_ctrl_t w_ctrlVGA_0;
+	macro_pkg::mem_ctrl_t w_ctrlVGA_0;
 	logic [7:0] w_pxlX_0;
 	logic [7:0] w_pxlY_0;
-	vga_color_t w_color_0;
+	macro_pkg::vga_color_t w_color_0;
 
 	logic [31:0] w_pxlAddr_1;
 	logic [31:0] w_pxlData_1;
-	mem_ctrl_t w_ctrlVGA_1;
+	macro_pkg::mem_ctrl_t w_ctrlVGA_1;
 	logic [7:0] w_pxlX_1;
 	logic [7:0] w_pxlY_1;
-	vga_color_t w_color_1;
+	macro_pkg::vga_color_t w_color_1;
 
 
 	// Buffer Select
@@ -53,7 +48,7 @@ module vga_memory (
 	end
 
 	// Muxes
-	always @(*) begin
+	always_comb begin
 		w_pxlAddr_0 = 0;
 		w_pxlData_0 = 0;
 		w_ctrlVGA_0 = 0;

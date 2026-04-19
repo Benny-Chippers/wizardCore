@@ -39,7 +39,6 @@
 // `define SCRIPT_TEST
 
 
-
 module if_instrMem (
   input  logic        i_clk,
   input  logic [31:0] i_addr,

@@ -1,14 +1,12 @@
 module id_control (
-    i_instr,
-    o_rdReg1, o_rdReg2,
-    o_ctrlEX, o_ctrlMEM, o_ctrlWB
+    input logic [31:0] i_instr,
+    output logic [4:0] o_rdReg1,
+    output logic [4:0] o_rdReg2,
+    output macro_pkg::ex_ctrl_t o_ctrlEX,
+    output macro_pkg::mem_ctrl_t o_ctrlMEM,       // Jump, Branch, Mem-Read, mem-Write
+    output macro_pkg::wb_ctrl_t o_ctrlWB        // Reg-Write, Memto-Reg, Write Register
 );
-    input logic [31:0] i_instr;
-    output logic [4:0] o_rdReg1;
-    output logic [4:0] o_rdReg2;
-    output ex_ctrl_t o_ctrlEX;
-    output mem_ctrl_t o_ctrlMEM;       // Jump, Branch, Mem-Read, mem-Write
-    output wb_ctrl_t o_ctrlWB;        // Reg-Write, Memto-Reg, Write Register
+
 
     always_comb begin
         unique case (i_instr[6:0])
