@@ -13,7 +13,7 @@ module testBench(
     output macro_pkg::vga_out_t vgaData
     `endif
 );
-
+    reg osc_clk;
     reg clk;      // System/CPU Clock
     reg vga_clk;  // Clock for vga circuit
 
@@ -26,8 +26,10 @@ module testBench(
         clk = 0;
         vga_clk = 0;
         `endif
+        osc_clk = 0;
         reset_n = 0;
-        hit_reset = 0;
+        hit_reset = 1;
+        #2us hit_reset = 0;
      end
 
     // Simulation clocking for Verilator
@@ -35,9 +37,13 @@ module testBench(
     always begin
         #20ns clk <= ~clk;
      end
-
+    
      always begin
          #20ns vga_clk <= ~vga_clk;
+     end
+     `else
+     always begin
+        #5ns osc_clk <= ~osc_clk;
      end
     `endif
 

@@ -12,12 +12,19 @@ module top (
 );
 
     `ifndef SIMULATION
+    logic osc_reset_n;
+    
+    initial begin
+        #0 osc_reset_n = 0;
+        #50ns osc_reset_n = 1;
+    end
+    
     // VIVADO CLOCKING
     logic clk, vga_clk;
     clk_wiz_0 WIZ (
         .clk_out1       (vga_clk),
         .clk_out2       (clk),
-        .resetn         (reset_n),
+        .resetn         (osc_reset_n),
         .clk_in1        (osc_clk)
         );
     `endif

@@ -19,7 +19,9 @@ VERILOG_SRCS := $(PKG_SRCS) $(TESTBENCH)
 all: build
 
 build:
+	mkdir -p $(OBJ_DIR)
 	verilator $(VER_FLAGS) $(VERILOG_SRCS)
+	@if [ ! -f $(OBJ_DIR)/$(TOP) ]; then echo "ERROR: Verilator compilation failed - $(TOP) not found"; exit 1; fi
 
 sim: build
 	mkdir -p $(OUT_DIR)
