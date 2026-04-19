@@ -7,7 +7,7 @@ module top (
     `else
     input osc_clk,
     `endif
-    input reset_n_out,  // Asynchronous reset active low
+    input reset_n,  // Asynchronous reset active low
     output macro_pkg::vga_out_t vgaData
 );
 
@@ -17,7 +17,7 @@ module top (
     clk_wiz_0 WIZ (
         .clk_out1       (vga_clk),
         .clk_out2       (clk),
-        .resetn         (reset_n_out),
+        .resetn         (reset_n),
         .clk_in1        (osc_clk)
         );
     `endif
@@ -55,14 +55,6 @@ module top (
     logic en_IF, en_ID, en_EX, en_MEM, en_WB;
     logic stall_IF, stall_ID, stall_EX, stall_MEM, stall_WB;
 
-    logic clk_if;
-    logic clk_id;
-    logic clk_mem;
-
-    logic reset_n;
-    always @(posedge clk) begin
-        reset_n <= reset_n_out;
-    end
 
     initial begin
         stall_IF = 0;

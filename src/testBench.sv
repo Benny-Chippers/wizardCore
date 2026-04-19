@@ -10,7 +10,7 @@ module testBench(
     output [13:0] vgaData
     `else
     input osc_clk,
-    output vga_out_t vgaData
+    output macro_pkg::vga_out_t vgaData
     `endif
 );
 
@@ -30,17 +30,16 @@ module testBench(
         hit_reset = 0;
      end
 
+    // Simulation clocking for Verilator
+    `ifdef SIMULATION
     always begin
-        `ifdef SIMULATION
         #20ns clk <= ~clk;
-        `endif
      end
 
      always begin
-        `ifdef SIMULATION
          #20ns vga_clk <= ~vga_clk;
-        `endif
      end
+    `endif
 
     `ifdef SIMULATION
     always @(posedge clk)
@@ -83,7 +82,7 @@ module testBench(
             `else
             .osc_clk    (osc_clk),
             `endif
-            .reset_n_out    (reset_n),
+            .reset_n    (reset_n),
             .vgaData    (vgaData)
         );
 
