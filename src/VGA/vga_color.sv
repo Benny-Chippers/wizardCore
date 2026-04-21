@@ -35,10 +35,11 @@ module vga_color (
         end
     end
 
-    // pixel index = y * 80 + x (since each x is two 4-bits for 160px wide)
+    // Write word index matches SW layout: row y at stride 256 B => y*20 + (xb/4) words/row.
+    // Read nibble-linear index must use same row pitch: 160 nibbles/row = y*160 + pixel_x.
     logic [11:0] w_WrPxl;
     logic [1:0] w_WrByte;
-    logic [13:0] w_RdPxl;
+    logic [15:0] w_RdPxl;
     logic w_validRD, w_validWR;
 
     //bounds checking
@@ -50,8 +51,8 @@ module vga_color (
     always_comb begin
         w_WrPxl = {i_pxlAddr[14:8],4'b0} + {2'b0,i_pxlAddr[14:8],2'b0} + {6'b0,i_pxlAddr[7:2]};
         w_WrByte = i_pxlAddr[1:0];
-        w_RdPxl = {i_pxlY,6'b0} + {2'b0,i_pxlY,4'b0} + {6'b0,i_pxlX[7:0]};
-        // w_RdPxl = (i_pxlY << 6) + (i_pxlY << 4) + i_pxlX;
+        // y*160 + x = y*128 + y*32 + x
+        w_RdPxl = {i_pxlY, 7'b0} + {2'b0, i_pxlY, 5'b0} + {8'b0, i_pxlX[7:0]};
     end
 
     always_ff @(posedge i_clk) begin
@@ -83,7 +84,7 @@ module vga_color (
 
     always_ff @(posedge i_vga_clk) begin
         if (w_validRD) begin
-            w_tempRD <= m_BRAM[{1'b0,w_RdPxl[13:3]}];
+            w_tempRD <= m_BRAM[w_RdPxl[14:3]];
         end else begin
             w_tempRD <= 0;
         end
