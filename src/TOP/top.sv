@@ -49,7 +49,7 @@ module top (
     logic [31:0] readData;
 
     logic [7:0] shift_reg; //DELETE
-    xmem_ctrl_t spi_ctrl;
+    macro_pkg::xmem_ctrl_t spi_ctrl;
 
     // Control Signals
     macro_pkg::ex_ctrl_t ex;

@@ -1,14 +1,14 @@
 module xmem_fsm	(
-	i_clk, i_reset_n, i_ctrlMEM,
-	i_shift_reg,
-	o_spi_ctrl
+	// Input
+	input logic i_clk,
+	input logic i_reset_n,
+	input macro_pkg::mem_ctrl_t i_ctrlMEM,
+	input logic [7:0] i_shift_reg,
+
+	// Output
+	output macro_pkg::xmem_ctrl_t o_spi_ctrl
 );
-	// I/O
-	input logic i_clk;
-	input logic i_reset_n;
-	input mem_ctrl_t i_ctrlMEM;
-	input logic [7:0] i_shift_reg;
-	output xmem_ctrl_t o_spi_ctrl;
+
 
 	// FSM
 	logic [2:0] current_state, next_state;
