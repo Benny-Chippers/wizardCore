@@ -81,17 +81,20 @@ module vga_color (
 
     // Color Read
     logic [31:0] w_tempRD;
+    logic [2:0] w_RdPxlBuf;
 
     always_ff @(posedge i_vga_clk) begin
         if (w_validRD) begin
             w_tempRD <= m_BRAM[w_RdPxl[14:3]];
+            w_RdPxlBuf <= w_RdPxl[2:0];
         end else begin
             w_tempRD <= 0;
+            w_RdPxlBuf <= 0 ;
         end
     end
 
     always_comb begin
-        case (w_RdPxl[2:0])
+        case (w_RdPxlBuf)
             0: o_value = w_tempRD[3:0];
             1: o_value = w_tempRD[7:4];
             2: o_value = w_tempRD[11:8];

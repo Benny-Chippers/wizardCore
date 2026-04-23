@@ -24,9 +24,9 @@ module mem_top (
 
     mem_memory #(
     `ifdef SIMULATION
-        .INIT_FILENAME("test_isa_vga.mem")
+        .INIT_FILENAME("demo_vga_gradient.mem")
     `else
-        .INIT_FILENAME("C:/Users/Donov/Projects/theTower/wizardCore/scripts/test_isa_vga.mem")
+        .INIT_FILENAME("C:/Users/Donov/Projects/theTower/wizardCore/scripts/demo_vga_gradient.mem")
     `endif
     ) Memory (
         .i_clk       (i_clk),
