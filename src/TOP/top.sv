@@ -158,14 +158,14 @@ module top (
             .o_PCSrc        (PCSrc)
         );
 
-    xmem_fsm SPIFSM
-        (
-            .i_clk      (clk),
-            .i_reset_n  (reset_n),
-            .i_ctrlMEM (ctrlMEM),
-            .i_shift_reg(shift_reg),
-            .o_spi_ctrl (spi_ctrl)
-        );
+    // xmem_fsm SPIFSM
+    //     (
+    //         .i_clk      (clk),
+    //         .i_reset_n  (reset_n),
+    //         .i_ctrlMEM (ctrlMEM),
+    //         .i_shift_reg(shift_reg),
+    //         .o_spi_ctrl (spi_ctrl)
+    //     );
 
     wb_top WB
         (

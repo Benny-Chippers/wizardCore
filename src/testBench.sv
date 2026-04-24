@@ -46,17 +46,16 @@ module testBench(
      always begin
          #20ns vga_clk <= ~vga_clk;
      end
+
+     always begin
+         #500ns spi_clk <= ~spi_clk;
+     end
      `else
      always begin
         #5ns osc_clk <= ~osc_clk;
      end
     `endif
 
-     always begin
-        `ifdef SIMULATION
-         #500ns spi_clk <= ~spi_clk;
-        `endif
-     end
 
     `ifdef SIMULATION
     always @(posedge clk)
@@ -106,9 +105,12 @@ module testBench(
 
     logic [31:0] dataIn;
     wire  [31:0] dataOut;
+    logic [7:0] o_compareByte;
     tri   [3:0]  QSPI;
 
     logic spi_en, spi_sel, spi_rw;
+    wire o_compMatch;
+    wire macro_pkg::xmem_ctrl_t o_spi_ctrl;
     logic [3:0] qspi_drv;
 
     assign QSPI = ~spi_rw ? qspi_drv : 4'bz;
@@ -205,10 +207,22 @@ module testBench(
             .i_clk    (clk),
             .i_reset_n(reset_n),
             .i_dataIn (dataIn),
+            .i_compByte (o_compareByte),
             .i_spi_en (spi_en),
             .i_spi_rw (spi_rw),
+            .o_compMatch(o_compMatch),
             .o_dataOut(dataOut),
             .io_QSPI  (QSPI)
+        );
+
+    xmem_fsm FSM 
+        (
+            .i_clk        (clk),
+            .i_reset_n    (reset_n),
+            .i_ctrlMEM    (7'b0),
+            .o_spi_ctrl   (o_spi_ctrl),
+            .i_compareHit (o_compMatch),
+            .o_compareByte(o_compareByte)
         );
 
 

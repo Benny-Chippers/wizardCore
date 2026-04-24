@@ -27,10 +27,9 @@ typedef struct packed {
 } mem_ctrl_t;
 
 typedef struct packed {
-	logic loadAddr;
-	logic enOut;
-	logic enIn;
-	logic stall;
+	logic readWrite;
+	logic [1:0]sendSelect;
+	logic enable;
 } xmem_ctrl_t;
 
 typedef struct packed {
@@ -64,7 +63,8 @@ typedef struct packed {
 /////////////////
 
 typedef struct packed {
-    logic        wr;
+    logic read;
+    logic write;
     logic [31:0] addr;
     logic [31:0] wdata;
 } spi_req_t;
