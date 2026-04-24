@@ -5,6 +5,7 @@ timeprecision 1ns;
 `timescale 1ns/1ns;
 `endif
 
+
 module testBench(
     `ifdef SIMULATION
     output [13:0] vgaData,
@@ -32,7 +33,8 @@ module testBench(
         osc_clk = 0;
         reset_n = 0;
         hit_reset = 1;
-        #2us hit_reset = 0;
+        // #2us hit_reset = 0;
+        #50ns hit_reset = 0;
      end
 
     // Simulation clocking for Verilator
@@ -100,6 +102,113 @@ module testBench(
             .reset_n    (reset_n),
             .vgaData    (vgaData),
             .spi        (spi)
+        );
+
+    logic [31:0] dataIn;
+    wire  [31:0] dataOut;
+    tri   [3:0]  QSPI;
+
+    logic spi_en, spi_sel, spi_rw;
+    logic [3:0] qspi_drv;
+
+    assign QSPI = ~spi_rw ? qspi_drv : 4'bz;
+    assign spi[3:0] = QSPI;
+
+    initial begin
+        dataIn = 32'b0;
+        qspi_drv = 4'b0;
+        spi_en = 0;
+        spi_sel = 1;
+        spi_rw = 0;
+
+        #80ns;
+
+        spi_en = 1;
+        spi_sel = 0;
+        qspi_drv = 4'h1;
+
+        #40ns;
+        qspi_drv = 4'h3;
+
+        #40ns;
+        qspi_drv = 4'h5;
+
+        #40ns;
+        qspi_drv = 4'h7;
+
+        #40ns;
+        qspi_drv = 4'h9;
+
+        #40ns;
+        qspi_drv = 4'hb;
+
+        #40ns;
+        qspi_drv = 4'hd;
+
+        #40ns;
+        qspi_drv = 4'hf;
+
+        #80ns
+        spi_en = 0;
+        spi_sel = 1;
+
+        #120ns
+
+        spi_en = 1;
+        spi_sel = 0;
+        qspi_drv = 4'h6;
+
+        #40ns;
+        qspi_drv = 4'h7;
+
+        #40ns;
+        qspi_drv = 4'h8;
+
+        #40ns;
+        qspi_drv = 4'h0;
+
+        #40ns;
+        qspi_drv = 4'h0;
+
+        #40ns;
+        qspi_drv = 4'h8;
+
+        #40ns;
+        qspi_drv = 4'h5;
+
+        #40ns;
+        qspi_drv = 4'hf;
+
+        #80ns;
+        spi_en = 0;
+
+        #80ns;
+        spi_rw = 1;
+        dataIn = 32'h69420789;
+
+        #40ns
+        spi_en = 1;
+        #320ns
+        spi_en = 0;
+
+
+        #40ns;
+        #40ns;
+
+        $finish;
+
+    end
+
+
+    xmem_spi SPI
+        (
+            .i_clk    (clk),
+            .i_reset_n(reset_n),
+            .i_dataIn (dataIn),
+            .i_spi_en (spi_en),
+            .i_spi_rw (spi_rw),
+            .o_dataOut(dataOut),
+            .io_QSPI  (QSPI)
         );
 
 

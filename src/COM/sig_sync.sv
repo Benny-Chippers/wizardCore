@@ -1,13 +1,13 @@
 module sig_sync (
-	i_clkA, i_clkB, i_reset_n,
-	i_sigIn, o_sigOut
+	// Inputs/Outputs
+	input logic i_clkA,
+	input logic i_clkB,
+	input logic i_reset_n,
+	input logic i_sigIn,
+	// Output
+	output logic o_sigOut
 );
 
-	// Inputs/Outputs
-	input logic i_clkA, i_clkB;
-	input logic i_reset_n;
-	input logic i_sigIn;
-	output logic o_sigOut;
 
 	// Internal signals
 	logic r_sampleA;
