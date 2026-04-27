@@ -25,14 +25,14 @@ module xmem_top (
 	logic [31:0] w_data_CPU_CDC;				// QSPI -> CPU
 	logic [31:0] w_data_QSPI_CDC;
 
-	logic w_resetSPI_n;
-	marco_pkg::xmem_ctrl_t spi_ctrl;
+	macro_pkg::xmem_ctrl_t spi_ctrl;
 	logic w_stall_buf;
 
 	logic [31:0] w_sendData;
 	logic [31:0] w_recvData;
 	logic w_saveData;
 	logic [7:0] w_compareByte;
+	logic w_compareHit;
 
 
 	// Handsake CPU -> QSPI
@@ -97,7 +97,7 @@ module xmem_top (
 	end
 
 	always_ff @(posedge i_clk_spi) begin
-		if(~rst_n) begin
+		if(~i_reset_n) begin
 			w_data_QSPI_CDC <= 0;
 		end else begin
 			if(w_saveData) begin

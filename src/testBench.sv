@@ -104,94 +104,34 @@ module testBench(
         );
 
     logic [31:0] dataIn;
+    logic [31:0] dataAddr;
     wire  [31:0] dataOut;
-    logic [7:0] o_compareByte;
     tri   [3:0]  QSPI;
 
-    logic spi_en, spi_sel, spi_rw;
-    wire o_compMatch;
-    wire macro_pkg::xmem_ctrl_t o_spi_ctrl;
+    macro_pkg::mem_ctrl_t spi_ctrl;
+    logic en_SPI, spi_rw;
+    wire spi_stall, o_clk_QSPI, o_select_QSPI;
     logic [3:0] qspi_drv;
 
     assign QSPI = ~spi_rw ? qspi_drv : 4'bz;
     assign spi[3:0] = QSPI;
 
     initial begin
-        dataIn = 32'b0;
+        dataIn = 32'h3820_DEAD;
+        dataAddr = 32'h2001_FF00;
         qspi_drv = 4'b0;
-        spi_en = 0;
-        spi_sel = 1;
         spi_rw = 0;
+        spi_ctrl.memWrite = 1;
+        spi_ctrl.size = 2'b10;
+        en_SPI = 0;
 
-        #80ns;
-
-        spi_en = 1;
-        spi_sel = 0;
-        qspi_drv = 4'h1;
-
-        #40ns;
-        qspi_drv = 4'h3;
-
-        #40ns;
-        qspi_drv = 4'h5;
-
-        #40ns;
-        qspi_drv = 4'h7;
-
-        #40ns;
-        qspi_drv = 4'h9;
-
-        #40ns;
-        qspi_drv = 4'hb;
-
-        #40ns;
-        qspi_drv = 4'hd;
-
-        #40ns;
-        qspi_drv = 4'hf;
+        
 
         #80ns
-        spi_en = 0;
-        spi_sel = 1;
 
-        #120ns
+        en_SPI = 1;
 
-        spi_en = 1;
-        spi_sel = 0;
-        qspi_drv = 4'h6;
-
-        #40ns;
-        qspi_drv = 4'h7;
-
-        #40ns;
-        qspi_drv = 4'h8;
-
-        #40ns;
-        qspi_drv = 4'h0;
-
-        #40ns;
-        qspi_drv = 4'h0;
-
-        #40ns;
-        qspi_drv = 4'h8;
-
-        #40ns;
-        qspi_drv = 4'h5;
-
-        #40ns;
-        qspi_drv = 4'hf;
-
-        #80ns;
-        spi_en = 0;
-
-        #80ns;
-        spi_rw = 1;
-        dataIn = 32'h69420789;
-
-        #40ns
-        spi_en = 1;
         #320ns
-        spi_en = 0;
 
 
         #40ns;
@@ -202,34 +142,20 @@ module testBench(
     end
 
 
-    // xmem_spi SPI
-    //     (
-    //         .i_clk    (clk),
-    //         .i_reset_n(reset_n),
-    //         .i_dataIn (dataIn),
-    //         .i_compByte (o_compareByte),
-    //         .i_spi_en (spi_en),
-    //         .i_spi_rw (spi_rw),
-    //         .o_compMatch(o_compMatch),
-    //         .o_dataOut(dataOut),
-    //         .io_QSPI  (QSPI)
-    //     );
-
-    xmem_fsm FSM 
-        (
-            .i_clk        (clk),
-            .i_reset_n    (reset_n),
-            .i_ctrlMEM    (7'b0),
-            .o_spi_ctrl   (o_spi_ctrl),
-            .i_compareHit (o_compMatch),
-            .o_compareByte(o_compareByte),
-            .i_memRead    (i_memRead),
-            .i_memWrite   (i_memWrite),
-            .i_req_CtQ    (i_req_CtQ),
-            .i_recv_QtC   (i_recv_QtC),
-            .o_saveData   (o_saveData),
-            .o_send_QtC   (o_send_QtC)
-        );
+    xmem_top XMEM (
+        .i_reset_n    (reset_n),
+        .i_clk_cpu    (clk),
+        .i_clk_spi    (spi_clk),
+        .i_address    (dataAddr),
+        .i_dataWrite  (dataIn),
+        .i_mem_ctrl   (spi_ctrl),
+        .en_SPI       (en_SPI),
+        .o_stall      (spi_stall),
+        .o_dataRead   (dataOut),
+        .o_clk_QSPI   (o_clk_QSPI),
+        .o_select_QSPI(o_select_QSPI),
+        .io_QSPI      (QSPI)
+    );
 
 
 endmodule

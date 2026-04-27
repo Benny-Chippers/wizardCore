@@ -64,7 +64,7 @@ module xmem_spi (
 	end
 
 	// Shifter Reading for finding signals
-	assign o_compMatch = (w_dataBuf[31:24] == i_compByte);
+	assign o_compareHit = (w_dataBuf[31:24] == i_compareByte);
 
 
 
