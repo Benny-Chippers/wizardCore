@@ -202,18 +202,18 @@ module testBench(
     end
 
 
-    xmem_spi SPI
-        (
-            .i_clk    (clk),
-            .i_reset_n(reset_n),
-            .i_dataIn (dataIn),
-            .i_compByte (o_compareByte),
-            .i_spi_en (spi_en),
-            .i_spi_rw (spi_rw),
-            .o_compMatch(o_compMatch),
-            .o_dataOut(dataOut),
-            .io_QSPI  (QSPI)
-        );
+    // xmem_spi SPI
+    //     (
+    //         .i_clk    (clk),
+    //         .i_reset_n(reset_n),
+    //         .i_dataIn (dataIn),
+    //         .i_compByte (o_compareByte),
+    //         .i_spi_en (spi_en),
+    //         .i_spi_rw (spi_rw),
+    //         .o_compMatch(o_compMatch),
+    //         .o_dataOut(dataOut),
+    //         .io_QSPI  (QSPI)
+    //     );
 
     xmem_fsm FSM 
         (
@@ -222,7 +222,13 @@ module testBench(
             .i_ctrlMEM    (7'b0),
             .o_spi_ctrl   (o_spi_ctrl),
             .i_compareHit (o_compMatch),
-            .o_compareByte(o_compareByte)
+            .o_compareByte(o_compareByte),
+            .i_memRead    (i_memRead),
+            .i_memWrite   (i_memWrite),
+            .i_req_CtQ    (i_req_CtQ),
+            .i_recv_QtC   (i_recv_QtC),
+            .o_saveData   (o_saveData),
+            .o_send_QtC   (o_send_QtC)
         );
 
 

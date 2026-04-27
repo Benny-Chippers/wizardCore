@@ -49,6 +49,7 @@ module vga_memory (
 		end
 	end
 
+	`ifdef SIMULATION
 	sig_sync SS1 (
 		.i_clkA   (i_clk),
 		.i_clkB   (i_vga_clk),
@@ -56,6 +57,21 @@ module vga_memory (
 		.i_sigIn  (buffer_select_cpu),
 		.o_sigOut (buffer_select_vga)
 		);
+	`else
+	xpm_cdc_single #(
+	   .DEST_SYNC_FF(2),   // DECIMAL; range: 2-10
+	   .INIT_SYNC_FF(0),   // DECIMAL; 0=disable simulation init values, 1=enable simulation init values
+	   .SIM_ASSERT_CHK(1), // DECIMAL; 0=disable simulation messages, 1=enable simulation messages
+	   .SRC_INPUT_REG(1)   // DECIMAL; 0=do not register input, 1=register input
+	)
+	xpm_cdc_single_inst (
+	   .src_clk(i_clk),   // 1-bit input: optional; required when SRC_INPUT_REG = 1
+	   .src_in(buffer_select_cpu),     // 1-bit input: Input signal to be synchronized to dest_clk domain.
+
+	   .dest_clk(i_vga_clk), // 1-bit input: Clock signal for the destination clock domain.
+	   .dest_out(buffer_select_vga)  // 1-bit output: src_in synchronized to the destination clock domain. This output is registered.
+	);
+	`endif
 
 	// Muxes
 	always_comb begin

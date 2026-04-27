@@ -30,6 +30,7 @@ typedef struct packed {
 	logic readWrite;
 	logic [1:0]sendSelect;
 	logic enable;
+	logic select;
 } xmem_ctrl_t;
 
 typedef struct packed {

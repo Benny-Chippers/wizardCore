@@ -3,7 +3,7 @@ module xmem_spi (
 	input logic i_clk,
 	input logic i_reset_n,
 	input logic [31:0] i_dataIn,
-	input logic [7:0] i_compByte,
+	input logic [7:0] i_compareByte,
 
 	// Control Sigs
 	input logic i_spi_en,
@@ -11,7 +11,7 @@ module xmem_spi (
 
 	// Output
 	output logic [31:0] o_dataOut,
-	output logic o_compMatch,
+	output logic o_compareHit,
 
 	// Inout
 	inout wire [3:0] io_QSPI

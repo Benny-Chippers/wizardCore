@@ -65,6 +65,9 @@ module xmem_fsm	(
 		if(~i_reset_n) begin
 			count_rst = 1;
 			next_state = 0;
+			o_spi_ctrl = 0;
+			o_saveData = 0;
+			o_send_QtC = 0;
 		end else begin
 			case (current_state)
 				0: begin
@@ -73,6 +76,7 @@ module xmem_fsm	(
 				end
 				IDLE_STATE: begin
 					count_rst = 1;
+					o_spi_ctrl.select = 1;
 					if(i_req_CtQ) begin
 						next_state = SEND_ADDR_STATE;
 					end
@@ -97,7 +101,7 @@ module xmem_fsm	(
 					end else if (count_inc == 1) begin
 						// Entry cycle
 						o_spi_ctrl.readWrite = 1;
-
+						o_spi_ctrl.select = 0;
 					end
 				end
 				SEND_DATA_STATE: begin
