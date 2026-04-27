@@ -58,13 +58,14 @@ module xmem_top (
 			w_packet_CPU_CDC.addr = i_address;
 			w_packet_CPU_CDC.wdata = i_dataWrite;
 			// stall = (mem.write | mem.read) & ~done (~dest_req)
-			o_stall = (i_mem_ctrl.memWrite | i_mem_ctrl.memRead) & w_dest_req_CPU;
+			o_stall = (i_mem_ctrl.memWrite | i_mem_ctrl.memRead) & ~w_dest_req_CPU;
 		end
 	end
 
 	always_ff @(posedge i_clk_cpu) begin
 		if(~i_reset_n) begin
 			w_stall_buf <= 0;
+			w_src_send_CPU <= 0;
 		end else begin
 			// goes high when stall 0 -> 1 (stall & ~stall_delay)
 			// resets when src_rcv_CPU asserted

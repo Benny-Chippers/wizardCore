@@ -31,6 +31,7 @@ module testBench(
         spi_clk = 0;
         `endif
         osc_clk = 0;
+        spi_clk = 0;    // For SPI Testing
         reset_n = 0;
         hit_reset = 1;
         // #2us hit_reset = 0;
@@ -52,8 +53,11 @@ module testBench(
      end
      `else
      always begin
-        #5ns osc_clk <= ~osc_clk;
+        #10ns osc_clk <= ~osc_clk;
      end
+     always begin
+        #25ns spi_clk <= ~spi_clk;
+    end
     `endif
 
 
@@ -115,27 +119,44 @@ module testBench(
 
     assign QSPI = ~spi_rw ? qspi_drv : 4'bz;
     assign spi[3:0] = QSPI;
+    
+    always @(posedge osc_clk) begin
+        if(spi_stall == 1'b0) begin
+            en_SPI <= 0;
+        end
+    end
 
     initial begin
         dataIn = 32'h3820_DEAD;
         dataAddr = 32'h2001_FF00;
-        qspi_drv = 4'b0;
-        spi_rw = 0;
+        qspi_drv = 4'hf;
+        spi_rw = 1;
+        spi_ctrl = 7'b0;
         spi_ctrl.memWrite = 1;
+        spi_ctrl.memRead = 0;
         spi_ctrl.size = 2'b10;
         en_SPI = 0;
 
         
 
-        #80ns
+        #160ns
 
         en_SPI = 1;
 
-        #320ns
+        #1600ns
+        #400ns
+        
+        spi_rw = 0;
+        qspi_drv = 4'h0;
+        #50ns
+        qspi_drv = 4'h6;
+        #50ns
+        qspi_drv = 4'hf;
+        spi_rw = 1;
+        
+        #800ns
 
 
-        #40ns;
-        #40ns;
 
         $finish;
 
@@ -144,7 +165,11 @@ module testBench(
 
     xmem_top XMEM (
         .i_reset_n    (reset_n),
+        `ifdef SIMULATION
         .i_clk_cpu    (clk),
+        `else
+        .i_clk_cpu    (osc_clk),
+        `endif
         .i_clk_spi    (spi_clk),
         .i_address    (dataAddr),
         .i_dataWrite  (dataIn),
