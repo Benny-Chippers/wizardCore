@@ -23,12 +23,17 @@ module top (
 
     // VIVADO CLOCKING
     logic clk, vga_clk, spi_clk;
-    clk_wiz_0 WIZ (
-        .clk_out1       (vga_clk),
-        .clk_out2       (clk),
-        .resetn         (osc_reset_n),
-        .clk_in1        (osc_clk)
-        );
+    clk_wiz_0 instance_name
+   (
+        // Clock out ports
+        .clk_cpu(clk),     // output clk_cpu
+        .clk_vga(vga_clk),     // output clk_vga
+        .clk_spi(spi_clk),     // output clk_spi
+        // Status and control signals
+        .resetn(osc_reset_n), // input resetn
+       // Clock in ports
+        .clk_in(osc_clk)      // input clk_in
+    );
     `endif
 
     // Internal signals

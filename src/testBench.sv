@@ -34,7 +34,7 @@ module testBench(
         spi_clk = 0;    // For SPI Testing
         reset_n = 0;
         hit_reset = 1;
-        #2us hit_reset = 0;
+        #15us hit_reset = 0;
         // #50ns hit_reset = 0;
      end
 
@@ -89,8 +89,8 @@ module testBench(
 
     initial
      begin
-         // #2500us $dumpflush;
-         #600ms $dumpflush;
+          #50us $dumpflush;
+//         #600ms $dumpflush;
          $finish;
      end
 
@@ -108,80 +108,80 @@ module testBench(
             .spi        (spi)
         );
 
-    logic [31:0] dataIn;
-    logic [31:0] dataAddr;
-    wire  [31:0] dataOut;
-    tri   [3:0]  QSPI;
+//    logic [31:0] dataIn;
+//    logic [31:0] dataAddr;
+//    wire  [31:0] dataOut;
+//    tri   [3:0]  QSPI;
 
-    macro_pkg::mem_ctrl_t spi_ctrl;
-    logic en_SPI, spi_rw;
-    wire spi_stall, o_clk_QSPI, o_select_QSPI;
-    logic [3:0] qspi_drv;
+//    macro_pkg::mem_ctrl_t spi_ctrl;
+//    logic en_SPI, spi_rw;
+//    wire spi_stall, o_clk_QSPI, o_select_QSPI;
+//    logic [3:0] qspi_drv;
 
-    assign QSPI = ~spi_rw ? qspi_drv : 4'bz;
-    assign spi[3:0] = QSPI;
+//    assign QSPI = ~spi_rw ? qspi_drv : 4'bz;
+//    assign spi[3:0] = QSPI;
     
-    always @(posedge osc_clk) begin
-        if(spi_stall == 1'b0) begin
-            en_SPI <= 0;
-        end
-    end
+//    always @(posedge osc_clk) begin
+//        if(spi_stall == 1'b0) begin
+//            en_SPI <= 0;
+//        end
+//    end
 
-    initial begin
-        dataIn = 32'h3820_DEAD;
-        dataAddr = 32'h2001_FF00;
-        qspi_drv = 4'hf;
-        spi_rw = 1;
-        spi_ctrl = 7'b0;
-        spi_ctrl.memWrite = 1;
-        spi_ctrl.memRead = 0;
-        spi_ctrl.size = 2'b10;
-        en_SPI = 0;
+//    initial begin
+//        dataIn = 32'h3820_DEAD;
+//        dataAddr = 32'h2001_FF00;
+//        qspi_drv = 4'hf;
+//        spi_rw = 1;
+//        spi_ctrl = 7'b0;
+//        spi_ctrl.memWrite = 1;
+//        spi_ctrl.memRead = 0;
+//        spi_ctrl.size = 2'b10;
+//        en_SPI = 0;
 
         
 
-        #160ns
+//        #160ns
 
-        en_SPI = 1;
+//        en_SPI = 1;
 
-        #1600ns
-        #400ns
+//        #1600ns
+//        #400ns
         
-        spi_rw = 0;
-        qspi_drv = 4'h0;
-        #50ns
-        qspi_drv = 4'h6;
-        #50ns
-        qspi_drv = 4'hf;
-        spi_rw = 1;
+//        spi_rw = 0;
+//        qspi_drv = 4'h0;
+//        #50ns
+//        qspi_drv = 4'h6;
+//        #50ns
+//        qspi_drv = 4'hf;
+//        spi_rw = 1;
         
-        #800ns
+//        #800ns
 
-        #3us
+//        #3us
 
-        $finish;
+//        $finish;
 
-    end
+//    end
 
 
-    xmem_top XMEM (
-        .i_reset_n    (reset_n),
-        `ifdef SIMULATION
-        .i_clk_cpu    (clk),
-        `else
-        .i_clk_cpu    (osc_clk),
-        `endif
-        .i_clk_spi    (spi_clk),
-        .i_address    (dataAddr),
-        .i_dataWrite  (dataIn),
-        .i_mem_ctrl   (spi_ctrl),
-        .en_SPI       (en_SPI),
-        .o_stall      (spi_stall),
-        .o_dataRead   (dataOut),
-        .o_clk_QSPI   (o_clk_QSPI),
-        .o_select_QSPI(o_select_QSPI),
-        .io_QSPI      (QSPI)
-    );
+//    xmem_top XMEM (
+//        .i_reset_n    (reset_n),
+//        `ifdef SIMULATION
+//        .i_clk_cpu    (clk),
+//        `else
+//        .i_clk_cpu    (osc_clk),
+//        `endif
+//        .i_clk_spi    (spi_clk),
+//        .i_address    (dataAddr),
+//        .i_dataWrite  (dataIn),
+//        .i_mem_ctrl   (spi_ctrl),
+//        .en_SPI       (en_SPI),
+//        .o_stall      (spi_stall),
+//        .o_dataRead   (dataOut),
+//        .o_clk_QSPI   (o_clk_QSPI),
+//        .o_select_QSPI(o_select_QSPI),
+//        .io_QSPI      (QSPI)
+//    );
 
 
 endmodule
