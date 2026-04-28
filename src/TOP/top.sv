@@ -4,12 +4,13 @@ module top (
     `ifdef SIMULATION
     input clk,      // System/CPU Clock
     input vga_clk,  // Clock for vga circuit
+    input spi_clk,
     `else
     input osc_clk,
     `endif
     input reset_n,  // Synchronous reset active low
     output macro_pkg::vga_out_t vgaData,
-    inout [5:0] spi
+    inout wire [5:0] spi
 );
 
     `ifndef SIMULATION
@@ -21,7 +22,7 @@ module top (
     end
 
     // VIVADO CLOCKING
-    logic clk, vga_clk;
+    logic clk, vga_clk, spi_clk;
     clk_wiz_0 WIZ (
         .clk_out1       (vga_clk),
         .clk_out2       (clk),
@@ -47,9 +48,9 @@ module top (
 
     logic [31:0] resultALU;
     logic [31:0] readData;
+    logic [31:0] readXMEM;
+    logic [31:0] readMEM;
 
-    logic [7:0] shift_reg; //DELETE
-    macro_pkg::xmem_ctrl_t spi_ctrl;
 
     // Control Signals
     macro_pkg::ex_ctrl_t ex;
@@ -59,6 +60,7 @@ module top (
     macro_pkg::mem_ctrl_t mem;
     macro_pkg::mem_ctrl_t ctrlMEM;
     macro_pkg::mem_ctrl_t ctrlVGA;
+    macro_pkg::mem_ctrl_t ctrlXMEM;
 
 
     // Clocking
@@ -83,7 +85,7 @@ module top (
             .stall_IF   (stall_IF),
             .stall_ID   (stall_ID),
             .stall_EX   (stall_EX),
-            .stall_MEM   (stall_MEM),
+            .stall_MEM  (stall_MEM),
             .stall_WB   (stall_WB),
             .o_en_IF  	(en_IF),
             .o_en_ID  	(en_ID),
@@ -138,7 +140,8 @@ module top (
             .o_zero        	(zero),
             .o_resultALU   	(resultALU),
             .o_ctrlMEM      (ctrlMEM),
-            .o_ctrlVGA      (ctrlVGA)
+            .o_ctrlVGA      (ctrlVGA),
+            .o_ctrlXMEM     (ctrlXMEM)
         );
 
     mem_top MEM
@@ -153,19 +156,36 @@ module top (
             .en_IF          (en_IF),
             .en_MEM         (en_MEM),
             .en_WB          (en_WB),
-            .o_readData     (readData),
+            .o_readData     (readMEM),
             .o_if_instr     (mem_instr),
             .o_PCSrc        (PCSrc)
         );
 
-    // xmem_fsm SPIFSM
-    //     (
-    //         .i_clk      (clk),
-    //         .i_reset_n  (reset_n),
-    //         .i_ctrlMEM (ctrlMEM),
-    //         .i_shift_reg(shift_reg),
-    //         .o_spi_ctrl (spi_ctrl)
-    //     );
+    xmem_top XMEM
+        (
+            .i_reset_n    (reset_n),
+            .i_clk_cpu    (clk),
+            .i_clk_spi    (spi_clk),
+            .i_address    (resultALU),
+            .i_dataWrite  (regData2),
+            .i_mem_ctrl   (ctrlXMEM),
+            .en_SPI       (en_MEM),
+            .o_stall      (stall_MEM),
+            .o_dataRead   (readXMEM),
+            .o_clk_QSPI   (spi[5]),
+            .o_select_QSPI(spi[4]),
+            .io_QSPI      (spi[3:0])
+        );
+
+    always_comb begin
+        if (ctrlMEM.memRead) begin
+            readData = readMEM;
+        end else if (ctrlXMEM.memRead) begin
+            readData = readXMEM;
+        end else begin
+            readData = '0;
+        end
+    end
 
     wb_top WB
         (

@@ -24,9 +24,9 @@ module mem_top (
 
     mem_memory #(
     `ifdef SIMULATION
-        .INIT_FILENAME("demo_vga_gradient.mem")
+        .INIT_FILENAME("test.mem")
     `else
-        .INIT_FILENAME("C:/Users/Donov/Projects/theTower/wizardCore/scripts/demo_vga_gradient.mem")
+        .INIT_FILENAME("C:/Users/Donov/Projects/theTower/wizardCore/scripts/test.mem")
     `endif
     ) Memory (
         .i_clk       (i_clk),
@@ -35,11 +35,11 @@ module mem_top (
         .i_instrAddr (i_if_instrAddr),
         .i_writeData (i_wrData),
         .i_ctrlMEM   (i_ctrlMEM),
-        .en_IF      (en_IF),
-        .en_MEM     (en_MEM),
-        .en_WB      (en_WB),
+        .en_IF       (en_IF),
+        .en_MEM      (en_MEM),
+        .en_WB       (en_WB),
         .o_readData  (o_readData),
-        .o_instr      (o_if_instr)
+        .o_instr     (o_if_instr)
     );
 
     // Combinational Logic

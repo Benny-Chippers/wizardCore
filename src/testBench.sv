@@ -34,8 +34,8 @@ module testBench(
         spi_clk = 0;    // For SPI Testing
         reset_n = 0;
         hit_reset = 1;
-        // #2us hit_reset = 0;
-        #50ns hit_reset = 0;
+        #2us hit_reset = 0;
+        // #50ns hit_reset = 0;
      end
 
     // Simulation clocking for Verilator
@@ -98,7 +98,8 @@ module testBench(
         (
             `ifdef SIMULATION
             .clk        (clk),
-            .vga_clk  (vga_clk),
+            .vga_clk    (vga_clk),
+            .spi_clk    (spi_clk),
             `else
             .osc_clk    (osc_clk),
             `endif
@@ -156,7 +157,7 @@ module testBench(
         
         #800ns
 
-
+        #3us
 
         $finish;
 
