@@ -30,7 +30,7 @@ module mem_top (
     `endif
     ) Memory (
         .i_clk       (i_clk),
-        .i_reset_n   (1),
+        .i_reset_n   (1'b1),
         .i_memAddr   (i_memAddr),
         .i_instrAddr (i_if_instrAddr),
         .i_writeData (i_wrData),

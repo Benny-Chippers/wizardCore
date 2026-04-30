@@ -12,6 +12,7 @@ module ex_alu (
 
     // Combinational Logic
     always_comb begin
+        o_zero = 1'b0;
         case (i_ctrlALU.aluOp)
             2'b00:      // Load/Store
                 o_result = i_A + i_B;
