@@ -23,6 +23,10 @@ module xmem_fsm	(
 	logic [3:0] count, count_inc;
 	logic count_rst;
 
+	// Output Buffers
+	macro_pkg::xmem_ctrl_t wB_spi_ctrl;
+	logic wB_send_QtC;
+
 	// FSM States
 	localparam logic [2:0] IDLE_STATE 		= 3'b001;
 	localparam logic [2:0] SEND_ADDR_STATE 	= 3'b010;
@@ -49,17 +53,28 @@ module xmem_fsm	(
 	end
 
 	always_ff @(posedge i_clk) begin
+		// State Managing
 		current_state <= next_state;
 		count <= (count_rst) ? 0 : count_inc;
+
+		// Output State saving
+		wB_spi_ctrl <= o_spi_ctrl;
+		wB_send_QtC <= o_send_QtC;
 	end
 
 	always_comb begin
 		count_inc = count + 1;
 		// Defaults
+		o_spi_ctrl = wB_spi_ctrl;
+		o_send_QtC = wB_send_QtC;
+
 		count_rst = 0;
 		o_spi_ctrl.sendSelect = NOTHING;
 		o_compareByte = IDLE;
 		o_saveData = 0;
+
+		next_state = current_state;
+
 
 
 		if(~i_reset_n) begin
