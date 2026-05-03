@@ -21,7 +21,11 @@ module pin_io (
 
 	always_ff @(posedge i_clk) begin
 		recvBuf <= io_pin;
-		sendBuf <= i_dataSend;
+//		sendBuf <= i_dataSend;
+	end
+	
+	always_ff @(negedge i_clk) begin
+	   sendBuf <= i_dataSend;
 	end
 
 
