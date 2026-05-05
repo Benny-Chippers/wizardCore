@@ -9,7 +9,8 @@ OBJ_DIR     := $(PROJ_DIR)/obj_dir
 SRC_DIRS    := $(wildcard $(SRC_DIR)/*/)
 INC_FLAGS   := $(addprefix -I, $(SRC_DIRS))
 DEF_FLAGS   := +define+SIMULATION
-VER_FLAGS   := $(INC_FLAGS) -Isrc --binary --trace --Mdir $(OBJ_DIR) --top-module testBench $(DEF_FLAGS)
+# Clang (macOS): ignore unknown -Wno-unnecessary-virtual-specifier from Verilator's default CXXFLAGS.
+VER_FLAGS   := $(INC_FLAGS) -Isrc --binary --trace --Mdir $(OBJ_DIR) --top-module testBench $(DEF_FLAGS) -CFLAGS -Wno-unknown-warning-option
 
 # All RTL packages and modules (Verilator needs every .sv, not only includes).
 SV_ALL       := $(shell find $(SRC_DIR) -name '*.sv' -type f)

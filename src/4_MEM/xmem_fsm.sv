@@ -20,7 +20,7 @@ module xmem_fsm	(
 
 	// FSM
 	logic [2:0] current_state, next_state;
-	logic [3:0] count, count_inc;
+	logic [7:0] count, count_inc;
 	logic count_rst;
 
 	// Output Buffers
@@ -41,6 +41,9 @@ module xmem_fsm	(
 	localparam logic [1:0] ADDRESS 	= 2'b01;
 	localparam logic [1:0] DATA 	= 2'b10;
 	localparam logic [1:0] COMPLETE = 2'b11;
+
+	// Control Path Params
+	localparam logic [7:0] WAIT_CYCLE = 8'd200;	// Keep more than 0
 
 	// Compare Bytes
 	localparam logic [7:0] IDLE = 	8'hFF;
@@ -146,7 +149,7 @@ module xmem_fsm	(
 						o_compareByte = READY;
 					end
 
-					if (count_inc >= 2) begin 	// 2 cycl for Latency, wait until macth ready/done
+					if (count_inc >= WAIT_CYCLE + 2) begin 	// 2 cycl for Latency, wait until macth ready/done
 						count_inc = count;		// Pause count so no overflow, won't interfere with reset
 
 						if(i_compareHit) begin
@@ -161,10 +164,14 @@ module xmem_fsm	(
 							o_spi_ctrl.enable = 0;
 						end
 
-					end else if (count_inc == 1) begin
-						// Entry Loop
+					end else if (count_inc == WAIT_CYCLE + 1) begin
+						// Begin Reading
 						o_spi_ctrl.enable = 1;
+						o_spi_ctrl.select = 0;
+					end else if (count_inc == 1) begin
+						// Entry Loop, Give time for NB to processes packet
 						o_spi_ctrl.readWrite = 0;
+						o_spi_ctrl.select = 1;
 					end
 				end
 				RCV_DATA_STATE: begin
