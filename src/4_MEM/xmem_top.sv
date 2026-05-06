@@ -86,7 +86,7 @@ module xmem_top (
 
 	// ONLY QSPI SIDE SIGNALS
 	always_comb begin
-		o_clk_QSPI = i_clk_spi;
+		o_clk_QSPI = i_clk_spi & ~spi_ctrl.select;
 		o_select_QSPI = spi_ctrl.select;
 		unique case (spi_ctrl.sendSelect)
 			NOTHING : w_sendData = 32'b0;

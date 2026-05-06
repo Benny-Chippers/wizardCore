@@ -43,6 +43,7 @@ module xmem_spi (
 	always_ff @(posedge i_clk) begin
 		if(~i_reset_n) begin
 			w_dataBuf <= 0;
+			w_outBuf <= 0;
 		end else begin
 			if (i_spi_en == 0) begin
 				// Word Buffering

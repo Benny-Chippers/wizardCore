@@ -11,6 +11,10 @@ module pin_io (
 	inout wire io_pin	// make sure to explicitly delcare everything this touches externally a wire.
 );
 
+	initial begin
+		sendBuf = 0;
+		recvBuf = 0;
+	end
 
 	// Internal
 	logic sendBuf;
@@ -21,9 +25,9 @@ module pin_io (
 
 	always_ff @(posedge i_clk) begin
 		recvBuf <= io_pin;
-//		sendBuf <= i_dataSend;
+		// sendBuf <= i_dataSend;
 	end
-	
+
 	always_ff @(negedge i_clk) begin
 	   sendBuf <= i_dataSend;
 	end

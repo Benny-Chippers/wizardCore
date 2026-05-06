@@ -84,6 +84,7 @@ module xmem_fsm	(
 			count_rst = 1;
 			next_state = 0;
 			o_spi_ctrl = 0;
+			o_spi_ctrl.select = 1;
 			o_saveData = 0;
 			o_send_QtC = 0;
 		end else begin
@@ -112,7 +113,7 @@ module xmem_fsm	(
 
 						o_spi_ctrl.enable = 0;
 
-					end else if (count_inc == 4) begin
+					end else if (count_inc == 3) begin
 						// Pull down CS at start of data
 						o_spi_ctrl.select = 0;
 
