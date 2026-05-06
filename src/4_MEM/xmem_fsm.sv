@@ -112,6 +112,10 @@ module xmem_fsm	(
 
 						o_spi_ctrl.enable = 0;
 
+					end else if (count_inc == 4) begin
+						// Pull down CS at start of data
+						o_spi_ctrl.select = 0;
+
 					end else if (count_inc == 2) begin
 						// Begin Shifting
 						o_spi_ctrl.enable = 1;
@@ -119,7 +123,6 @@ module xmem_fsm	(
 					end else if (count_inc == 1) begin
 						// Entry cycle
 						o_spi_ctrl.readWrite = 1;
-						o_spi_ctrl.select = 0;
 					end
 				end
 				SEND_DATA_STATE: begin
