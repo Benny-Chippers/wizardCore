@@ -1,10 +1,10 @@
 module xmem_top (
 	// Input
-	input logic i_clk_cpu,    // CPU clock
-	input logic i_clk_spi,    // SPI clock
-	input logic i_reset_n,  // Asynchronous reset active low
-	input [31:0] i_address,
-	input [31:0] i_dataWrite,
+	input logic i_clk_cpu,    	// CPU clock
+	input logic i_clk_spi,    	// SPI clock
+	input logic i_reset_n,    	// Synchronous reset active low
+	input logic [31:0] i_address,
+	input logic [31:0] i_dataWrite,
 	input macro_pkg::mem_ctrl_t i_mem_ctrl,
 
 	// Enable
@@ -12,11 +12,16 @@ module xmem_top (
 
 	// Output
 	output logic o_stall,
-	output [31:0] o_dataRead,
+	output logic [31:0] o_dataRead,
 
+	// SPI Lines
 	output logic o_clk_QSPI,
 	output logic o_select_QSPI,
-	inout wire [3:0] io_QSPI
+	output wire o_MOSI,
+	input wire i_MISO,
+	output logic o_cmd_rdy,
+	input logic i_d_rdy
+	// inout wire [3:0] io_QSPI
 );
 
 	// Internal Signals
@@ -25,14 +30,18 @@ module xmem_top (
 	logic [31:0] w_data_CPU_CDC;				// QSPI -> CPU
 	logic [31:0] w_data_QSPI_CDC;
 
-	macro_pkg::xmem_ctrl_t spi_ctrl;
 	logic w_stall_buf;
 
+	macro_pkg::xmem_ctrl_t spi_ctrl;
 	logic [31:0] w_sendData;
+	logic [31:0] w_sendData_dbl;
 	logic [31:0] w_recvData;
 	logic w_saveData;
 	logic [7:0] w_compareByte;
 	logic w_compareHit;
+
+	logic w_dRdy_buf;
+	logic w_dRdy_fall;
 
 
 	// Handsake CPU -> QSPI
@@ -59,6 +68,9 @@ module xmem_top (
 			w_packet_CPU_CDC.wdata = i_dataWrite;
 			// stall = (mem.write | mem.read) & ~done (~dest_req)
 			o_stall = (i_mem_ctrl.memWrite | i_mem_ctrl.memRead) & ~w_dest_req_CPU;
+
+			// decode packet
+			o_dataRead = w_data_CPU_CDC;
 		end
 	end
 
@@ -80,29 +92,50 @@ module xmem_top (
 
 	// Send Data Selction
 	localparam logic [1:0] NOTHING 	= 2'b00;
-	localparam logic [1:0] ADDRESS 	= 2'b01;
-	localparam logic [1:0] DATA 	= 2'b10;
-	localparam logic [1:0] COMPLETE = 2'b11;
+	localparam logic [1:0] COMMAND 	= 2'b01;
+	localparam logic [1:0] ADDRESS 	= 2'b10;
+	localparam logic [1:0] DATA 	= 2'b11;
 
 	// ONLY QSPI SIDE SIGNALS
 	always_comb begin
-		o_clk_QSPI = i_clk_spi & ~spi_ctrl.select;
-		o_select_QSPI = spi_ctrl.select;
+		o_clk_QSPI = i_clk_spi & ~o_select_QSPI;
+		// o_select_QSPI = spi_ctrl.select;
+		o_cmd_rdy = spi_ctrl.cmdRdy;
+		w_sendData_dbl = 32'b0;
 		unique case (spi_ctrl.sendSelect)
 			NOTHING : w_sendData = 32'b0;
+			COMMAND	: w_sendData = {24'b0, 1'b0, i_mem_ctrl};
 			ADDRESS : w_sendData = w_packet_QSPI_CDC.addr;
-			DATA 	: w_sendData = w_packet_QSPI_CDC.wdata;
-			COMPLETE: w_sendData = 32'h0000_00A0;
+			DATA 	:  begin
+				w_sendData = w_packet_QSPI_CDC.addr;
+				w_sendData_dbl = w_packet_QSPI_CDC.wdata;
+			end
 			default : w_sendData = 32'b0;
 		endcase
+	end
+
+	always_ff @(negedge i_clk_spi) begin : proc_
+		if(~i_reset_n) begin
+			o_select_QSPI <= 1;
+		end else begin
+			o_select_QSPI <= spi_ctrl.select;
+		end
 	end
 
 	always_ff @(posedge i_clk_spi) begin
 		if(~i_reset_n) begin
 			w_data_QSPI_CDC <= 0;
+			w_dRdy_buf <= 0;
+			w_dRdy_fall <= 0;
 		end else begin
 			if(w_saveData) begin
 				w_data_QSPI_CDC <= w_recvData;
+			end
+			w_dRdy_buf <= i_d_rdy;
+			if (~i_d_rdy & w_dRdy_buf) begin
+				w_dRdy_fall <= 1;
+			end else begin
+				w_dRdy_fall <= 0;
 			end
 		end
 	end
@@ -167,6 +200,7 @@ module xmem_top (
 		.i_memRead    (w_packet_QSPI_CDC.read),
 		.i_memWrite   (w_packet_QSPI_CDC.write),
 		.i_compareHit (w_compareHit),
+		.i_dRdy_fall  (w_dRdy_fall),
 		.i_req_CtQ    (w_dest_req_QSPI),
 		.i_recv_QtC   (w_src_rcv_QSPI),
 		.o_spi_ctrl   (spi_ctrl),
@@ -180,12 +214,16 @@ module xmem_top (
 		.i_clk        (i_clk_spi),
 		.i_reset_n    (i_reset_n),
 		.i_dataIn     (w_sendData),
+		.i_dataIn_dbl (w_sendData_dbl),
 		.i_compareByte(w_compareByte),
 		.i_spi_en     (spi_ctrl.enable),
 		.i_spi_rw     (spi_ctrl.readWrite),
+		.i_spi_dbl    (spi_ctrl.dbl),
 		.o_dataOut    (w_recvData),
 		.o_compareHit (w_compareHit),
-		.io_QSPI      (io_QSPI)
+		// .io_QSPI      (io_QSPI)
+		.i_MISO       (i_MISO),
+		.o_MOSI       (o_MOSI)
 	);
 
 endmodule : xmem_top
