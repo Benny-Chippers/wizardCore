@@ -22,6 +22,12 @@ module testBench(
 
     reg hit_reset;
     reg reset_n;
+    
+    reg MISO;
+    reg D_RDY;
+    
+    assign spi[2] = MISO;
+    assign spi[0] = D_RDY;
 
     initial
      begin
@@ -31,7 +37,6 @@ module testBench(
         spi_clk = 0;
         `endif
         osc_clk = 0;
-        spi_clk = 0;    // For SPI Testing
         reset_n = 0;
         hit_reset = 1;
         #15us hit_reset = 0;
@@ -55,9 +60,6 @@ module testBench(
      always begin
         #10ns osc_clk <= ~osc_clk;
      end
-     always begin
-        #25ns spi_clk <= ~spi_clk;
-    end
     `endif
 
 
@@ -92,6 +94,28 @@ module testBench(
           #50us $dumpflush;
 //         #600ms $dumpflush;
          $finish;
+     end
+     
+     initial begin 
+        #0us
+        MISO = 1;
+        D_RDY = 1;
+        #16.8us // CMD 1
+        D_RDY = 0;
+        #0.2us
+        D_RDY = 1;
+        #2.2us  // ADDR/DATA 1
+        D_RDY = 0;
+        #0.2us
+        D_RDY = 1;
+        #1us    // CMD 2
+        D_RDY = 0;
+        #0.2us
+        D_RDY = 1;
+        #2.2us  // ADDR 2
+        D_RDY = 0;
+        #0.2us
+        D_RDY = 1;
      end
 
     top top_instance
