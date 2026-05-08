@@ -39,6 +39,7 @@ module xmem_top (
 	logic w_saveData;
 	logic [7:0] w_compareByte;
 	logic w_compareHit;
+	logic [3:0] w_byteCmd;
 
 	logic w_dRdy_buf;
 	logic w_dRdy_fall;
@@ -66,11 +67,9 @@ module xmem_top (
 			w_packet_CPU_CDC.write = i_mem_ctrl.memWrite;
 			w_packet_CPU_CDC.addr = i_address;
 			w_packet_CPU_CDC.wdata = i_dataWrite;
+			w_packet_CPU_CDC.control = i_mem_ctrl;
 			// stall = (mem.write | mem.read) & ~done (~dest_req)
 			o_stall = (i_mem_ctrl.memWrite | i_mem_ctrl.memRead) & ~w_dest_req_CPU;
-
-			// decode packet
-			o_dataRead = w_data_CPU_CDC;
 		end
 	end
 
@@ -78,7 +77,11 @@ module xmem_top (
 		if(~i_reset_n) begin
 			w_stall_buf <= 0;
 			w_src_send_CPU <= 0;
+			o_dataRead <= 0;
 		end else begin
+			// decode packet
+			o_dataRead <= w_data_CPU_CDC;
+
 			// goes high when stall 0 -> 1 (stall & ~stall_delay)
 			// resets when src_rcv_CPU asserted
 			w_stall_buf <= o_stall;
@@ -101,11 +104,34 @@ module xmem_top (
 		o_clk_QSPI = i_clk_spi & ~o_select_QSPI;
 		// o_select_QSPI = spi_ctrl.select;
 		o_cmd_rdy = spi_ctrl.cmdRdy;
+
+		// Byte address selection
+		w_byteCmd = 0;
+		unique case (w_packet_QSPI_CDC.control.size)
+			2'b00: begin
+				unique case (w_packet_QSPI_CDC.addr[1:0])
+					2'b00: w_byteCmd = 4'b0011;
+					2'b01: w_byteCmd = 4'b0100;
+					2'b10: w_byteCmd = 4'b0101;
+					2'b11: w_byteCmd = 4'b0110;
+				endcase
+			end
+			2'b01: begin
+				unique case (w_packet_QSPI_CDC.addr[1])
+					1'b0: w_byteCmd = 4'b0001;
+					1'b1: w_byteCmd = 4'b0010;
+				endcase
+			end
+			2'b11: w_byteCmd = 4'b0000;
+			default: w_byteCmd = 0;
+		endcase
+
 		w_sendData_dbl = 32'b0;
 		unique case (spi_ctrl.sendSelect)
 			NOTHING : w_sendData = 32'b0;
-			COMMAND	: w_sendData = {24'b0, 1'b0, i_mem_ctrl};
-			ADDRESS : w_sendData = w_packet_QSPI_CDC.addr;
+			COMMAND	: w_sendData = {24'b0, w_packet_QSPI_CDC.addr[31:30],
+									w_byteCmd, {2{w_packet_QSPI_CDC.write}}};
+			ADDRESS : w_sendData = {2'b0, w_packet_QSPI_CDC.addr[31:2]};
 			DATA 	:  begin
 				w_sendData = w_packet_QSPI_CDC.addr;
 				w_sendData_dbl = w_packet_QSPI_CDC.wdata;
@@ -151,7 +177,7 @@ module xmem_top (
 	   .INIT_SYNC_FF(0),   // DECIMAL; 0=disable simulation init values, 1=enable simulation init values
 	   .SIM_ASSERT_CHK(1), // DECIMAL; 0=disable simulation messages, 1=enable simulation messages
 	   .SRC_SYNC_FF(3),    // DECIMAL; range: 2-10
-	   .WIDTH(66)          // DECIMAL; range: 1-1024
+	   .WIDTH(73)          // DECIMAL; range: 1-1024
 	)
 	HANDSHAKE_CPU_QSPI (
 	   .src_clk(i_clk_cpu),   		// 1-bit input: Source clock.

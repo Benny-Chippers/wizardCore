@@ -70,6 +70,7 @@ typedef struct packed {
     logic write;
     logic [31:0] addr;
     logic [31:0] wdata;
+    mem_ctrl_t control;
 } spi_req_t;
 
 endpackage : macro_pkg
