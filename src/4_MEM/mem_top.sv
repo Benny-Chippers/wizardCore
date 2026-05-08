@@ -26,7 +26,7 @@ module mem_top (
     `ifdef SIMULATION
         .INIT_FILENAME("test.mem")
     `else
-        .INIT_FILENAME("C:/capstone/theTower/wizardCore/scripts/test.mem")
+        .INIT_FILENAME("C:/capstone/theTower/wizardCore/scripts/mem_test.mem")
     `endif
     ) Memory (
         .i_clk       (i_clk),
