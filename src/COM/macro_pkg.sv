@@ -27,6 +27,15 @@ typedef struct packed {
 } mem_ctrl_t;
 
 typedef struct packed {
+	logic readWrite;
+	logic [1:0]sendSelect;
+	logic enable;
+	logic select;
+	logic dbl;
+	logic cmdRdy;
+} xmem_ctrl_t;
+
+typedef struct packed {
 	logic regWrite;
 	logic memToReg;
 	logic [4:0] writeReg;
@@ -50,5 +59,18 @@ typedef struct packed {
 	logic [3:0] green;
 	logic [3:0] blue;
 } vga_color_t;
+
+
+/////////////////
+// SPI Signals //
+/////////////////
+
+typedef struct packed {
+    logic read;
+    logic write;
+    logic [31:0] addr;
+    logic [31:0] wdata;
+    mem_ctrl_t control;
+} spi_req_t;
 
 endpackage : macro_pkg

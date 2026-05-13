@@ -28,7 +28,7 @@ module vga_compCount #(
 	// Logic
 
 	// Counter
-	always_ff @(negedge i_clk or negedge i_reset_n) begin
+	always_ff @(posedge i_clk) begin 	// WHY WAS THIS ON NEDGE?
 		if(~i_reset_n) begin
 			w_count <= 0;
 		end else begin

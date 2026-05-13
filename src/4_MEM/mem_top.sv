@@ -24,22 +24,22 @@ module mem_top (
 
     mem_memory #(
     `ifdef SIMULATION
-        .INIT_FILENAME("test_isa_vga.mem")
+        .INIT_FILENAME("test.mem")
     `else
-        .INIT_FILENAME("C:/Users/Donov/Projects/theTower/wizardCore/scripts/test_isa_vga.mem")
+        .INIT_FILENAME("C:/capstone/theTower/wizardCore/scripts/render_gaysans.mem")
     `endif
     ) Memory (
         .i_clk       (i_clk),
-        .i_reset_n   (1),
+        .i_reset_n   (1'b1),
         .i_memAddr   (i_memAddr),
         .i_instrAddr (i_if_instrAddr),
         .i_writeData (i_wrData),
         .i_ctrlMEM   (i_ctrlMEM),
-        .en_IF      (en_IF),
-        .en_MEM     (en_MEM),
-        .en_WB      (en_WB),
+        .en_IF       (en_IF),
+        .en_MEM      (en_MEM),
+        .en_WB       (en_WB),
         .o_readData  (o_readData),
-        .o_instr      (o_if_instr)
+        .o_instr     (o_if_instr)
     );
 
     // Combinational Logic

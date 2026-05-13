@@ -18,7 +18,8 @@ module vga_memory (
 
 
 	// Internal Signals
-	reg buffer_select;
+	logic buffer_select_cpu;
+	logic buffer_select_vga;
 
 	logic [31:0] w_pxlAddr_0;
 	logic [31:0] w_pxlData_0;
@@ -36,16 +37,41 @@ module vga_memory (
 
 
 	// Buffer Select
-	initial buffer_select = 0;
+	initial buffer_select_cpu = 0;
+	initial buffer_select_vga = 0;
 
 	always_ff @(posedge i_clk) begin
 		if(i_reset_n) begin
 			if(i_pxlAddr == 32'h1003_0000 && i_ctrlVGA.memWrite)
-			buffer_select <= ~buffer_select;
+			buffer_select_cpu <= ~buffer_select_cpu;
 		end else begin
-			buffer_select <= 0;
+			buffer_select_cpu <= 0;
 		end
 	end
+
+	`ifdef SIMULATION
+	sig_sync SS1 (
+		.i_clkA   (i_clk),
+		.i_clkB   (i_vga_clk),
+		.i_reset_n(i_reset_n),
+		.i_sigIn  (buffer_select_cpu),
+		.o_sigOut (buffer_select_vga)
+		);
+	`else
+	xpm_cdc_single #(
+	   .DEST_SYNC_FF(2),   // DECIMAL; range: 2-10
+	   .INIT_SYNC_FF(0),   // DECIMAL; 0=disable simulation init values, 1=enable simulation init values
+	   .SIM_ASSERT_CHK(1), // DECIMAL; 0=disable simulation messages, 1=enable simulation messages
+	   .SRC_INPUT_REG(1)   // DECIMAL; 0=do not register input, 1=register input
+	)
+	xpm_cdc_single_inst (
+	   .src_clk(i_clk),   // 1-bit input: optional; required when SRC_INPUT_REG = 1
+	   .src_in(buffer_select_cpu),     // 1-bit input: Input signal to be synchronized to dest_clk domain.
+
+	   .dest_clk(i_vga_clk), // 1-bit input: Clock signal for the destination clock domain.
+	   .dest_out(buffer_select_vga)  // 1-bit output: src_in synchronized to the destination clock domain. This output is registered.
+	);
+	`endif
 
 	// Muxes
 	always_comb begin
@@ -63,7 +89,7 @@ module vga_memory (
 
 		o_color = 0;
 
-		case (buffer_select)
+		case (buffer_select_vga)
 			0 : begin
 				w_pxlAddr_0 = i_pxlAddr;
 				w_pxlData_0 = i_pxlData;
@@ -118,7 +144,7 @@ module vga_memory (
             .i_clk      (i_clk),
             .en_MEM     (en_MEM),
             .en_WB 		(0),
-            .i_memAddr  ({buffer_select,i_pxlAddr[30:0]}),
+            .i_memAddr  ({buffer_select_vga,i_pxlAddr[30:0]}),
             .i_writeData(i_pxlData),
             .i_ctrlMEM  (i_ctrlVGA),
             .i_readData (0)

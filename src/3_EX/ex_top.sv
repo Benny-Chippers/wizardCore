@@ -17,6 +17,7 @@ module ex_top (
     output logic o_zero,
     output logic [31:0] o_resultALU,
     output macro_pkg::mem_ctrl_t o_ctrlMEM,
+    output macro_pkg::mem_ctrl_t o_ctrlXMEM,
     output macro_pkg::mem_ctrl_t o_ctrlVGA
 );
 
@@ -74,19 +75,31 @@ module ex_top (
     // Memory Routing Logic
     always_comb begin
         if(i_ctrlMEM.memRead | i_ctrlMEM.memWrite) begin
-            if(oB_resultALU[29:28] == 2'b00) begin
+            if(oB_resultALU[29:28] == 2'b00) begin              // On Chip
                 oB_ctrlMEM = i_ctrlMEM;
                 oB_ctrlVGA = '0;
-            end else if (oB_resultALU[29:28] == 2'b01) begin
+                o_ctrlXMEM = '0;
+            end else if (oB_resultALU[29:28] == 2'b01) begin    // VGA
                 oB_ctrlMEM = '0;
                 oB_ctrlVGA = i_ctrlMEM;
+                o_ctrlXMEM = '0;
+            end else if (oB_resultALU[29:28] == 2'b10) begin    // External Mem
+                oB_ctrlMEM = '0;
+                oB_ctrlVGA = '0;
+                o_ctrlXMEM = i_ctrlMEM;
+            end else if (oB_resultALU[29:28] == 2'b11) begin    // Config Reg
+                oB_ctrlMEM = '0;
+                oB_ctrlVGA = '0;
+                o_ctrlXMEM = '0;
             end else begin
                 oB_ctrlMEM = i_ctrlMEM;
                 oB_ctrlVGA = '0;
+                o_ctrlXMEM = '0;
             end
         end else begin
             oB_ctrlMEM = i_ctrlMEM;
             oB_ctrlVGA = '0;
+            o_ctrlXMEM = '0;
         end
     end
 

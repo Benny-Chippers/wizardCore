@@ -43,7 +43,7 @@ module vga_top (
 	) VGA_X (
 		.i_clk    (i_vga_clk),
 		.i_reset_n(i_reset_n),
-		.en       (1),
+		.en       (1'b1),
 		.o_comp   (o_vgaData.hSync),
 		.o_comp2  (w_x_y),
 		.o_value  (w_pxlX)
