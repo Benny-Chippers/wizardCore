@@ -129,9 +129,9 @@ module xmem_top (
 		w_sendData_dbl = 32'b0;
 		unique case (spi_ctrl.sendSelect)
 			NOTHING : w_sendData = 32'b0;
-			COMMAND	: w_sendData = {24'b0, w_packet_QSPI_CDC.addr[31:30],
-									w_byteCmd, {2{w_packet_QSPI_CDC.write}}};
-			ADDRESS : w_sendData = {2'b0, w_packet_QSPI_CDC.addr[31:2]};
+			COMMAND	: w_sendData = {w_packet_QSPI_CDC.addr[31:30],
+									w_byteCmd, {2{w_packet_QSPI_CDC.write}}, 24'b0};
+			ADDRESS : w_sendData = {2'b00, w_packet_QSPI_CDC.addr[31:2]};
 			DATA 	:  begin
 				w_sendData = w_packet_QSPI_CDC.addr;
 				w_sendData_dbl = w_packet_QSPI_CDC.wdata;

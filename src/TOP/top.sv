@@ -179,10 +179,10 @@ module top (
             .o_dataRead   (readXMEM),
             .o_clk_QSPI   (spi[5]),
             .o_select_QSPI(spi[4]),
-            .o_MOSI       (spi[3]),
-            .i_MISO       (spi[2]),
-            .o_cmd_rdy    (spi[1]),
-            .i_d_rdy      (spi[0])
+            .o_MOSI       (spi[0]),
+            .i_MISO       (spi[1]),
+            .o_cmd_rdy    (spi[2]),
+            .i_d_rdy      (spi[3])
         );
 
     always_comb begin

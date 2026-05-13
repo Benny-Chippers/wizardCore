@@ -46,7 +46,7 @@ module xmem_spi (
 
     always_ff @(negedge i_clk) begin
     	if(~i_reset_n) begin
-    		o_MOSI <= 0;
+    		o_MOSI <= 1;
     	end else begin
     		o_MOSI <= w_outBuf;
     	end
@@ -55,9 +55,9 @@ module xmem_spi (
 
 	always_ff @(posedge i_clk) begin
 		if(~i_reset_n) begin
-			w_dataBuf <= 0;
-			w_dataBuf_ext <= 0;
-			w_outBuf <= 0;
+			w_dataBuf <= 32'h0;
+			w_dataBuf_ext <= 32'h0;
+			w_outBuf <= 1;
 		end else begin
 			if (i_spi_en == 0) begin
 				// Word Buffering
@@ -71,16 +71,16 @@ module xmem_spi (
 				// Shifting In/Out
 				if (i_spi_rw == 0) begin
 					// Receiving
-					w_dataBuf <= {i_MISO, w_dataBuf[31:1]};
+					w_dataBuf <= {w_dataBuf[30:0], i_MISO};
 				end else if (i_spi_rw == 1) begin
 					// Sending
-					w_outBuf <= w_dataBuf[0];
+					w_outBuf <= w_dataBuf[31];
 					// need to add double word send option
 					if(i_spi_dbl == 0) begin
-						w_dataBuf <= {{1{1'b0}}, w_dataBuf[31:1]};
+						w_dataBuf <= {w_dataBuf[30:0], 1'b0};
 					end else begin
-						w_dataBuf <= {w_dataBuf_ext[0], w_dataBuf[31:1]};
-						w_dataBuf_ext <= {{1{1'b0}}, w_dataBuf_ext[31:1]};
+						w_dataBuf <= {w_dataBuf[30:0], w_dataBuf_ext[31]};
+						w_dataBuf_ext <= {w_dataBuf_ext[30:0], 1'b0};
 					end
 				end
 			end

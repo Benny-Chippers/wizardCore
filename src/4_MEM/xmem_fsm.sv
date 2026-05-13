@@ -104,7 +104,7 @@ module xmem_fsm	(
 				SEND_CMD_STATE: begin
 					o_spi_ctrl.sendSelect = COMMAND;
 
-					if (count_inc >= 14) begin
+					if (count_inc >= 38) begin
 						o_spi_ctrl.cmdRdy = 1;
 						// Wait for D_RDY Release
 						count_inc = count;
@@ -117,11 +117,11 @@ module xmem_fsm	(
 							count_rst = 1;
 						end
 
-					end else if (count_inc == 12) begin
+					end else if (count_inc == 36) begin
 						// send CMD READY
 						o_spi_ctrl.cmdRdy = 0;
 
-					end else if (count_inc == 11) begin 		// 3 cycl for Latency, 8 cycl for CMD
+					end else if (count_inc == 35) begin 		// 3 cycl for Latency, 8 cycl for CMD
 						// Transaction end
 						o_spi_ctrl.enable = 0;
 						o_spi_ctrl.select = 1;
@@ -229,102 +229,6 @@ module xmem_fsm	(
 						o_spi_ctrl.readWrite = 0;
 					end
 				end
-				// SEND_ADDR_STATE: begin
-				// 	o_spi_ctrl.sendSelect = ADDRESS;
-				// 	if (count_inc >= 12) begin 		// 2 cycl for Latency, 8 cycl for Addr, 2 cycl prep/wait
-				// 		// Address Sent
-				// 		if (i_memWrite) begin
-				// 			next_state = SEND_DATA_STATE;
-				// 		end else if (i_memRead) begin
-				// 			next_state = RCV_RESP_STATE;
-				// 		end
-				// 		count_rst = 1;
-
-				// 		o_spi_ctrl.enable = 0;
-
-				// 	end else if (count_inc == 3) begin
-				// 		// Pull down CS at start of data
-				// 		o_spi_ctrl.select = 0;
-
-				// 	end else if (count_inc == 2) begin
-				// 		// Begin Shifting
-				// 		o_spi_ctrl.enable = 1;
-
-				// 	end else if (count_inc == 1) begin
-				// 		// Entry cycle
-				// 		o_spi_ctrl.readWrite = 1;
-				// 	end
-				// end
-				// SEND_DATA_STATE: begin
-				// 	o_spi_ctrl.sendSelect = DATA;
-				// 	if (count_inc >= 12) begin 		// 2 cycl for Latency, 8 cycl for Addr, 2 cycl prep/wait
-				// 		// Address Sent
-				// 		next_state = RCV_RESP_STATE;
-				// 		count_rst = 1;
-
-				// 		o_spi_ctrl.enable = 0;
-
-				// 	end else if (count_inc == 2) begin
-				// 		// Begin Shifting
-				// 		o_spi_ctrl.enable = 1;
-
-				// 	end else if (count_inc == 1) begin
-				// 		// Entry cycle
-				// 		o_spi_ctrl.readWrite = 1;
-
-				// 	end
-				// end
-				// RCV_RESP_STATE: begin
-				// 	// Which Response Expecting
-				// 	if (i_memWrite) begin
-				// 		o_compareByte = DONE;
-				// 	end else if (i_memRead) begin
-				// 		o_compareByte = READY;
-				// 	end
-
-				// 	if (count_inc >= WAIT_CYCLE + 2) begin 	// 2 cycl for Latency, wait until macth ready/done
-				// 		count_inc = count;		// Pause count so no overflow, won't interfere with reset
-
-				// 		if(i_compareHit) begin
-				// 			// Response Received
-				// 			if (i_memWrite) begin
-				// 				next_state = DONE_STATE;
-				// 			end else if (i_memRead) begin
-				// 				next_state = RCV_DATA_STATE;
-				// 			end
-				// 			count_rst = 1;
-
-				// 			o_spi_ctrl.enable = 0;
-				// 		end
-
-				// 	end else if (count_inc == WAIT_CYCLE + 1) begin
-				// 		// Begin Reading
-				// 		o_spi_ctrl.enable = 1;
-				// 		o_spi_ctrl.select = 0;
-				// 	end else if (count_inc == 1) begin
-				// 		// Entry Loop, Give time for NB to processes packet
-				// 		o_spi_ctrl.readWrite = 0;
-				// 		o_spi_ctrl.select = 1;
-				// 	end
-				// end
-				// RCV_DATA_STATE: begin
-				// 	if (count_inc >= 10) begin 	// 8 cycles for Data, 2 cycle latency, 1 cycle save data
-				// 		// Data Received
-				// 		next_state = DONE_STATE;
-				// 		count_rst = 1;
-
-				// 		o_saveData = 1;
-
-				// 	end else if (count_inc >= 10) begin 	// 1 cycl for pause, 8 cycles for Data, 1 cycle latency
-				// 		// Response Received
-				// 		o_spi_ctrl.enable = 0;
-
-				// 	end else if (count_inc == 1) begin
-				// 		// Entry Loop
-				// 		o_spi_ctrl.enable = 1;
-				// 		o_spi_ctrl.readWrite = 0;
-				// 	end
-				// end
 				DONE_STATE: begin
 					count_inc = count;
 					// CDC handshake
@@ -334,29 +238,6 @@ module xmem_fsm	(
 						next_state = IDLE_STATE;
 						count_rst = 1;
 					end
-					// o_spi_ctrl.sendSelect = COMPLETE;
-					// if (count_inc >= 4) begin 		// 2 cycl for Latency, 2 cycl for Done, pause and release stall
-					// 	// COMPLETE Sent
-					// 	count_inc = count;	// Pause count so no overflow, won't interfere with reset
-					// 	o_spi_ctrl.enable = 0;
-
-					// 	// CDC handshake
-					// 	o_send_QtC = 1;
-					// 	if(i_recv_QtC == 1) begin
-					// 		o_send_QtC = 0;
-					// 		next_state = IDLE_STATE;
-					// 		count_rst = 1;
-					// 	end
-
-					// end else if (count_inc == 2) begin
-					// 	// Begin Shifting
-					// 	o_spi_ctrl.enable = 1;
-
-					// end else if (count_inc == 1) begin
-					// 	// Entry cycle
-					// 	o_spi_ctrl.readWrite = 1;
-
-					// end
 				end
 				default : begin
 					next_state = IDLE_STATE;

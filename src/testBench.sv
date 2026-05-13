@@ -26,8 +26,8 @@ module testBench(
     reg MISO;
     reg D_RDY;
     
-    assign spi[2] = MISO;
-    assign spi[0] = D_RDY;
+    assign spi[1] = MISO;
+    assign spi[3] = D_RDY;
 
     initial
      begin
