@@ -81,3 +81,39 @@ module ex_alu (
     end
 
 endmodule : ex_alu
+
+// mult_gen_32_64 mult(
+//   .CLK(clk), // input wire CLK
+//   .A(A), // input wire [31:0] A
+//   .B(B), // input wire [31:0] B
+//   .CE(CE), // input wire CE
+//   .P(Prod) // output wire [63:0] P
+// );
+
+// mult_gen_32u_64u multU (
+//   .CLK(clk), // input wire CLK
+//   .A(A), // input wire [31:0] A
+//   .B(B), // input wire [31:0] B
+//   .CE(CE), // input wire CE
+//   .P(uProd) // output wire [63:0] P
+// );
+
+// div_gen_32_64 div (
+//   .aclk(clk),                                      // input wire aclk
+//   .s_axis_divisor_tvalid(CE),    // input wire s_axis_divisor_tvalid
+//   .s_axis_divisor_tdata(B),      // input wire [31 : 0] s_axis_divisor_tdata
+//   .s_axis_dividend_tvalid(CE),  // input wire s_axis_dividend_tvalid
+//   .s_axis_dividend_tdata(A),    // input wire [31 : 0] s_axis_dividend_tdata
+//   .m_axis_dout_tvalid(qValid),          // output wire m_axis_dout_tvalid
+//   .m_axis_dout_tdata({Quot,Rem})            // output wire [63 : 0] m_axis_dout_tdata
+// );
+
+// div_gen_32u_64u divU (
+//   .aclk(clk),                                      // input wire aclk
+//   .s_axis_divisor_tvalid(CE),    // input wire s_axis_divisor_tvalid
+//   .s_axis_divisor_tdata(B),      // input wire [31 : 0] s_axis_divisor_tdata
+//   .s_axis_dividend_tvalid(CE),  // input wire s_axis_dividend_tvalid
+//   .s_axis_dividend_tdata(A),    // input wire [31 : 0] s_axis_dividend_tdata
+//   .m_axis_dout_tvalid(qValidU),          // output wire m_axis_dout_tvalid
+//   .m_axis_dout_tdata({uQuot,uRem})            // output wire [63 : 0] m_axis_dout_tdata
+// );
