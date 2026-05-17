@@ -11,6 +11,7 @@ module ex_top (
 
     // Enable
     input logic en_EX,
+    output logic stall_EX,
 
     // Output
     output logic [31:0] o_outAddr,
@@ -32,14 +33,19 @@ module ex_top (
     logic [31:0] oB_resultALU;
     macro_pkg::mem_ctrl_t oB_ctrlMEM;
     macro_pkg::mem_ctrl_t oB_ctrlVGA;
+    macro_pkg::mem_ctrl_t oB_ctrlXMEM;
 
     // ALU
     ex_alu ALU (
-        .i_A       (w_A),
-        .i_B       (w_B),
-        .i_ctrlALU ({i_ctrlEX.aluOp,i_ctrlEX.func3,i_ctrlEX.func7}),
-        .o_result  (oB_resultALU),
-        .o_zero    (oB_zero)
+        .i_clk      (i_clk),
+        .i_reset_n  (i_reset_n),
+        .i_A        (w_A),
+        .i_B        (w_B),
+        .i_ctrlALU  ({i_ctrlEX.aluOp,i_ctrlEX.func3,i_ctrlEX.func7}),
+        .en_ALU     (en_EX),
+        .o_stall    (stall_EX),
+        .o_result   (oB_resultALU),
+        .o_zero     (oB_zero)
     );
 
     // Combinational Logic
@@ -78,28 +84,28 @@ module ex_top (
             if(oB_resultALU[29:28] == 2'b00) begin              // On Chip
                 oB_ctrlMEM = i_ctrlMEM;
                 oB_ctrlVGA = '0;
-                o_ctrlXMEM = '0;
+                oB_ctrlXMEM = '0;
             end else if (oB_resultALU[29:28] == 2'b01) begin    // VGA
                 oB_ctrlMEM = '0;
                 oB_ctrlVGA = i_ctrlMEM;
-                o_ctrlXMEM = '0;
+                oB_ctrlXMEM = '0;
             end else if (oB_resultALU[29:28] == 2'b10) begin    // External Mem
                 oB_ctrlMEM = '0;
                 oB_ctrlVGA = '0;
-                o_ctrlXMEM = i_ctrlMEM;
+                oB_ctrlXMEM = i_ctrlMEM;
             end else if (oB_resultALU[29:28] == 2'b11) begin    // Config Reg
                 oB_ctrlMEM = '0;
                 oB_ctrlVGA = '0;
-                o_ctrlXMEM = '0;
+                oB_ctrlXMEM = '0;
             end else begin
                 oB_ctrlMEM = i_ctrlMEM;
                 oB_ctrlVGA = '0;
-                o_ctrlXMEM = '0;
+                oB_ctrlXMEM = '0;
             end
         end else begin
             oB_ctrlMEM = i_ctrlMEM;
             oB_ctrlVGA = '0;
-            o_ctrlXMEM = '0;
+            oB_ctrlXMEM = '0;
         end
     end
 
@@ -111,13 +117,15 @@ module ex_top (
             o_resultALU <= 0;
             o_ctrlMEM <= 0;
             o_ctrlVGA <= 0;
+            o_ctrlXMEM <= 0;
         end else begin
-            if (en_EX) begin
+            if (en_EX & ~stall_EX) begin
                 o_outAddr <= oB_outAddr;
                 o_zero <= oB_zero;
                 o_resultALU <= oB_resultALU;
                 o_ctrlMEM <= oB_ctrlMEM;
                 o_ctrlVGA <= oB_ctrlVGA;
+                o_ctrlXMEM <= oB_ctrlXMEM;
             end
         end
     end

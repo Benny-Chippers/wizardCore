@@ -141,6 +141,7 @@ module top (
             .i_ctrlEX      	(ex),
             .i_ctrlMEM     	(mem),
             .en_EX      	(en_EX),
+            .stall_EX       (stall_EX),
             .o_outAddr     	(outAddr),
             .o_zero        	(zero),
             .o_resultALU   	(resultALU),

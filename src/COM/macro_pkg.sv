@@ -41,6 +41,17 @@ typedef struct packed {
 	logic [4:0] writeReg;
 } wb_ctrl_t;
 
+/////////////////
+// ALU Signals //
+/////////////////
+
+typedef struct packed {
+	logic done;
+	logic [63:0] out;
+	logic en;
+	logic [31:0] input_A;
+	logic [31:0] input_B;
+} dsp_bus_t;
 
 /////////////////
 // VGA Signals //
