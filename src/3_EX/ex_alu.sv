@@ -105,6 +105,7 @@ module ex_alu (
         multU.done = 0;
         div[64:0] = 0;
         divU[64:0] = 0;
+        w_dspDone = 0;
 
         if(i_ctrlALU.func7 == 7'b000_0001) begin    // m-extension
             case (i_ctrlALU.func3)
