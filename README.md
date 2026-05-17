@@ -20,8 +20,9 @@ WizardCore is a SystemVerilog CPU implementation targeting the **RISC-V RV32I** 
 - `src/TOP/` — Top-level wiring
 - `src/COM/` — Common/shared components
 - `src/testBench.sv` — Top-level testbench used by the Makefile
-- `scripts/` — Runtime program binaries loaded by simulation (for example, `test_rv32i.bin`)
+- `scripts/` — Runtime program binaries loaded by simulation (for example, `test_rv32i.mem`)
 
+## Warning! using IP for SPI and mult/div has broken Verilator/Vivado parity
 ## Simulate (before synthesis) using the Makefile
 
 This project uses **Verilator** for fast, pre-synthesis simulation.
