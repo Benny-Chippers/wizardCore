@@ -181,6 +181,7 @@ module ex_alu (
     );
 
     // DSP modules
+    `ifndef SIMULATION
     mult_gen_32_64 DSP_MULT(
       .CLK(i_clk), // input wire CLK
       .A(mult.input_A), // input wire [31:0] A
@@ -224,5 +225,6 @@ module ex_alu (
       .m_axis_dout_tvalid(divU.done),          // output wire m_axis_dout_tvalid
       .m_axis_dout_tdata(divU.out)       // output wire [63 : 0] m_axis_dout_tdata
     );
+    `endif
 
 endmodule : ex_alu
