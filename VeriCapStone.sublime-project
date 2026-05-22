@@ -32,6 +32,11 @@
         	"name": "sim&view",
         	"working_dir":"$project_path",
         	"shell_cmd": "make simview",
+        },
+        {
+        	"name": "clean",
+        	"working_dir":"$project_path",
+        	"shell_cmd": "make clean",
         }
 	],
 }
