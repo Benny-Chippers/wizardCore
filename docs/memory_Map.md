@@ -11,7 +11,7 @@ Addr[29:28] will be used for internal routing areas
 | `0b00` | `0x0` | Standard on Chip Memory |
 | `0b01` | `0x1` | VGA Frame Memory |
 | `0b10` | `0x2,0x6,0xA,0xE` | Northbridge communication |
-| `0b11` | `0x3` | Internal Config Registers |
+| `0b11` | `0x3` | Internal Module Registers |
 
 Accesses will be aligned to size
 
@@ -22,13 +22,18 @@ Addr[25:0] will be actual memory addresses, but still need to fit in the ranges 
 
 | Address Range | Description |
 | --- | --- |
-| `0x0000_0000 - 0x0x0000_1FFF` | Standard on Chip Memory |
-| `0x1000_0000 - 0x1000_774F` | VGA Frame Memory (Red)* |
-| `0x1001_0000 - 0x1001_774F` | VGA Frame Memory (Green)* |
-| `0x1002_0000 - 0x1002_774F` | VGA Frame Memory (Blue)* |
+| `0x0000_0000 - 0x0x0001_FFFF` | Standard on Chip Memory (131 KB) |
+| `0x1000_0000 - 0x1000_779F` | VGA Frame Memory* |
+| `0x1000_8000 - 0x1000_80FF` | VGA Frame Palette (Red)** |
+| `0x1000_8100 - 0x1000_81FF` | VGA Frame Palette (Green)** |
+| `0x1000_8200 - 0x1000_82FF` | VGA Frame Palette (Blue)** |
 | `0x1003_0000` | Writing swaps VGA frames |
 
-\* VGA Frame memory is split into 3 colors, and each color is to be indexed by X value in Addr[7:0] up to `0x4f`(80) by 2 4-bit chunks and Y value in Addr[15:8] up to `0x77`(120)
+\* VGA Frame memory is only row-contiguous and is to be indexed by X value in Addr[7:0] up to `0x9f`(160) by 2 4-bit chunks and Y value in Addr[15:8] up to `0x77`(120)
+
+\*\* VGA Palette entries per color are nibble sized with the higher bits padded to fill up the byte
+
+There are 2 frame buffers in memory that alternate being the active frame and the frame that is being written to. They overlap in the `0x1000_XXXX` address range.
 
 ## Northbridge Communication
 
@@ -66,7 +71,7 @@ Addr[26] will indicate if the access is a read or a write
 | `0b0` | Read |
 | `0b1` | Write |
 
-## Internal Config Registers
+## Internal Module Registers
 
 
 
