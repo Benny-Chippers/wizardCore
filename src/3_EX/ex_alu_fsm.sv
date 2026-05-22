@@ -52,7 +52,7 @@ module ex_alu_fsm (
 		unique case (current_state)
 			IDLE_STATE:begin
 				count_rst = 1;
-				if (i_ctrlALU.func7 == 7'b000_0001 && en_ALU == 1) begin
+				if (i_ctrlALU.func7 == 7'b000_0001 && i_ctrlALU.aluOp == 2'b10 && en_ALU == 1) begin
 					o_dspEn = 1;
 					if(i_ctrlALU.func3[2] == 0) begin 	// MULT
 						next_state = MULT_STATE;

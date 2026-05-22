@@ -5,7 +5,7 @@ module ex_alu (
     input logic [31:0] i_A,
     input logic [31:0] i_B,
     input macro_pkg::alu_ctrl_t i_ctrlALU,  //ALU OP(2), Func3(3), Func7(7)
-    
+
     // Enable/Stallun
     input logic en_ALU,
     output logic o_stall,
