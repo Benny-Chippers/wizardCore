@@ -12,7 +12,7 @@ module vga_color (
     input logic en_MEM,
 
     // Output
-    output logic [3:0] o_value
+    output logic [7:0] o_value
 );
 
     // ==========================================================
@@ -21,7 +21,7 @@ module vga_color (
     localparam WIDTH  = 160;
     localparam HEIGHT = 120;
     localparam PIXELS = WIDTH * HEIGHT;
-    localparam WORDS = PIXELS / 8;
+    localparam WORDS = PIXELS / 4;
 
     // 32-bit True Dual-Port m_BRAM
     (* ram_style = "block" *)
@@ -35,21 +35,21 @@ module vga_color (
         end
     end
 
-    // Write word index matches SW layout: row y at stride 256 B => y*20 + (xb/4) words/row.
-    // Read nibble-linear index must use same row pitch: 160 nibbles/row = y*160 + pixel_x.
-    logic [11:0] w_WrPxl;
+    // Write word index matches SW layout: row y at stride 160 B => y*40 + (x/4) words/row.
+    // Read byte-linear index must use same row pitch: 160 byte/row = y*160 + pixel_x.
+    logic [12:0] w_WrPxl;
     logic [1:0] w_WrByte;
     logic [15:0] w_RdPxl;
     logic w_validRD, w_validWR;
 
     //bounds checking
     always_comb begin
-        w_validWR = (i_pxlAddr[14:8] < 120) & (i_pxlAddr[7:0] < 80);
+        w_validWR = (i_pxlAddr[14:8] < 120) & (i_pxlAddr[7:0] < 160);
         w_validRD = (i_pxlY < 120) & (i_pxlX < 160);
     end
 
     always_comb begin
-        w_WrPxl = {i_pxlAddr[14:8],4'b0} + {2'b0,i_pxlAddr[14:8],2'b0} + {6'b0,i_pxlAddr[7:2]};
+        w_WrPxl = {i_pxlAddr[14:8],5'b0} + {2'b0,i_pxlAddr[14:8],3'b0} + {7'b0,i_pxlAddr[7:2]};
         w_WrByte = i_pxlAddr[1:0];
         // y*160 + x = y*128 + y*32 + x
         w_RdPxl = {i_pxlY, 7'b0} + {2'b0, i_pxlY, 5'b0} + {8'b0, i_pxlX[7:0]};
@@ -81,12 +81,12 @@ module vga_color (
 
     // Color Read
     logic [31:0] w_tempRD;
-    logic [2:0] w_RdPxlBuf;
+    logic [1:0] w_RdPxlBuf;
 
     always_ff @(posedge i_vga_clk) begin
         if (w_validRD) begin
-            w_tempRD <= m_BRAM[w_RdPxl[14:3]];
-            w_RdPxlBuf <= w_RdPxl[2:0];
+            w_tempRD <= m_BRAM[w_RdPxl[14:2]];
+            w_RdPxlBuf <= w_RdPxl[1:0];
         end else begin
             w_tempRD <= 0;
             w_RdPxlBuf <= 0 ;
@@ -95,14 +95,10 @@ module vga_color (
 
     always_comb begin
         case (w_RdPxlBuf)
-            0: o_value = w_tempRD[3:0];
-            1: o_value = w_tempRD[7:4];
-            2: o_value = w_tempRD[11:8];
-            3: o_value = w_tempRD[15:12];
-            4: o_value = w_tempRD[19:16];
-            5: o_value = w_tempRD[23:20];
-            6: o_value = w_tempRD[27:24];
-            7: o_value = w_tempRD[31:28];
+            0: o_value = w_tempRD[7:0];
+            1: o_value = w_tempRD[15:8];
+            2: o_value = w_tempRD[23:16];
+            3: o_value = w_tempRD[31:24];
             default : o_value = 0;
         endcase
     end

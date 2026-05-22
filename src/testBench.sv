@@ -91,8 +91,8 @@ module testBench(
 
     initial
      begin
-          #50us $dumpflush;
-//         #600ms $dumpflush;
+          // #50us $dumpflush;
+        #150ms $dumpflush;
          $finish;
      end
      

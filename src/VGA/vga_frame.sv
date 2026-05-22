@@ -17,79 +17,59 @@ module vga_frame (
 
 
 	// Internal signals
-	logic [31:0] w_redAddr;
-	logic [31:0] w_greenAddr;
-	logic [31:0] w_blueAddr;
-	logic [31:0] w_redData;
-	logic [31:0] w_greenData;
-	logic [31:0] w_blueData;
-	macro_pkg::mem_ctrl_t w_redCtrl;
-	macro_pkg::mem_ctrl_t w_greenCtrl;
-	macro_pkg::mem_ctrl_t w_blueCtrl;
+	logic [31:0] w_frameAddr;
+	logic [31:0] w_palAddr;
+	logic [31:0] w_frameData;
+	logic [31:0] w_palData;
+	macro_pkg::mem_ctrl_t w_frameCtrl;
+	macro_pkg::mem_ctrl_t w_palCtrl;
 
-	macro_pkg::vga_color_t w_color;
+	logic [7:0] w_palIdx;
+
 
 	always_comb begin
-		w_redAddr = 0;
-		w_greenAddr = 0;
-		w_blueAddr = 0;
-		w_redData = 0;
-		w_greenData = 0;
-		w_blueData = 0;
-		w_redCtrl = 0;
-		w_greenCtrl = 0;
-		w_blueCtrl = 0;
-		case (i_pxlAddr[17:16])
-			2'h0: begin
-				w_redAddr = i_pxlAddr;
-				w_redData = i_pxlData;
-				w_redCtrl = i_ctrlVGA;
+		w_frameAddr = 0;
+		w_palAddr = 0;
+		w_frameData = 0;
+		w_palData = 0;
+		w_frameCtrl = 0;
+		w_palCtrl = 0;
+		case (i_pxlAddr[11])
+			0: begin
+				w_frameAddr = i_pxlAddr;
+				w_frameData = i_pxlData;
+				w_frameCtrl = i_ctrlVGA;
 			end
-			2'h1: begin
-				w_greenAddr = i_pxlAddr;
-				w_greenData = i_pxlData;
-				w_greenCtrl = i_ctrlVGA;
-			end
-			2'h2: begin
-				w_blueAddr = i_pxlAddr;
-				w_blueData = i_pxlData;
-				w_blueCtrl = i_ctrlVGA;
+			1: begin
+				w_palAddr = i_pxlAddr;
+				w_palData = i_pxlData;
+				w_palCtrl = i_ctrlVGA;
 			end
 			default : /* Nothing */;
 		endcase
 	end
 
-	vga_color redColor (
-			.i_clk    (i_clk),
-			.i_vga_clk(i_vga_clk),
-			.i_pxlAddr(w_redAddr),
-			.i_pxlData(w_redData),
-			.i_ctrlVGA(w_redCtrl),
-			.i_pxlX   (i_pxlX),
-			.i_pxlY   (i_pxlY),
-			.en_MEM   (en_MEM),
-			.o_value  (o_color.red)
-		);
-	vga_color greenColor (
-			.i_clk    (i_clk),
-			.i_vga_clk(i_vga_clk),
-			.i_pxlAddr(w_greenAddr),
-			.i_pxlData(w_greenData),
-			.i_ctrlVGA(w_greenCtrl),
-			.i_pxlX   (i_pxlX),
-			.i_pxlY   (i_pxlY),
-			.en_MEM   (en_MEM),
-			.o_value  (o_color.green)
-		);
-	vga_color blueColor (
-			.i_clk    (i_clk),
-			.i_vga_clk(i_vga_clk),
-			.i_pxlAddr(w_blueAddr),
-			.i_pxlData(w_blueData),
-			.i_ctrlVGA(w_blueCtrl),
-			.i_pxlX   (i_pxlX),
-			.i_pxlY   (i_pxlY),
-			.en_MEM   (en_MEM),
-			.o_value  (o_color.blue)
-		);
+	vga_color FRAME_DATA (
+		.i_clk    (i_clk),
+		.i_vga_clk(i_vga_clk),
+		.i_pxlAddr(w_frameAddr),
+		.i_pxlData(w_frameData),
+		.i_ctrlVGA(w_frameCtrl),
+		.en_MEM   (en_MEM),
+		.i_pxlX   (i_pxlX),
+		.i_pxlY   (i_pxlY),
+		.o_value  (w_palIdx)
+	);
+
+	vga_palette VGA_PALETTE (
+		.i_clk    (i_clk),
+		.i_vga_clk(i_vga_clk),
+		.i_palAddr(w_palAddr),
+		.i_palData(w_palData),
+		.i_ctrlVGA(w_palCtrl),
+		.en_MEM   (en_MEM),
+		.i_palIdx (w_palIdx),
+		.o_color  (o_color)
+	);
+
 endmodule
