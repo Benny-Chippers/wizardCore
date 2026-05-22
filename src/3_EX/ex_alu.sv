@@ -27,7 +27,23 @@ module ex_alu (
 
     // Combinational Logic
     always_comb begin
+        // DSP routing
+        // [64] en, [63:32] A, [31:0] B                     (driven here)
+        // [128:65] Output, [129] done(mult doesn't use)    (driven by DSP)
+        mult[64:0] = 0;
+        mult.done = 0;
+        multSU[64:0] = 0;
+        multSU.done = 0;
+        multU[64:0] = 0;
+        multU.done = 0;
+        div[64:0] = 0;
+        divU[64:0] = 0;
+        w_dspDone = 0;
+
+
         o_zero = 1'b0;
+
+
         case (i_ctrlALU.aluOp)
             2'b00:      // Load/Store
                 o_result = i_A + i_B;
@@ -82,6 +98,68 @@ module ex_alu (
                         o_result = i_A & i_B;
                     default : o_result = 32'b0;
                 endcase
+
+                if(i_ctrlALU.func7 == 7'b000_0001) begin    // m-extension
+                    case (i_ctrlALU.func3)
+                        3'b000: begin   // MUL (lower, uses signed)
+                            mult.input_A = i_A;
+                            mult.input_B = i_B;
+                            mult.en = w_dspEn;
+                            o_result = mult.out[31:0];
+                            w_dspDone = mult.done;
+                        end
+                        3'b001: begin   // MULH (upper signed)
+                            mult.input_A = i_A;
+                            mult.input_B = i_B;
+                            mult.en = w_dspEn;
+                            o_result = mult.out[63:32];
+                            w_dspDone = mult.done;
+                        end
+                        3'b010: begin   // MULHSU (upper sign/unsign)
+                            multSU.input_A = i_A;
+                            multSU.input_B = i_B;
+                            multSU.en = w_dspEn;
+                            o_result = multSU.out[63:32];
+                            w_dspDone = multSU.done;
+                        end
+                        3'b011: begin   // MULHU (upper unsigned)
+                            multU.input_A = i_A;
+                            multU.input_B = i_B;
+                            multU.en = w_dspEn;
+                            o_result = multU.out[63:32];
+                            w_dspDone = multU.done;
+                        end
+                        3'b100: begin   // DIV
+                            div.input_A = i_A;
+                            div.input_B = i_B;
+                            div.en = w_dspEn;
+                            o_result = div.out[63:32];
+                            w_dspDone = div.done;
+                        end
+                        3'b101: begin   // DIVU
+                            divU.input_A = i_A;
+                            divU.input_B = i_B;
+                            divU.en = w_dspEn;
+                            o_result = divU.out[63:32];
+                            w_dspDone = divU.done;
+                        end
+                        3'b110: begin   // REM
+                            div.input_A = i_A;
+                            div.input_B = i_B;
+                            div.en = w_dspEn;
+                            o_result = div.out[31:0];
+                            w_dspDone = div.done;
+                        end
+                        3'b111: begin   // REMU
+                            divU.input_A = i_A;
+                            divU.input_B = i_B;
+                            divU.en = w_dspEn;
+                            o_result = divU.out[31:0];
+                            w_dspDone = divU.done;
+                        end
+                        default : /* default */;
+                    endcase
+                end
             end
             default : o_result = 32'b0;
         endcase
@@ -92,81 +170,6 @@ module ex_alu (
             end else begin
                 o_zero = 1'b0;
             end
-        end
-
-        // DSP routing
-        // [64] en, [63:32] A, [31:0] B                     (driven here)
-        // [128:65] Output, [129] done(mult doesn't use)    (driven by DSP)
-        mult[64:0] = 0;
-        mult.done = 0;
-        multSU[64:0] = 0;
-        multSU.done = 0;
-        multU[64:0] = 0;
-        multU.done = 0;
-        div[64:0] = 0;
-        divU[64:0] = 0;
-        w_dspDone = 0;
-
-        if(i_ctrlALU.func7 == 7'b000_0001) begin    // m-extension
-            case (i_ctrlALU.func3)
-                3'b000: begin   // MUL (lower, uses signed)
-                    mult.input_A = i_A;
-                    mult.input_B = i_B;
-                    mult.en = w_dspEn;
-                    o_result = mult.out[31:0];
-                    w_dspDone = mult.done;
-                end
-                3'b001: begin   // MULH (upper signed)
-                    mult.input_A = i_A;
-                    mult.input_B = i_B;
-                    mult.en = w_dspEn;
-                    o_result = mult.out[63:32];
-                    w_dspDone = mult.done;
-                end
-                3'b010: begin   // MULHSU (upper sign/unsign)
-                    multSU.input_A = i_A;
-                    multSU.input_B = i_B;
-                    multSU.en = w_dspEn;
-                    o_result = multSU.out[63:32];
-                    w_dspDone = multSU.done;
-                end
-                3'b011: begin   // MULHU (upper unsigned)
-                    multU.input_A = i_A;
-                    multU.input_B = i_B;
-                    multU.en = w_dspEn;
-                    o_result = multU.out[63:32];
-                    w_dspDone = multU.done;
-                end
-                3'b100: begin   // DIV
-                    div.input_A = i_A;
-                    div.input_B = i_B;
-                    div.en = w_dspEn;
-                    o_result = div.out[63:32];
-                    w_dspDone = div.done;
-                end
-                3'b101: begin   // DIVU
-                    divU.input_A = i_A;
-                    divU.input_B = i_B;
-                    divU.en = w_dspEn;
-                    o_result = divU.out[63:32];
-                    w_dspDone = divU.done;
-                end
-                3'b110: begin   // REM
-                    div.input_A = i_A;
-                    div.input_B = i_B;
-                    div.en = w_dspEn;
-                    o_result = div.out[31:0];
-                    w_dspDone = div.done;
-                end
-                3'b111: begin   // REMU
-                    divU.input_A = i_A;
-                    divU.input_B = i_B;
-                    divU.en = w_dspEn;
-                    o_result = divU.out[31:0];
-                    w_dspDone = divU.done;
-                end
-                default : /* default */;
-            endcase
         end
     end
 
