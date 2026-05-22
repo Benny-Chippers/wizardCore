@@ -74,16 +74,35 @@ module vga_memory (
 	`endif
 
 	// Muxes
+	// CPU clk mux
 	always_comb begin
 		w_pxlAddr_0 = 0;
 		w_pxlData_0 = 0;
 		w_ctrlVGA_0 = 0;
-		w_pxlX_0 = 0;
-		w_pxlY_0 = 0;
 
 		w_pxlAddr_1 = 0;
 		w_pxlData_1 = 0;
 		w_ctrlVGA_1 = 0;
+
+		case (buffer_select_cpu)
+			0 : begin
+				w_pxlAddr_0 = i_pxlAddr;
+				w_pxlData_0 = i_pxlData;
+				w_ctrlVGA_0 = i_ctrlVGA;
+			end
+			1 : begin
+				w_pxlAddr_1 = i_pxlAddr;
+				w_pxlData_1 = i_pxlData;
+				w_ctrlVGA_1 = i_ctrlVGA;
+			end
+			default : /* Nothing */;
+		endcase
+	end
+	// VGA clk mux
+	always_comb begin
+		w_pxlX_0 = 0;
+		w_pxlY_0 = 0;
+
 		w_pxlX_1 = 0;
 		w_pxlY_1 = 0;
 
@@ -91,17 +110,11 @@ module vga_memory (
 
 		case (buffer_select_vga)
 			0 : begin
-				w_pxlAddr_0 = i_pxlAddr;
-				w_pxlData_0 = i_pxlData;
-				w_ctrlVGA_0 = i_ctrlVGA;
 				w_pxlX_1 = i_pxlX;
 				w_pxlY_1 = i_pxlY;
 				o_color = w_color_1;
 			end
 			1 : begin
-				w_pxlAddr_1 = i_pxlAddr;
-				w_pxlData_1 = i_pxlData;
-				w_ctrlVGA_1 = i_ctrlVGA;
 				w_pxlX_0 = i_pxlX;
 				w_pxlY_0 = i_pxlY;
 				o_color = w_color_0;
