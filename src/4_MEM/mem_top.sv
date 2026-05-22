@@ -24,7 +24,7 @@ module mem_top (
 
     mem_memory #(
     `ifdef SIMULATION
-        .INIT_FILENAME("test.mem")
+        .INIT_FILENAME("test_isa_vga.mem")
     `else
         .INIT_FILENAME("C:/capstone/theTower/wizardCore/scripts/test_isa_vga.mem")
     `endif

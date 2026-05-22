@@ -11,20 +11,20 @@ module vga_color (
     // Enables
     input logic en_MEM,
 
-    // Output
-    output logic [7:0] o_value,
-    output logic o_validRD
+    // Outputs
+    output logic [7:0] o_value,       // framebuffer byte => palette entry index per pixel
+    output logic o_validRD            // latch palette scan while inside active raster (WxH)
 );
 
     // ==========================================================
-    // Framebuffer Parameters
+    // Indexed framebuffer (160 x 120 x 8b palette indexes)
     // ==========================================================
     localparam WIDTH  = 160;
     localparam HEIGHT = 120;
     localparam PIXELS = WIDTH * HEIGHT;
     localparam WORDS = PIXELS / 4;
 
-    // 32-bit True Dual-Port m_BRAM
+    // 32-bit block RAM frame store, 8bit/pixel
     (* ram_style = "block" *)
     logic [31:0] m_BRAM [WORDS];
 
@@ -47,9 +47,6 @@ module vga_color (
     always_comb begin
         w_validWR = (i_pxlAddr[14:8] < 120) & (i_pxlAddr[7:0] < 160);
         w_validRD = (i_pxlY < 120) & (i_pxlX < 160);
-        
-        // Relay valid pixel to palette
-        o_validRD = w_validRD;
     end
 
     always_comb begin
@@ -83,11 +80,15 @@ module vga_color (
     end
 
 
+    // Scan-out (@ i_vga_clk): pick one FB byte lane as palette idx for current pixel
     // Color Read
     logic [31:0] w_tempRD;
     logic [1:0] w_RdPxlBuf;
 
     always_ff @(posedge i_vga_clk) begin
+        // VGA pixel in range -> drive palette mux (zero outside image)
+        o_validRD <= w_validRD;
+
         if (w_validRD) begin
             w_tempRD <= m_BRAM[w_RdPxl[14:2]];
             w_RdPxlBuf <= w_RdPxl[1:0];

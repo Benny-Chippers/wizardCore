@@ -17,14 +17,18 @@ module vga_palette (
 
 
 	// ==========================================================
-    // Framebuffer Parameters
+    // Palette BRAM layout (matches memory_Map.md 0x1000_8000..82FF)
     // ==========================================================
+    // 256 RGB colors packed in BRAM as COLORS*3 nibbles across 32b words:
+    //   WORDS = COLORS * 3 / 4 (see memory_Map 0x1000_8000..82FF contiguous 768B).
+    // CPU store: pal_off = i_palAddr - PALETTE_BASE, valid if pal_off < 768 -> w_WrWord/Byte.
+    // VGA loads 3 muxed slices from {2'h0|1|2, palIdx[7:2]} and picks R/G/B nibble group.
     localparam COLORS  = 256;
     localparam WORDS = COLORS * 3 / 4;
 
     localparam PALETTE_BASE = 32'h1000_8000;
 
-    // 32-bit True Dual-Port m_BRAM
+    // 32-bit block RAM palette store
     (* ram_style = "block" *)
     logic [31:0] m_BRAM [WORDS];
 
@@ -41,9 +45,11 @@ module vga_palette (
     logic [1:0] w_WrByte;
     logic w_validWR;
 
-    //bounds checking
+    // check CPU write address in within mapped region
+    // indexed around PALETTE_BASE
+    // Bounds checking
     always_comb begin
-    	w_palAddrRel = i_palAddr - PALETTE_BASE;
+        w_palAddrRel = i_palAddr - PALETTE_BASE;
         w_validWR = (w_palAddrRel < 768);
 
         w_WrWord = w_palAddrRel[9:2];
@@ -74,7 +80,7 @@ module vga_palette (
     end
 
 
-    // Color Read
+    // Color Read (active when x,y is valid, o.w. zero)
     logic [31:0] w_tempRD_R;
     logic [31:0] w_tempRD_G;
     logic [31:0] w_tempRD_B;
@@ -88,8 +94,8 @@ module vga_palette (
             w_RdPxlBuf <= i_palIdx[1:0];
         end else begin
             w_tempRD_R <= 0;
-			w_tempRD_G <= 0;
-			w_tempRD_B <= 0;
+            w_tempRD_G <= 0;
+            w_tempRD_B <= 0;
             w_RdPxlBuf <= 0 ;
         end
     end
