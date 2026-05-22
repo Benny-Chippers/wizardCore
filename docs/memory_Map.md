@@ -22,7 +22,7 @@ Addr[25:0] will be actual memory addresses, but still need to fit in the ranges 
 
 | Address Range | Description |
 | --- | --- |
-| `0x0000_0000 - 0x0x0000_1FFF` | Standard on Chip Memory |
+| `0x0000_0000 - 0x0x0001_FFFF` | Standard on Chip Memory (131 KB) |
 | `0x1000_0000 - 0x1000_779F` | VGA Frame Memory* |
 | `0x1000_8000 - 0x1000_80FF` | VGA Frame Palette (Red)** |
 | `0x1000_8100 - 0x1000_81FF` | VGA Frame Palette (Green)** |
