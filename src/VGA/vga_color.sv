@@ -12,7 +12,8 @@ module vga_color (
     input logic en_MEM,
 
     // Output
-    output logic [7:0] o_value
+    output logic [7:0] o_value,
+    output logic o_validRD
 );
 
     // ==========================================================
@@ -46,6 +47,9 @@ module vga_color (
     always_comb begin
         w_validWR = (i_pxlAddr[14:8] < 120) & (i_pxlAddr[7:0] < 160);
         w_validRD = (i_pxlY < 120) & (i_pxlX < 160);
+        
+        // Relay valid pixel to palette
+        o_validRD = w_validRD;
     end
 
     always_comb begin

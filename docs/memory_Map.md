@@ -31,7 +31,7 @@ Addr[25:0] will be actual memory addresses, but still need to fit in the ranges 
 
 \* VGA Frame memory is only row-contiguous and is to be indexed by X value in Addr[7:0] up to `0x9f`(160) by 2 4-bit chunks and Y value in Addr[15:8] up to `0x77`(120)
 
-\*\* VGA Palette entires per color are nibble sized with the higher bits padded to fill up the byte
+\*\* VGA Palette entries per color are nibble sized with the higher bits padded to fill up the byte
 
 There are 2 frame buffers in memory that alternate being the active frame and the frame that is being written to. They overlap in the `0x1000_XXXX` address range.
 

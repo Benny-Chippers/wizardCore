@@ -2,7 +2,7 @@ module vga_frame (
 	// Inputs
     input logic i_clk,
     input logic i_vga_clk,
-	input logic [31:0] i_pxlAddr,		// [23:16] selects color, [15:8] selects Y, [7:0] selects X
+	input logic [31:0] i_pxlAddr,		// [15:8] selects Y, [7:0] selects X
 	input logic [31:0] i_pxlData,
 	input macro_pkg::mem_ctrl_t i_ctrlVGA,
 	input logic [7:0] i_pxlX,			// Controls output
@@ -25,6 +25,7 @@ module vga_frame (
 	macro_pkg::mem_ctrl_t w_palCtrl;
 
 	logic [7:0] w_palIdx;
+	logic w_validRD;
 
 
 	always_comb begin
@@ -34,7 +35,7 @@ module vga_frame (
 		w_palData = 0;
 		w_frameCtrl = 0;
 		w_palCtrl = 0;
-		case (i_pxlAddr[11])
+		case (i_pxlAddr[15])
 			0: begin
 				w_frameAddr = i_pxlAddr;
 				w_frameData = i_pxlData;
@@ -58,7 +59,8 @@ module vga_frame (
 		.en_MEM   (en_MEM),
 		.i_pxlX   (i_pxlX),
 		.i_pxlY   (i_pxlY),
-		.o_value  (w_palIdx)
+		.o_value  (w_palIdx),
+		.o_validRD(w_validRD)
 	);
 
 	vga_palette VGA_PALETTE (
@@ -69,6 +71,7 @@ module vga_frame (
 		.i_ctrlVGA(w_palCtrl),
 		.en_MEM   (en_MEM),
 		.i_palIdx (w_palIdx),
+		.i_validRD(w_validRD),
 		.o_color  (o_color)
 	);
 

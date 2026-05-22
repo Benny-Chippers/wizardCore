@@ -6,6 +6,7 @@ module vga_palette (
     input logic [31:0] i_palData,
     input macro_pkg::mem_ctrl_t i_ctrlVGA,
     input logic [7:0] i_palIdx,
+    input logic i_validRD,
 
     // Enables
     input logic en_MEM,
@@ -18,8 +19,10 @@ module vga_palette (
 	// ==========================================================
     // Framebuffer Parameters
     // ==========================================================
-    localparam COLORS  = 160;
+    localparam COLORS  = 256;
     localparam WORDS = COLORS * 3 / 4;
+
+    localparam PALETTE_BASE = 32'h1000_8000;
 
     // 32-bit True Dual-Port m_BRAM
     (* ram_style = "block" *)
@@ -33,20 +36,18 @@ module vga_palette (
         end
     end
 
-    logic [12:0] w_WrWord;
+    logic [31:0] w_palAddrRel;
+    logic [7:0] w_WrWord;
     logic [1:0] w_WrByte;
-    logic [15:0] w_RdPxl;
-    logic w_validRD, w_validWR;
+    logic w_validWR;
 
     //bounds checking
     always_comb begin
-        w_validWR = (i_palAddr < 768);
-        w_validRD = (i_palIdx < 256);
-    end
+    	w_palAddrRel = i_palAddr - PALETTE_BASE;
+        w_validWR = (w_palAddrRel < 768);
 
-    always_comb begin
-        w_WrWord = i_palAddr[9:2];
-        w_WrByte = i_palAddr[1:0];
+        w_WrWord = w_palAddrRel[9:2];
+        w_WrByte = w_palAddrRel[1:0];
     end
 
     always_ff @(posedge i_clk) begin
@@ -80,13 +81,15 @@ module vga_palette (
     logic [1:0] w_RdPxlBuf;
 
     always_ff @(posedge i_vga_clk) begin
-        if (w_validRD) begin
-            w_tempRD_R <= m_BRAM[{2'h0,i_palIdx[8:2]}];
-            w_tempRD_G <= m_BRAM[{2'h1,i_palIdx[8:2]}];
-            w_tempRD_B <= m_BRAM[{2'h2,i_palIdx[8:2]}];
+        if (i_validRD) begin
+            w_tempRD_R <= m_BRAM[{2'h0,i_palIdx[7:2]}];
+            w_tempRD_G <= m_BRAM[{2'h1,i_palIdx[7:2]}];
+            w_tempRD_B <= m_BRAM[{2'h2,i_palIdx[7:2]}];
             w_RdPxlBuf <= i_palIdx[1:0];
         end else begin
-            w_tempRD <= 0;
+            w_tempRD_R <= 0;
+			w_tempRD_G <= 0;
+			w_tempRD_B <= 0;
             w_RdPxlBuf <= 0 ;
         end
     end
@@ -97,7 +100,7 @@ module vga_palette (
             1: o_color = {w_tempRD_R[11:8], w_tempRD_G[11:8], w_tempRD_B[11:8]};
             2: o_color = {w_tempRD_R[19:16], w_tempRD_G[19:16], w_tempRD_B[19:16]};
             3: o_color = {w_tempRD_R[27:24], w_tempRD_G[27:24], w_tempRD_B[27:24]};
-            default : o_value = 0;
+            default : o_color = 0;
         endcase
     end
 
