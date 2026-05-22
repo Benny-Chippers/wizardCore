@@ -20,19 +20,20 @@ module vga_top (
 	logic w_x_y;
 	logic w_yy;
 
-	logic [2:0] w_vSync_buf;
-	logic [2:0] w_hSync_buf;
+	// avoid blocks and non-blocking conflicts
+	logic w_vSync_0, w_vSync_1, w_vSync_2;
+	logic w_hSync_0, w_hSync_1, w_hSync_2;
 
-	assign o_vgaData.vSync = w_vSync_buf[2];
-	assign o_vgaData.hSync = w_hSync_buf[2];
+	assign o_vgaData.vSync = w_vSync_2;
+	assign o_vgaData.hSync = w_hSync_2;
 
 	always_ff @(posedge i_vga_clk) begin
 		if(~i_reset_n) begin
-			w_vSync_buf[2:1] <= 0;
-			w_hSync_buf[2:1] <= 0;
+			{w_vSync_2,w_vSync_1} <= 2'b0;
+			{w_hSync_2,w_hSync_1} <= 2'b0;
 		end else begin
-			w_vSync_buf[2:1] <= w_vSync_buf[1:0];
-			w_hSync_buf[2:1] <= w_hSync_buf[1:0];
+			{w_vSync_2,w_vSync_1} <= {w_vSync_1, w_vSync_0};
+			{w_hSync_2,w_hSync_1} <= {w_hSync_1, w_hSync_0};
 		end
 	end
 
@@ -60,7 +61,7 @@ module vga_top (
 		.i_clk    (i_vga_clk),
 		.i_reset_n(i_reset_n),
 		.en       (1'b1),
-		.o_comp   (w_hSync_buf[0]),
+		.o_comp   (w_hSync_0),
 		.o_comp2  (w_x_y),
 		.o_value  (w_pxlX)
 	);
@@ -74,7 +75,7 @@ module vga_top (
 		.i_clk    (i_vga_clk),
 		.i_reset_n(i_reset_n),
 		.en       (w_x_y),
-		.o_comp   (w_vSync_buf[0]),
+		.o_comp   (w_vSync_0),
 		.o_comp2  (w_yy),
 		.o_value  (w_pxlY)
 	);
