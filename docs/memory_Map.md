@@ -15,6 +15,12 @@ Addr[29:28] will be used for internal routing areas
 
 Accesses will be aligned to size
 
+## On Chip Memory
+
+| Address Range | Description |
+| --- | --- |
+| `0x0000_0000 - 0x0x0001_FFFF` | Standard on Chip Memory (131 KB) |
+
 ## VGA Memory
 
 Addr[25:0] will be actual memory addresses, but still need to fit in the ranges availible to each Area
@@ -22,7 +28,6 @@ Addr[25:0] will be actual memory addresses, but still need to fit in the ranges 
 
 | Address Range | Description |
 | --- | --- |
-| `0x0000_0000 - 0x0x0001_FFFF` | Standard on Chip Memory (131 KB) |
 | `0x1000_0000 - 0x1000_779F` | VGA Frame Memory* |
 | `0x1000_8000 - 0x1000_80FF` | VGA Frame Palette (Red)** |
 | `0x1000_8100 - 0x1000_81FF` | VGA Frame Palette (Green)** |
@@ -73,10 +78,39 @@ Addr[26] will indicate if the access is a read or a write
 
 ## Internal Module Registers
 
+Addr[23:16] will indicate the internal module type and Addr [15:0] will determine the register accessed
 
+| Address Range | Description |
+| --- | --- |
+| `0x3000_0000 - 0x3000_0007` | IO Port |
+| `0x3001_0000 - 0x3001_0003` | Timing Counters |
+| `0x3002_0000 - 0x3002_001F` | Pipeline Performace(*planned*) |
+| `0x3003_0000 - 0x3003_000F` | Status Registers(*planned*) |
 
+### IO Port
 
+| Address | Description |
+| --- | --- |
+| `0x3000_0000` | GPIO values |
+| `0x3000_0004` | GPIO Direction |
 
+GPIO is 32bit wide, but not fully dedicated to the FPGA, will force those pins to only be in output mode, so register holds the data of last write
 
+### Timing Counter
+
+| Address | Description |
+| --- | --- |
+| `0x3001_0000` | 32bit Counter |
+| `0x3001_1000` | Reset 32bit Counter |
+
+These 32 bit counter will increment every base clock cyle
+
+*Planned*
+| Address | Description |
+| --- | --- |
+| `0x3001_0010 - 0x3001_0017` | 64bit Counter |
+| `0x3001_1010` | Reset 64bit Counter |
+
+64 bits is a long add, will likey put these on a 10MHz clock in their own Clk Domain
 
 
