@@ -46,7 +46,7 @@ module testBench(
     // Simulation clocking for Verilator
     `ifdef SIMULATION
     always begin
-        #20ns clk <= ~clk;
+        #10ns clk <= ~clk;
      end
 
      always begin
@@ -118,94 +118,29 @@ module testBench(
         D_RDY = 1;
      end
 
-    top top_instance
-        (
-            `ifdef SIMULATION
-            .clk        (clk),
-            .vga_clk    (vga_clk),
-            .spi_clk    (spi_clk),
-            `else
-            .osc_clk    (osc_clk),
-            `endif
-            .reset_n    (reset_n),
-            .vgaData    (vgaData),
-            .spi        (spi)
-        );
+    top top_instance (
+        `ifdef SIMULATION
+        .clk        (clk),
+        .vga_clk    (vga_clk),
+        .spi_clk    (spi_clk),
+        `else
+        .osc_clk    (osc_clk),
+        `endif
+        .reset_n    (reset_n),
+        .vgaData    (vgaData),
+        .spi        (spi)
+    );
 
-//    logic [31:0] dataIn;
-//    logic [31:0] dataAddr;
-//    wire  [31:0] dataOut;
-//    tri   [3:0]  QSPI;
-
-//    macro_pkg::mem_ctrl_t spi_ctrl;
-//    logic en_SPI, spi_rw;
-//    wire spi_stall, o_clk_QSPI, o_select_QSPI;
-//    logic [3:0] qspi_drv;
-
-//    assign QSPI = ~spi_rw ? qspi_drv : 4'bz;
-//    assign spi[3:0] = QSPI;
-    
-//    always @(posedge osc_clk) begin
-//        if(spi_stall == 1'b0) begin
-//            en_SPI <= 0;
-//        end
-//    end
-
-//    initial begin
-//        dataIn = 32'h3820_DEAD;
-//        dataAddr = 32'h2001_FF00;
-//        qspi_drv = 4'hf;
-//        spi_rw = 1;
-//        spi_ctrl = 7'b0;
-//        spi_ctrl.memWrite = 1;
-//        spi_ctrl.memRead = 0;
-//        spi_ctrl.size = 2'b10;
-//        en_SPI = 0;
-
-        
-
-//        #160ns
-
-//        en_SPI = 1;
-
-//        #1600ns
-//        #400ns
-        
-//        spi_rw = 0;
-//        qspi_drv = 4'h0;
-//        #50ns
-//        qspi_drv = 4'h6;
-//        #50ns
-//        qspi_drv = 4'hf;
-//        spi_rw = 1;
-        
-//        #800ns
-
-//        #3us
-
-//        $finish;
-
-//    end
+    logic i_pin, o_pin;
 
 
-//    xmem_top XMEM (
-//        .i_reset_n    (reset_n),
-//        `ifdef SIMULATION
-//        .i_clk_cpu    (clk),
-//        `else
-//        .i_clk_cpu    (osc_clk),
-//        `endif
-//        .i_clk_spi    (spi_clk),
-//        .i_address    (dataAddr),
-//        .i_dataWrite  (dataIn),
-//        .i_mem_ctrl   (spi_ctrl),
-//        .en_SPI       (en_SPI),
-//        .o_stall      (spi_stall),
-//        .o_dataRead   (dataOut),
-//        .o_clk_QSPI   (o_clk_QSPI),
-//        .o_select_QSPI(o_select_QSPI),
-//        .io_QSPI      (QSPI)
-//    );
+    debounce DB (
+        .i_clk    (clk),
+        .i_reset_n(reset_n),
+        .i_pin    (i_pin),
+        .o_pin    (o_pin)
+    );
+
 
 
 endmodule

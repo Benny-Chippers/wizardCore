@@ -11,7 +11,7 @@ Addr[29:28] will be used for internal routing areas
 | `0b00` | `0x0` | Standard on Chip Memory |
 | `0b01` | `0x1` | VGA Frame Memory |
 | `0b10` | `0x2,0x6,0xA,0xE` | Northbridge communication |
-| `0b11` | `0x3` | Internal Module Registers |
+| `0b11` | `0x3` | Special Module Registers |
 
 Accesses will be aligned to size
 
@@ -76,9 +76,9 @@ Addr[26] will indicate if the access is a read or a write
 | `0b0` | Read |
 | `0b1` | Write |
 
-## Internal Module Registers
+## Special Module Registers
 
-Addr[23:16] will indicate the internal module type and Addr [15:0] will determine the register accessed
+Addr[23:16] will indicate the special module type and Addr [15:0] will determine the register accessed
 
 | Address Range | Description |
 | --- | --- |

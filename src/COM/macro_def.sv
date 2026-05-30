@@ -6,3 +6,6 @@
 `define FUNCT3  i_instr[14:12]
 `define FUNCT7  i_instr[31:25]
 `define IMM     i_instr[31:20]
+
+// System Definitions
+`define CPU_FREQ 50_000_000
