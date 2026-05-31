@@ -2,13 +2,13 @@
 //(* max_fanout = 20 *)
 module top (
     `ifdef SIMULATION
-    input clk,      // System/CPU Clock
-    input vga_clk,  // Clock for vga circuit
-    input spi_clk,
+    input logic clk,      // System/CPU Clock
+    input logic vga_clk,  // Clock for vga circuit
+    input logic spi_clk,
     `else
-    input osc_clk,
+    input logic osc_clk,
     `endif
-    input reset_n,  // Synchronous reset active low
+    input logic reset_n,  // Synchronous reset active low
     output macro_pkg::vga_out_t vgaData,
     inout wire [5:0] spi
 );
@@ -16,13 +16,13 @@ module top (
     `ifndef SIMULATION
     logic osc_reset_n;
 
+
     initial begin
         #0 osc_reset_n = 0;
         #50ns osc_reset_n = 1;
     end
 
     // VIVADO CLOCKING
-    logic clk, vga_clk, spi_clk;
     clk_wiz_0 instance_name
    (
         // Clock out ports
@@ -196,17 +196,6 @@ module top (
         end
     end
 
-    wb_top WB
-        (
-            .i_ctrlWB     (wb.memToReg),
-            .i_readData   (readData),
-            .i_resultALU  (resultALU),
-            .o_wrData     (wrData)
-        );
-
-
-
-    // VGA output circuit
     vga_top VGA
         (
             .i_clk          (clk),
@@ -217,6 +206,14 @@ module top (
             .i_ctrlVGA      (ctrlVGA),
             .en_MEM   		(en_MEM),
             .o_vgaData      (vgaData)
+        );
+
+    wb_top WB
+        (
+            .i_ctrlWB     (wb.memToReg),
+            .i_readData   (readData),
+            .i_resultALU  (resultALU),
+            .o_wrData     (wrData)
         );
 
 endmodule : top
