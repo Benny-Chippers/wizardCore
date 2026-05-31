@@ -45,10 +45,10 @@ module special_top (
 				// GPIO
 				w_gData_i = i_dataWrite;
 
-				if (i_address[15:0] == 16'h0000) begin
+				if (i_address[15:2] == 14'h0000) begin
 					w_gPort_r = i_ctrlMEM.memRead;
 					w_gPort_w = i_ctrlMEM.memWrite;
-				end else if (i_address[15:0] == 16'h0004) begin
+				end else if (i_address[15:2] == 14'h0001) begin
 					w_gDir_r = i_ctrlMEM.memRead;
 					w_gDir_w = i_ctrlMEM.memWrite;
 				end
@@ -57,11 +57,11 @@ module special_top (
 
 			end else if (i_address[31:16] == 16'h3001) begin
 				// Counter
-				if (i_address[15:0] == 16'h0000) begin
+				if (i_address[15:2] == 14'h0000) begin
 					w_outRaw = w_count;
 				end
 
-				if ((i_address[15:0] == 16'h1000) && i_ctrlMEM.memWrite) begin
+				if ((i_address[15:2] == 14'b0001_0000_0000_00) && i_ctrlMEM.memWrite) begin
 					w_countReset = 1'b1;
 				end
 			end

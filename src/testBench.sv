@@ -14,6 +14,7 @@ module testBench(
     output macro_pkg::vga_out_t vgaData,
     `endif
     inout [5:0] spi
+    // inout [31:0] gpio
 );
     reg osc_clk;
     reg clk;      // System/CPU Clock
@@ -95,28 +96,27 @@ module testBench(
         #50ms $dumpflush;
          $finish;
      end
-     
-     initial begin 
-        #0us
-        MISO = 1;
-        D_RDY = 1;
-        #16.8us // CMD 1
-        D_RDY = 0;
-        #0.2us
-        D_RDY = 1;
-        #2.2us  // ADDR/DATA 1
-        D_RDY = 0;
-        #0.2us
-        D_RDY = 1;
-        #1us    // CMD 2
-        D_RDY = 0;
-        #0.2us
-        D_RDY = 1;
-        #2.2us  // ADDR 2
-        D_RDY = 0;
-        #0.2us
-        D_RDY = 1;
-     end
+
+     // initial begin
+
+     // end
+
+     reg [31:0] gpio;
+
+    initial begin
+        gpio = 32'h0000_0100;   /* bit 8 high for test_gpio_input_pin8() */
+    end
+
+    wire [31:0] gpio_bus;
+    wire [31:0] gpio_dir = top_instance.SPECIAL.GPIO.r_direction;
+    wire [31:0] gpio_out = top_instance.SPECIAL.GPIO.r_out_reg;
+
+    genvar gi;
+    generate
+        for (gi = 0; gi < 32; gi = gi + 1) begin : g_gpio_pin_hookup
+            assign gpio_bus[gi] = gpio_dir[gi] ? gpio_out[gi] : gpio[gi];
+        end
+    endgenerate
 
     top top_instance (
         `ifdef SIMULATION
@@ -128,17 +128,8 @@ module testBench(
         `endif
         .reset_n    (reset_n),
         .vgaData    (vgaData),
-        .spi        (spi)
-    );
-
-    logic i_pin, o_pin;
-
-
-    debounce DB (
-        .i_clk    (clk),
-        .i_reset_n(reset_n),
-        .i_pin    (i_pin),
-        .o_pin    (o_pin)
+        .spi        (spi),
+        .gpio       (gpio_bus)
     );
 
 

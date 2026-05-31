@@ -199,7 +199,7 @@ module top (
             .i_ctrlMEM  (ctrlSPCL),
             .en_SPC     (en_MEM),
             .o_dataRead (readSPCL),
-            .io_gpio    (io_gpio)
+            .io_gpio    (gpio)
         );
 
     always_comb begin
