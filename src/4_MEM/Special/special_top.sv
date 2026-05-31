@@ -32,96 +32,96 @@ module special_top (
 
 	always_comb begin
 		w_outRaw = 32'b0;
+		w_outBuf = 32'b0;
+
 		w_gData_i = 32'b0;
 		{w_gPort_r, w_gPort_w, w_gDir_r, w_gDir_w} = 4'b0;
-		w_countReset = 0;
 
-		// Addressing Mux
-		if (i_address[31:16] == 16'h3000) begin
-			// GPIO
-			w_gData_i = i_dataWrite;
-			if (i_address[15:0] == 16'h0000) begin
-				w_gPort_r = i_ctrlMEM.memRead;
-				w_gPort_w = i_ctrlMEM.memWrite;
-			end else if (i_address[15:0] == 16'h0004) begin
-				w_gDir_r = i_ctrlMEM.memRead;
-				w_gDir_w = i_ctrlMEM.memWrite;
+		w_countReset = 1'b0;
+
+		if (en_SPC) begin
+			// Addressing Mux
+			if (i_address[31:16] == 16'h3000) begin
+				// GPIO
+				w_gData_i = i_dataWrite;
+
+				if (i_address[15:0] == 16'h0000) begin
+					w_gPort_r = i_ctrlMEM.memRead;
+					w_gPort_w = i_ctrlMEM.memWrite;
+				end else if (i_address[15:0] == 16'h0004) begin
+					w_gDir_r = i_ctrlMEM.memRead;
+					w_gDir_w = i_ctrlMEM.memWrite;
+				end
+
+				w_outRaw = w_gData_o;
+
+			end else if (i_address[31:16] == 16'h3001) begin
+				// Counter
+				if (i_address[15:0] == 16'h0000) begin
+					w_outRaw = w_count;
+				end
+
+				if ((i_address[15:0] == 16'h1000) && i_ctrlMEM.memWrite) begin
+					w_countReset = 1'b1;
+				end
 			end
-			w_outRaw = w_gData_o;
-
-		end else if (i_address[31:16] == 16'h3001) begin
-			// Counter
-			w_outRaw = w_count;
-			if (i_address[15:0] == 16'h1000 && i_ctrlMEM.memWrite) begin
-				w_countReset = 1'b1;
-			end
-
 		end
 
 		// Output Size Processing
-        unique case (i_ctrlMEM.size)
-            2'b00: begin
-                unique case (i_address[1:0]) // Byte-aligned access, LB/LBU
-                    2'b00: begin
-                        w_outBuf = {
-                                (!i_ctrlMEM.sign)?{24{w_outRaw[7]}}:{24'b0},
-                                w_outRaw[7:0]
-                                };
-                    end
-                    2'b01: begin
-                        w_outBuf = {
-                                (!i_ctrlMEM.sign)?{24{w_outRaw[15]}}:{24'b0},
-                                w_outRaw[15:8]
-                                };
-                    end
-                    2'b10: begin
-                        w_outBuf = {
-                                (!i_ctrlMEM.sign)?{24{w_outRaw[23]}}:{24'b0},
-                                w_outRaw[23:16]
-                                };
-                    end
-                    2'b11: begin
-                        w_outBuf = {
-                                (!i_ctrlMEM.sign)?{24{w_outRaw[31]}}:{24'b0},
-                                w_outRaw[31:24]
-                                };
-                    end
-                endcase
-            end
-            2'b01: begin
-                unique case (i_address[1]) // Halfword-aligned access, LH/LHU
-                    1'b0: begin
-                        w_outBuf = {
-                                (!i_ctrlMEM.sign)?{16{w_outRaw[15]}}:{16'b0},
-                                w_outRaw[15:0]
-                                };
-                    end
-                    1'b1: begin
-                        w_outBuf = {
-                                (!i_ctrlMEM.sign)?{16{w_outRaw[31]}}:{16'b0},
-                                w_outRaw[31:16]
-                                };
-                    end
-                endcase
-            end
-            2'b10: begin
-                w_outBuf = w_outRaw; // Word-aligned access
-            end
-            default: begin
-                w_outBuf = 32'b0;
-            end
-        endcase
-    end
+		unique case (i_ctrlMEM.size)
+			2'b00: begin
+				unique case (i_address[1:0])
+					2'b00: w_outBuf = {
+						(!i_ctrlMEM.sign) ? {24{w_outRaw[7]}} : 24'b0,
+						w_outRaw[7:0]
+					};
+					2'b01: w_outBuf = {
+						(!i_ctrlMEM.sign) ? {24{w_outRaw[15]}} : 24'b0,
+						w_outRaw[15:8]
+					};
+					2'b10: w_outBuf = {
+						(!i_ctrlMEM.sign) ? {24{w_outRaw[23]}} : 24'b0,
+						w_outRaw[23:16]
+					};
+					2'b11: w_outBuf = {
+						(!i_ctrlMEM.sign) ? {24{w_outRaw[31]}} : 24'b0,
+						w_outRaw[31:24]
+					};
+				endcase
+			end
+
+			2'b01: begin
+				unique case (i_address[1])
+					1'b0: w_outBuf = {
+						(!i_ctrlMEM.sign) ? {16{w_outRaw[15]}} : 16'b0,
+						w_outRaw[15:0]
+					};
+					1'b1: w_outBuf = {
+						(!i_ctrlMEM.sign) ? {16{w_outRaw[31]}} : 16'b0,
+						w_outRaw[31:16]
+					};
+				endcase
+			end
+
+			2'b10: begin
+				w_outBuf = w_outRaw;
+			end
+
+			default: begin
+				w_outBuf = 32'b0;
+			end
+		endcase
+	end
 
     always_ff @(posedge i_clk) begin
-    	if(~i_reset_n) begin
-    		o_dataRead <= 0;
-    	end else begin
-    		if (en_SPC) begin
-    			o_dataRead <= w_outBuf;
-    		end
-    	end
-    end
+		if (~i_reset_n) begin
+			o_dataRead <= 32'b0;
+		end else if (en_SPC) begin
+			o_dataRead <= w_outBuf;
+		end else begin
+			o_dataRead <= 32'b0;
+		end
+	end
 
     sp_gpio GPIO (
     	.i_clk    (i_clk),

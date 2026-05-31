@@ -10,7 +10,8 @@ module top (
     `endif
     input logic reset_n,  // Synchronous reset active low
     output macro_pkg::vga_out_t vgaData,
-    inout wire [5:0] spi
+    inout wire [5:0] spi,
+    inout wire [31:0] gpio
 );
 
     `ifndef SIMULATION
@@ -53,8 +54,9 @@ module top (
 
     logic [31:0] resultALU;
     logic [31:0] readData;
-    logic [31:0] readXMEM;
     logic [31:0] readMEM;
+    logic [31:0] readXMEM;
+    logic [31:0] readSPCL;
 
 
     // Control Signals
@@ -64,8 +66,9 @@ module top (
     // Memory Routing Signals
     macro_pkg::mem_ctrl_t mem;
     macro_pkg::mem_ctrl_t ctrlMEM;
-    macro_pkg::mem_ctrl_t ctrlVGA;
     macro_pkg::mem_ctrl_t ctrlXMEM;
+    macro_pkg::mem_ctrl_t ctrlSPCL;
+    macro_pkg::mem_ctrl_t ctrlVGA;
 
 
     // Clocking
@@ -147,6 +150,7 @@ module top (
             .o_resultALU   	(resultALU),
             .o_ctrlMEM      (ctrlMEM),
             .o_ctrlVGA      (ctrlVGA),
+            .o_ctrlSPCL     (ctrlSPCL),
             .o_ctrlXMEM     (ctrlXMEM)
         );
 
@@ -169,8 +173,8 @@ module top (
 
     xmem_top XMEM
         (
-            .i_reset_n    (reset_n),
             .i_clk_cpu    (clk),
+            .i_reset_n    (reset_n),
             .i_clk_spi    (spi_clk),
             .i_address    (resultALU),
             .i_dataWrite  (regData2),
@@ -186,11 +190,25 @@ module top (
             .i_d_rdy      (spi[3])
         );
 
+    special_top SPECIAL
+        (
+            .i_clk      (clk),
+            .i_reset_n  (reset_n),
+            .i_address  (resultALU),
+            .i_dataWrite(regData2),
+            .i_ctrlMEM  (ctrlSPCL),
+            .en_SPC     (en_MEM),
+            .o_dataRead (readSPCL),
+            .io_gpio    (io_gpio)
+        );
+
     always_comb begin
         if (ctrlMEM.memRead) begin
             readData = readMEM;
         end else if (ctrlXMEM.memRead) begin
             readData = readXMEM;
+        end else if (ctrlSPCL.memRead) begin
+            readData = readSPCL;
         end else begin
             readData = '0;
         end
