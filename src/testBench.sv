@@ -2,66 +2,70 @@
 timeunit 1ns;
 timeprecision 1ns;
 `else
-`timescale 1ns/1ns;
+`timescale 1ns/1ns
 `endif
 
+module testBench;
+    logic osc_clk;
+    logic hit_reset;
+    logic reset_n;
 
-module testBench(
     `ifdef SIMULATION
-    output [13:0] vgaData,
-    `else
-    input osc_clk,
-    output macro_pkg::vga_out_t vgaData,
+    logic clk;      // System/CPU clock
+    logic vga_clk;  // VGA clock
+    logic spi_clk;  // SPI clock
     `endif
-    inout [5:0] spi
-);
-    reg osc_clk;
-    reg clk;      // System/CPU Clock
-    reg vga_clk;  // Clock for vga circuit
-    reg spi_clk;
 
-    reg hit_reset;
-    reg reset_n;
-    
-    reg MISO;
-    reg D_RDY;
-    
+    macro_pkg::vga_out_t vgaData;
+
+    wire [5:0] spi;
+    wire [31:0] gpio_bus;
+
+    logic MISO;
+    logic D_RDY;
+    logic [31:0] gpio_drive;
+    logic [31:0] gpio_drive_en;
+
     assign spi[1] = MISO;
     assign spi[3] = D_RDY;
 
-    initial
-     begin
+    initial begin
         `ifdef SIMULATION
-        clk = 0;
-        vga_clk = 0;
-        spi_clk = 0;
+        clk = 1'b0;
+        vga_clk = 1'b0;
+        spi_clk = 1'b0;
         `endif
-        osc_clk = 0;
-        reset_n = 0;
-        hit_reset = 1;
-        #15us hit_reset = 0;
-        // #50ns hit_reset = 0;
-     end
 
-    // Simulation clocking for Verilator
+        osc_clk = 1'b0;
+        MISO = 1'b0;
+        D_RDY = 1'b0;
+        reset_n = 1'b0;
+        hit_reset = 1'b1;
+
+        // test_special_regs.mem expects external GPIO pin 8 to be driven high.
+        gpio_drive = 32'h0000_0100;
+        gpio_drive_en = 32'h0000_0100;
+
+        #15us hit_reset = 1'b0;
+    end
+
     `ifdef SIMULATION
     always begin
-        #20ns clk <= ~clk;
-     end
+        #10ns clk <= ~clk;
+    end
 
-     always begin
-         #20ns vga_clk <= ~vga_clk;
-     end
+    always begin
+        #20ns vga_clk <= ~vga_clk;
+    end
 
-     always begin
-         #500ns spi_clk <= ~spi_clk;
-     end
-     `else
-     always begin
+    always begin
+        #500ns spi_clk <= ~spi_clk;
+    end
+    `else
+    always begin
         #10ns osc_clk <= ~osc_clk;
-     end
+    end
     `endif
-
 
     `ifdef SIMULATION
     always @(posedge clk)
@@ -69,143 +73,45 @@ module testBench(
     always @(posedge osc_clk)
     `endif
     begin
-        if(hit_reset === 1'b1) begin
-            reset_n <= 0;
-        end
-        else begin
-            reset_n <= 1;
-        end
+        reset_n <= ~hit_reset;
     end
 
+    initial begin
+        $display("[%0t] Tracing to dump.vcd...\n", $time);
+        $dumpfile("dump.vcd");
+        $dumpvars();
+        $display("[%0t] Model running...\n", $time);
+        `ifdef SIMULATION
+        $display("[%0t] Simulation mode enabled.\n", $time);
+        `endif
+    end
 
-    initial
-     begin
-         $display("[%0t] Tracing to dump.vcd...\n",$time);
-         $dumpfile("dump.vcd");
-         $dumpvars();
-         $display("[%0t] Model running...\n",$time);
-         `ifdef SIMULATION
-         $display("[%0t] Simulation mode enabled.\n",$time);
-         `endif
-     end
+    initial begin
+        #10ms $dumpflush;
+        $finish;
+    end
 
-    initial
-     begin
-          // #50us $dumpflush;
-        #50ms $dumpflush;
-         $finish;
-     end
-     
-     initial begin 
-        #0us
-        MISO = 1;
-        D_RDY = 1;
-        #16.8us // CMD 1
-        D_RDY = 0;
-        #0.2us
-        D_RDY = 1;
-        #2.2us  // ADDR/DATA 1
-        D_RDY = 0;
-        #0.2us
-        D_RDY = 1;
-        #1us    // CMD 2
-        D_RDY = 0;
-        #0.2us
-        D_RDY = 1;
-        #2.2us  // ADDR 2
-        D_RDY = 0;
-        #0.2us
-        D_RDY = 1;
-     end
+    genvar gi;
+    generate
+        for (gi = 0; gi < 32; gi = gi + 1) begin : g_gpio_tb_drive
+            assign gpio_bus[gi] =
+                (gpio_drive_en[gi] && !top_instance.SPECIAL.GPIO.r_direction[gi]) ?
+                gpio_drive[gi] : 1'bz;
+        end
+    endgenerate
 
-    top top_instance
-        (
-            `ifdef SIMULATION
-            .clk        (clk),
-            .vga_clk    (vga_clk),
-            .spi_clk    (spi_clk),
-            `else
-            .osc_clk    (osc_clk),
-            `endif
-            .reset_n    (reset_n),
-            .vgaData    (vgaData),
-            .spi        (spi)
-        );
-
-//    logic [31:0] dataIn;
-//    logic [31:0] dataAddr;
-//    wire  [31:0] dataOut;
-//    tri   [3:0]  QSPI;
-
-//    macro_pkg::mem_ctrl_t spi_ctrl;
-//    logic en_SPI, spi_rw;
-//    wire spi_stall, o_clk_QSPI, o_select_QSPI;
-//    logic [3:0] qspi_drv;
-
-//    assign QSPI = ~spi_rw ? qspi_drv : 4'bz;
-//    assign spi[3:0] = QSPI;
-    
-//    always @(posedge osc_clk) begin
-//        if(spi_stall == 1'b0) begin
-//            en_SPI <= 0;
-//        end
-//    end
-
-//    initial begin
-//        dataIn = 32'h3820_DEAD;
-//        dataAddr = 32'h2001_FF00;
-//        qspi_drv = 4'hf;
-//        spi_rw = 1;
-//        spi_ctrl = 7'b0;
-//        spi_ctrl.memWrite = 1;
-//        spi_ctrl.memRead = 0;
-//        spi_ctrl.size = 2'b10;
-//        en_SPI = 0;
-
-        
-
-//        #160ns
-
-//        en_SPI = 1;
-
-//        #1600ns
-//        #400ns
-        
-//        spi_rw = 0;
-//        qspi_drv = 4'h0;
-//        #50ns
-//        qspi_drv = 4'h6;
-//        #50ns
-//        qspi_drv = 4'hf;
-//        spi_rw = 1;
-        
-//        #800ns
-
-//        #3us
-
-//        $finish;
-
-//    end
-
-
-//    xmem_top XMEM (
-//        .i_reset_n    (reset_n),
-//        `ifdef SIMULATION
-//        .i_clk_cpu    (clk),
-//        `else
-//        .i_clk_cpu    (osc_clk),
-//        `endif
-//        .i_clk_spi    (spi_clk),
-//        .i_address    (dataAddr),
-//        .i_dataWrite  (dataIn),
-//        .i_mem_ctrl   (spi_ctrl),
-//        .en_SPI       (en_SPI),
-//        .o_stall      (spi_stall),
-//        .o_dataRead   (dataOut),
-//        .o_clk_QSPI   (o_clk_QSPI),
-//        .o_select_QSPI(o_select_QSPI),
-//        .io_QSPI      (QSPI)
-//    );
-
+    top top_instance (
+        `ifdef SIMULATION
+        .clk        (clk),
+        .vga_clk    (vga_clk),
+        .spi_clk    (spi_clk),
+        `else
+        .osc_clk    (osc_clk),
+        `endif
+        .reset_n    (reset_n),
+        .vgaData    (vgaData),
+        .spi        (spi),
+        .gpio       (gpio_bus)
+    );
 
 endmodule

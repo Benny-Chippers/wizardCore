@@ -2,19 +2,21 @@
 //(* max_fanout = 20 *)
 module top (
     `ifdef SIMULATION
-    input clk,      // System/CPU Clock
-    input vga_clk,  // Clock for vga circuit
-    input spi_clk,
+    input logic clk,      // System/CPU Clock
+    input logic vga_clk,  // Clock for vga circuit
+    input logic spi_clk,
     `else
-    input osc_clk,
+    input logic osc_clk,
     `endif
-    input reset_n,  // Synchronous reset active low
+    input logic reset_n,  // Synchronous reset active low
     output macro_pkg::vga_out_t vgaData,
-    inout wire [5:0] spi
+    inout wire [5:0] spi,
+    inout wire [31:0] gpio
 );
 
     `ifndef SIMULATION
     logic osc_reset_n;
+
 
     initial begin
         #0 osc_reset_n = 0;
@@ -22,7 +24,6 @@ module top (
     end
 
     // VIVADO CLOCKING
-    logic clk, vga_clk, spi_clk;
     clk_wiz_0 instance_name
    (
         // Clock out ports
@@ -53,8 +54,9 @@ module top (
 
     logic [31:0] resultALU;
     logic [31:0] readData;
-    logic [31:0] readXMEM;
     logic [31:0] readMEM;
+    logic [31:0] readXMEM;
+    logic [31:0] readSPCL;
 
 
     // Control Signals
@@ -64,8 +66,9 @@ module top (
     // Memory Routing Signals
     macro_pkg::mem_ctrl_t mem;
     macro_pkg::mem_ctrl_t ctrlMEM;
-    macro_pkg::mem_ctrl_t ctrlVGA;
     macro_pkg::mem_ctrl_t ctrlXMEM;
+    macro_pkg::mem_ctrl_t ctrlSPCL;
+    macro_pkg::mem_ctrl_t ctrlVGA;
 
 
     // Clocking
@@ -147,6 +150,7 @@ module top (
             .o_resultALU   	(resultALU),
             .o_ctrlMEM      (ctrlMEM),
             .o_ctrlVGA      (ctrlVGA),
+            .o_ctrlSPCL     (ctrlSPCL),
             .o_ctrlXMEM     (ctrlXMEM)
         );
 
@@ -169,8 +173,8 @@ module top (
 
     xmem_top XMEM
         (
-            .i_reset_n    (reset_n),
             .i_clk_cpu    (clk),
+            .i_reset_n    (reset_n),
             .i_clk_spi    (spi_clk),
             .i_address    (resultALU),
             .i_dataWrite  (regData2),
@@ -186,27 +190,30 @@ module top (
             .i_d_rdy      (spi[3])
         );
 
+    special_top SPECIAL
+        (
+            .i_clk      (clk),
+            .i_reset_n  (reset_n),
+            .i_address  (resultALU),
+            .i_dataWrite(regData2),
+            .i_ctrlMEM  (ctrlSPCL),
+            .en_SPC     (en_MEM),
+            .o_dataRead (readSPCL),
+            .io_gpio    (gpio)
+        );
+
     always_comb begin
         if (ctrlMEM.memRead) begin
             readData = readMEM;
         end else if (ctrlXMEM.memRead) begin
             readData = readXMEM;
+        end else if (ctrlSPCL.memRead) begin
+            readData = readSPCL;
         end else begin
             readData = '0;
         end
     end
 
-    wb_top WB
-        (
-            .i_ctrlWB     (wb.memToReg),
-            .i_readData   (readData),
-            .i_resultALU  (resultALU),
-            .o_wrData     (wrData)
-        );
-
-
-
-    // VGA output circuit
     vga_top VGA
         (
             .i_clk          (clk),
@@ -217,6 +224,14 @@ module top (
             .i_ctrlVGA      (ctrlVGA),
             .en_MEM   		(en_MEM),
             .o_vgaData      (vgaData)
+        );
+
+    wb_top WB
+        (
+            .i_ctrlWB     (wb.memToReg),
+            .i_readData   (readData),
+            .i_resultALU  (resultALU),
+            .o_wrData     (wrData)
         );
 
 endmodule : top
