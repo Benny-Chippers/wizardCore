@@ -14,15 +14,14 @@ module top (
     inout wire [31:0] gpio
 );
 
+    
+    logic sys_reset_n;
+
+    `ifdef SIMULATION
+    assign sys_reset_n = reset_n;
+    `endif
+    
     `ifndef SIMULATION
-    logic osc_reset_n;
-
-
-    initial begin
-        #0 osc_reset_n = 0;
-        #50ns osc_reset_n = 1;
-    end
-
     // VIVADO CLOCKING
     clk_wiz_0 instance_name
    (
@@ -31,7 +30,8 @@ module top (
         .clk_vga(vga_clk),     // output clk_vga
         .clk_spi(spi_clk),     // output clk_spi
         // Status and control signals
-        .resetn(osc_reset_n), // input resetn
+        .resetn(reset_n), // input resetn
+        .locked(sys_reset_n),
        // Clock in ports
         .clk_in(osc_clk)      // input clk_in
     );
@@ -89,7 +89,7 @@ module top (
     top_en enable
         (
             .i_clk    	(clk),
-            .i_reset_n	(reset_n),
+            .i_reset_n	(sys_reset_n),
             .stall_IF   (stall_IF),
             .stall_ID   (stall_ID),
             .stall_EX   (stall_EX),
@@ -105,7 +105,7 @@ module top (
     if_top IF
         (
             .i_clk        		(clk),
-            .i_reset_n    		(reset_n),
+            .i_reset_n    		(sys_reset_n),
             .i_PCSrc      		(PCSrc),
             .i_inAddr     		(outAddr),
             .i_mem_instr  		(mem_instr),
@@ -118,7 +118,7 @@ module top (
     id_top ID
         (
             .i_clk          (clk),
-            .i_reset_n      (reset_n),
+            .i_reset_n      (sys_reset_n),
             .i_instr        (instruction),
             .i_wrSig        (wb.regWrite),
             .i_wrReg        (wb.writeReg),
@@ -136,7 +136,7 @@ module top (
     ex_top EX
         (
         	.i_clk		   	(clk),
-        	.i_reset_n		(reset_n),
+        	.i_reset_n		(sys_reset_n),
             .i_inAddr      	(inAddr),
             .i_regData1    	(regData1),
             .i_regData2    	(regData2),
@@ -157,7 +157,7 @@ module top (
     mem_top MEM
         (
             .i_clk          (clk),
-            .i_reset_n      (reset_n),
+            .i_reset_n      (sys_reset_n),
             .i_memAddr      (resultALU),
             .i_if_instrAddr (mem_instrAddr),
             .i_wrData       (regData2),
@@ -174,7 +174,7 @@ module top (
     xmem_top XMEM
         (
             .i_clk_cpu    (clk),
-            .i_reset_n    (reset_n),
+            .i_reset_n    (sys_reset_n),
             .i_clk_spi    (spi_clk),
             .i_address    (resultALU),
             .i_dataWrite  (regData2),
@@ -193,7 +193,7 @@ module top (
     special_top SPECIAL
         (
             .i_clk      (clk),
-            .i_reset_n  (reset_n),
+            .i_reset_n  (sys_reset_n),
             .i_address  (resultALU),
             .i_dataWrite(regData2),
             .i_ctrlMEM  (ctrlSPCL),
@@ -218,7 +218,7 @@ module top (
         (
             .i_clk          (clk),
             .i_vga_clk      (vga_clk),
-            .i_reset_n      (reset_n),
+            .i_reset_n      (sys_reset_n),
             .i_pxlAddr      (resultALU),
             .i_pxlData      (regData2),
             .i_ctrlVGA      (ctrlVGA),

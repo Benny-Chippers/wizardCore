@@ -1,4 +1,4 @@
-// `include "macro_def.sv"
+`include "macro_def.sv"
 
 module debounce (
 	// Input
