@@ -14,13 +14,18 @@ WizardCore is a SystemVerilog CPU implementation targeting the **RISC-V RV32I** 
 
 - `src/1_IF/` — Instruction Fetch stage
 - `src/2_ID/` — Instruction Decode stage
-- `src/3_EX/` — Execute stage
-- `src/4_MEM/` — Memory stage
+- `src/3_EX/` — Execute stage and memory-region routing
+- `src/4_MEM/` — Memory stage and memory-mapped peripherals
+  - `src/4_MEM/SPI/` — External SPI memory controller
+  - `src/4_MEM/Special/` — Memory-mapped special registers, including GPIO and timing counter
+  - `src/4_MEM/VGA/` — VGA frame memory, palette, and output logic
 - `src/5_WB/` — Writeback stage
-- `src/TOP/` — Top-level wiring
-- `src/COM/` — Common/shared components
+- `src/TOP/` — Top-level CPU, clock, and enable wiring
+- `src/COM/` — Common/shared components, macros, packages, pin IO, sync, and debounce helpers
 - `src/testBench.sv` — Top-level testbench used by the Makefile
-- `scripts/` — Runtime program binaries loaded by simulation (for example, `test_rv32i.mem`)
+- `scripts/` — Runtime memory images loaded by simulation
+- `docs/` — Architecture notes and memory map documentation
+- `makefile` — Verilator build, simulation, waveform, and clean targets
 
 ## Warning! using IP for SPI and mult/div has broken Verilator/Vivado parity
 ## Simulate (before synthesis) using the Makefile
