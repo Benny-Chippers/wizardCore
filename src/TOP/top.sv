@@ -43,19 +43,19 @@ module top (
     `endif
 
     // Reset Locked Signal Delay
-    reset_delay #(.DELAY_CYCLES(120)) CPU_RST (
+    reset_delay #(.DELAY_CYCLES(240)) CPU_RST (
         .i_clk    (clk),
         .i_locked (locked),
         .o_reset_n(reset_n_CPU)
     );
 
-    reset_delay #(.DELAY_CYCLES(50)) VGA_RST (
+    reset_delay #(.DELAY_CYCLES(100)) VGA_RST (
         .i_clk    (vga_clk),
         .i_locked (locked),
         .o_reset_n(reset_n_VGA)
     );
 
-    reset_delay #(.DELAY_CYCLES(2)) SPI_RST (
+    reset_delay #(.DELAY_CYCLES(4)) SPI_RST (
         .i_clk    (spi_clk),
         .i_locked (locked),
         .o_reset_n(reset_n_SPI)
