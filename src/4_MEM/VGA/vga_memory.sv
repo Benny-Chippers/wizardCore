@@ -2,7 +2,7 @@ module vga_memory (
 	// Inputs
 	input logic i_clk,
 	input logic i_vga_clk,
-	input logic i_reset_n,
+	input logic i_reset_n_CPU,
 	input logic [31:0] i_pxlAddr,
 	input logic [31:0] i_pxlData,
 	input macro_pkg::mem_ctrl_t i_ctrlVGA,
@@ -41,7 +41,7 @@ module vga_memory (
 	initial buffer_select_vga = 0;
 
 	always_ff @(posedge i_clk) begin
-		if(i_reset_n) begin
+		if(i_reset_n_CPU) begin
 			if(i_pxlAddr == 32'h1003_0000 && i_ctrlVGA.memWrite)
 			buffer_select_cpu <= ~buffer_select_cpu;
 		end else begin
@@ -53,7 +53,7 @@ module vga_memory (
 	sig_sync SS1 (
 		.i_clkA   (i_clk),
 		.i_clkB   (i_vga_clk),
-		.i_reset_n(i_reset_n),
+		.i_reset_n(i_reset_n_CPU),
 		.i_sigIn  (buffer_select_cpu),
 		.o_sigOut (buffer_select_vga)
 		);

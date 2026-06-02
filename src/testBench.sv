@@ -59,11 +59,11 @@ module testBench;
     end
 
     always begin
-        #500ns spi_clk <= ~spi_clk;
+        #100ns spi_clk <= ~spi_clk;
     end
     `else
     always begin
-        #10ns osc_clk <= ~osc_clk;
+        #5ns osc_clk <= ~osc_clk;
     end
     `endif
 

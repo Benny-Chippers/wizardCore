@@ -2,7 +2,8 @@ module vga_top (
 	// Inputs
 	input logic i_clk,				// Memory Writing Clock
 	input logic i_vga_clk,			// VGA display
-	input logic i_reset_n,			// Asynchronous reset active low
+	input logic i_reset_n_CPU,
+	input logic i_reset_n_VGA,
 	input [31:0] i_pxlAddr,
 	input [31:0] i_pxlData,
 	input macro_pkg::mem_ctrl_t i_ctrlVGA,		// Pixel writing signals
@@ -28,7 +29,7 @@ module vga_top (
 	assign o_vgaData.hSync = w_hSync_2;
 
 	always_ff @(posedge i_vga_clk) begin
-		if(~i_reset_n) begin
+		if(~i_reset_n_VGA) begin
 			{w_vSync_2,w_vSync_1} <= 2'b0;
 			{w_hSync_2,w_hSync_1} <= 2'b0;
 		end else begin
@@ -39,16 +40,16 @@ module vga_top (
 
 
 	vga_memory VGA_MEM (
-		.i_clk    (i_clk),
-		.i_vga_clk(i_vga_clk),
-		.i_reset_n(i_reset_n),
-		.i_pxlAddr(i_pxlAddr),
-		.i_pxlData(i_pxlData),
-		.i_ctrlVGA(i_ctrlVGA),
-		.i_pxlX   (w_pxlX),
-		.i_pxlY   (w_pxlY),
-		.en_MEM   (en_MEM),
-		.o_color  (o_vgaData[11:0])
+		.i_clk    		(i_clk),
+		.i_vga_clk		(i_vga_clk),
+		.i_reset_n_CPU	(i_reset_n_CPU),
+		.i_pxlAddr		(i_pxlAddr),
+		.i_pxlData		(i_pxlData),
+		.i_ctrlVGA		(i_ctrlVGA),
+		.i_pxlX   		(w_pxlX),
+		.i_pxlY   		(w_pxlY),
+		.en_MEM   		(en_MEM),
+		.o_color  		(o_vgaData[11:0])
 		);
 
 	vga_compCount #(
@@ -59,7 +60,7 @@ module vga_top (
 		.OUTPUT_OFFSET(144)
 	) VGA_X (
 		.i_clk    (i_vga_clk),
-		.i_reset_n(i_reset_n),
+		.i_reset_n(i_reset_n_VGA),
 		.en       (1'b1),
 		.o_comp   (w_hSync_0),
 		.o_comp2  (w_x_y),
@@ -73,7 +74,7 @@ module vga_top (
 		.OUTPUT_OFFSET(31)
 	) VGA_Y (
 		.i_clk    (i_vga_clk),
-		.i_reset_n(i_reset_n),
+		.i_reset_n(i_reset_n_VGA),
 		.en       (w_x_y),
 		.o_comp   (w_vSync_0),
 		.o_comp2  (w_yy),
