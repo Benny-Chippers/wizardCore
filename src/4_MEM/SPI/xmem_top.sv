@@ -40,7 +40,8 @@ module xmem_top (
 	logic w_saveData;
 	logic [7:0] w_compareByte;
 	logic w_compareHit;
-	logic [3:0] w_byteCmd;
+	logic [7:0] w_byteCmd;
+	logic [2:0] w_cmd_index;
 
 	logic w_dRdy_buf;
 	logic w_dRdy_fall;
@@ -69,7 +70,6 @@ module xmem_top (
 			w_packet_CPU_CDC.addr = i_address;
 			w_packet_CPU_CDC.wdata = i_dataWrite;
 			w_packet_CPU_CDC.control = i_mem_ctrl;
-			// stall = (mem.write | mem.read) & ~done (~dest_req)
 			o_stall = (i_mem_ctrl.memWrite | i_mem_ctrl.memRead) & ~w_dest_req_CPU;
 		end
 	end
@@ -107,32 +107,38 @@ module xmem_top (
 		o_cmd_rdy = spi_ctrl.cmdRdy;
 
 		// Byte address selection
-		w_byteCmd = 0;
+		w_cmd_index = 0;
 		unique case (w_packet_QSPI_CDC.control.size)
 			2'b00: begin
 				unique case (w_packet_QSPI_CDC.addr[1:0])
-					2'b00: w_byteCmd = 4'b0011;
-					2'b01: w_byteCmd = 4'b0100;
-					2'b10: w_byteCmd = 4'b0101;
-					2'b11: w_byteCmd = 4'b0110;
+					2'b00: w_cmd_index = 3'b011;
+					2'b01: w_cmd_index = 3'b100;
+					2'b10: w_cmd_index = 3'b101;
+					2'b11: w_cmd_index = 3'b110;
 				endcase
 			end
 			2'b01: begin
 				unique case (w_packet_QSPI_CDC.addr[1])
-					1'b0: w_byteCmd = 4'b0001;
-					1'b1: w_byteCmd = 4'b0010;
+					1'b0: w_cmd_index = 3'b001;
+					1'b1: w_cmd_index = 3'b010;
 				endcase
 			end
-			2'b11: w_byteCmd = 4'b0000;
-			default: w_byteCmd = 0;
+			2'b11: w_cmd_index = 3'b000;
+			default: w_cmd_index = 0;
 		endcase
 
+		// Command Assembly
+		w_cmd_serial = (w_packet_QSPI_CDC.addr[31:30] == 11) ? w_packet_QSPI_CDC.addr[27] : 1'b0;
+
+		w_byteCmd = {1'b0, w_cmd_serial, w_packet_QSPI_CDC.addr[31:30],
+					 w_cmd_index, w_packet_QSPI_CDC.write};
+
+		// Loading the Shift Reg
 		w_sendData_dbl = 32'b0;
 		unique case (spi_ctrl.sendSelect)
 			NOTHING : w_sendData = 32'b0;
-			COMMAND	: w_sendData = {w_packet_QSPI_CDC.addr[31:30],
-									w_byteCmd, {2{w_packet_QSPI_CDC.write}}, 24'b0};
-			ADDRESS : w_sendData = {2'b00, w_packet_QSPI_CDC.addr[31:2]};
+			COMMAND	: w_sendData = {w_byteCmd, 24'b0};
+			ADDRESS : w_sendData = {w_packet_QSPI_CDC.addr[31:0]};
 			DATA 	:  begin
 				w_sendData = w_packet_QSPI_CDC.addr;
 				w_sendData_dbl = w_packet_QSPI_CDC.wdata;

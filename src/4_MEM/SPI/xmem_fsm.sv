@@ -21,6 +21,7 @@ module xmem_fsm	(
 	// FSM States
 	typedef enum {
 		IDLE_STATE,
+		PRIME_RX_STATE,
 		SEND_CMD_STATE,
 		SEND_ADDR_STATE,
 		SEND_ADDR_DATA_STATE,
@@ -98,13 +99,32 @@ module xmem_fsm	(
 					count_rst = 1;
 					o_spi_ctrl.select = 1;
 					if(i_req_CtQ) begin
-						next_state = SEND_CMD_STATE;
+						next_state = PRIME_RX_STATE;
+					end
+				end
+				PRIME_RX_STATE: begin
+					if (count_inc >= 2) begin
+						o_spi_ctrl.cmdRdy = 1;
+						// Wait for D_RDY Release
+						if (i_dRdy_fall == 1) begin
+							if (i_memWrite) begin
+								next_state = SEND_CMD_STATE;
+							end
+							count_rst = 1;
+						end
+						// Resend CMD READY if no response
+						if (count_inc >= 255) begin
+							count_rst = 1;
+						end
+					end else if (count_inc == 1) begin
+						// Entry cycle, Send CMD READY
+						o_spi_ctrl.cmdRdy = 0;
 					end
 				end
 				SEND_CMD_STATE: begin
 					o_spi_ctrl.sendSelect = COMMAND;
 
-					if (count_inc >= 38) begin
+					if (count_inc >= 14) begin
 						o_spi_ctrl.cmdRdy = 1;
 						// Wait for D_RDY Release
 						count_inc = count;
@@ -117,11 +137,11 @@ module xmem_fsm	(
 							count_rst = 1;
 						end
 
-					end else if (count_inc == 36) begin
+					end else if (count_inc == 12) begin
 						// send CMD READY
 						o_spi_ctrl.cmdRdy = 0;
 
-					end else if (count_inc == 35) begin 		// 3 cycl for Latency, 8 cycl for CMD
+					end else if (count_inc == 11) begin 		// 3 cycl for Latency, 8 cycl for CMD
 						// Transaction end
 						o_spi_ctrl.enable = 0;
 						o_spi_ctrl.select = 1;

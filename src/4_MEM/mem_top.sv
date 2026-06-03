@@ -26,7 +26,7 @@ module mem_top (
     `ifdef SIMULATION
         .INIT_FILENAME("test_special_regs.mem")
     `else
-        .INIT_FILENAME("C:/capstone/theTower/wizardCore/scripts/test_isa_vga.mem")
+        .INIT_FILENAME("C:/capstone/theTower/wizardCore/scripts/spi.mem")
     `endif
     ) Memory (
         .i_clk       (i_clk),
