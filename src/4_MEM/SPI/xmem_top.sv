@@ -44,6 +44,7 @@ module xmem_top (
 	logic [2:0] w_cmd_index;
 	logic w_cmd_serial;
 
+	logic w_dRdy_sync;
 	logic w_dRdy_buf;
 	logic w_dRdy_fall;
 
@@ -129,7 +130,7 @@ module xmem_top (
 		endcase
 
 		// Command Assembly
-		w_cmd_serial = (w_packet_QSPI_CDC.addr[31:30] == 11) ? w_packet_QSPI_CDC.addr[27] : 1'b0;
+		w_cmd_serial = (w_packet_QSPI_CDC.addr[31:30] == 2'b11) ? w_packet_QSPI_CDC.addr[27] : 1'b0;
 
 		w_byteCmd = {1'b0, w_cmd_serial, w_packet_QSPI_CDC.addr[31:30],
 					 w_cmd_index, w_packet_QSPI_CDC.write};
@@ -165,14 +166,22 @@ module xmem_top (
 			if(w_saveData) begin
 				w_data_QSPI_CDC <= w_recvData;
 			end
-			w_dRdy_buf <= i_d_rdy;
-			if (~i_d_rdy & w_dRdy_buf) begin
+			w_dRdy_buf <= w_dRdy_sync;
+			if (~w_dRdy_sync & w_dRdy_buf) begin
 				w_dRdy_fall <= 1;
 			end else begin
 				w_dRdy_fall <= 0;
 			end
 		end
 	end
+
+	sig_sync D_RDY_SYNC (
+		.i_clkA   (i_clk_spi),
+		.i_clkB   (i_clk_spi),
+		.i_reset_n(i_reset_n_SPI),
+		.i_sigIn  (i_d_rdy),
+		.o_sigOut (w_dRdy_sync)
+	);
 
 	`ifdef SIMULATION
 	// Emulation

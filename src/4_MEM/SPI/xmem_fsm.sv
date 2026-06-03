@@ -104,12 +104,11 @@ module xmem_fsm	(
 				end
 				PRIME_RX_STATE: begin
 					if (count_inc >= 2) begin
-						o_spi_ctrl.cmdRdy = 1;
 						// Wait for D_RDY Release
+						count_inc = count;
 						if (i_dRdy_fall == 1) begin
-							if (i_memWrite) begin
-								next_state = SEND_CMD_STATE;
-							end
+							o_spi_ctrl.cmdRdy = 1;
+							next_state = SEND_CMD_STATE;
 							count_rst = 1;
 						end
 						// Resend CMD READY if no response
@@ -125,10 +124,10 @@ module xmem_fsm	(
 					o_spi_ctrl.sendSelect = COMMAND;
 
 					if (count_inc >= 14) begin
-						o_spi_ctrl.cmdRdy = 1;
 						// Wait for D_RDY Release
 						count_inc = count;
 						if (i_dRdy_fall == 1) begin
+							o_spi_ctrl.cmdRdy = 1;
 							if (i_memWrite) begin
 								next_state = SEND_ADDR_DATA_STATE;
 							end else if (i_memRead) begin
@@ -163,10 +162,10 @@ module xmem_fsm	(
 					o_spi_ctrl.sendSelect = ADDRESS;
 
 					if (count_inc >= 38) begin
-						o_spi_ctrl.cmdRdy = 1;
 						// Wait for D_RDY Release
 						count_inc = count;
 						if (i_dRdy_fall == 1) begin
+							o_spi_ctrl.cmdRdy = 1;
 							next_state = RCV_DATA_STATE;
 							count_rst = 1;
 						end
@@ -197,10 +196,10 @@ module xmem_fsm	(
 					o_spi_ctrl.sendSelect = DATA;
 
 					if (count_inc >= 70) begin
-						o_spi_ctrl.cmdRdy = 1;
 						// Wait for D_RDY Release
 						count_inc = count;
 						if (i_dRdy_fall == 1) begin
+							o_spi_ctrl.cmdRdy = 1;
 							next_state = DONE_STATE;
 							count_rst = 1;
 						end
