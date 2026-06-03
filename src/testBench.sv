@@ -46,7 +46,7 @@ module testBench;
         gpio_drive = 32'h0000_0100;
         gpio_drive_en = 32'h0000_0100;
 
-        #15us hit_reset = 1'b0;
+        #50ns hit_reset = 1'b0;
     end
 
     `ifdef SIMULATION
@@ -59,11 +59,11 @@ module testBench;
     end
 
     always begin
-        #500ns spi_clk <= ~spi_clk;
+        #100ns spi_clk <= ~spi_clk;
     end
     `else
     always begin
-        #10ns osc_clk <= ~osc_clk;
+        #5ns osc_clk <= ~osc_clk;
     end
     `endif
 
@@ -87,7 +87,7 @@ module testBench;
     end
 
     initial begin
-        #10ms $dumpflush;
+        #100us $dumpflush;
         $finish;
     end
 
@@ -111,7 +111,8 @@ module testBench;
         .reset_n    (reset_n),
         .vgaData    (vgaData),
         .spi        (spi),
-        .gpio       (gpio_bus)
+        .gpio       (gpio_bus[15:7]),
+        .gpio2      (gpio_bus[31:23])
     );
 
 endmodule

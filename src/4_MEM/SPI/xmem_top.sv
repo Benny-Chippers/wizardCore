@@ -2,7 +2,8 @@ module xmem_top (
 	// Input
 	input logic i_clk_cpu,    	// CPU clock
 	input logic i_clk_spi,    	// SPI clock
-	input logic i_reset_n,    	// Synchronous reset active low
+	input logic i_reset_n_CPU,
+	input logic i_reset_n_SPI,
 	input logic [31:0] i_address,
 	input logic [31:0] i_dataWrite,
 	input macro_pkg::mem_ctrl_t i_mem_ctrl,
@@ -74,7 +75,7 @@ module xmem_top (
 	end
 
 	always_ff @(posedge i_clk_cpu) begin
-		if(~i_reset_n) begin
+		if(~i_reset_n_CPU) begin
 			w_stall_buf <= 0;
 			w_src_send_CPU <= 0;
 			o_dataRead <= 0;
@@ -141,7 +142,7 @@ module xmem_top (
 	end
 
 	always_ff @(negedge i_clk_spi) begin : proc_
-		if(~i_reset_n) begin
+		if(~i_reset_n_SPI) begin
 			o_select_QSPI <= 1;
 		end else begin
 			o_select_QSPI <= spi_ctrl.select;
@@ -149,7 +150,7 @@ module xmem_top (
 	end
 
 	always_ff @(posedge i_clk_spi) begin
-		if(~i_reset_n) begin
+		if(~i_reset_n_SPI) begin
 			w_data_QSPI_CDC <= 0;
 			w_dRdy_buf <= 0;
 			w_dRdy_fall <= 0;
@@ -222,7 +223,7 @@ module xmem_top (
 
 	xmem_fsm FSM (
 		.i_clk        (i_clk_spi),
-		.i_reset_n    (i_reset_n),
+		.i_reset_n    (i_reset_n_SPI),
 		.i_memRead    (w_packet_QSPI_CDC.read),
 		.i_memWrite   (w_packet_QSPI_CDC.write),
 		.i_compareHit (w_compareHit),
@@ -236,9 +237,9 @@ module xmem_top (
 	);
 
 
-	xmem_spi QSPI (
+	xmem_spi SPI (
 		.i_clk        (i_clk_spi),
-		.i_reset_n    (i_reset_n),
+		.i_reset_n    (i_reset_n_SPI),
 		.i_dataIn     (w_sendData),
 		.i_dataIn_dbl (w_sendData_dbl),
 		.i_compareByte(w_compareByte),
