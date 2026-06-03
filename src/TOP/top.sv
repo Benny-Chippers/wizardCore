@@ -11,7 +11,8 @@ module top (
     input logic reset_n,  // Synchronous reset active low
     output macro_pkg::vga_out_t vgaData,
     inout wire [5:0] spi,
-    inout wire [31:0] gpio
+    inout wire [8:0] gpio,
+    inout wire [8:0] gpio2
 );
 
     // Reset Signals
@@ -81,6 +82,11 @@ module top (
     logic [31:0] readMEM;
     logic [31:0] readXMEM;
     logic [31:0] readSPCL;
+    
+    //dummy gpio signals
+    wire [31:0] gpio_bus;
+    assign gpio2 = gpio_bus[31:23];
+    assign gpio = gpio_bus[15:7];
 
 
     // Control Signals
@@ -224,7 +230,7 @@ module top (
             .i_ctrlMEM  (ctrlSPCL),
             .en_SPC     (en_MEM),
             .o_dataRead (readSPCL),
-            .io_gpio    (gpio)
+            .io_gpio    (gpio_bus)
         );
 
     always_comb begin
