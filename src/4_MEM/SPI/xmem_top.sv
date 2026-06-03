@@ -42,6 +42,7 @@ module xmem_top (
 	logic w_compareHit;
 	logic [7:0] w_byteCmd;
 	logic [2:0] w_cmd_index;
+	logic w_cmd_serial;
 
 	logic w_dRdy_buf;
 	logic w_dRdy_fall;
