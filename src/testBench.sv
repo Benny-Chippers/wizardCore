@@ -111,7 +111,8 @@ module testBench;
         .reset_n    (reset_n),
         .vgaData    (vgaData),
         .spi        (spi),
-        .gpio       (gpio_bus)
+        .gpio       (gpio_bus[15:7]),
+        .gpio2      (gpio_bus[31:23])
     );
 
 endmodule
