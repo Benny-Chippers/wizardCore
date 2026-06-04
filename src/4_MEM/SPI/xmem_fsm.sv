@@ -103,7 +103,7 @@ module xmem_fsm	(
 					end
 				end
 				PRIME_RX_STATE: begin
-					if (count_inc >= 2) begin
+					if (count + 1 >= 2) begin
 						// Wait for D_RDY Release
 						// count_inc = count;
 						o_spi_ctrl.cmdRdy = 1;
@@ -112,10 +112,10 @@ module xmem_fsm	(
 							count_rst = 1;
 						end
 						// Resend CMD READY if no response
-						if (count_inc >= 255) begin
+						if (count + 1 >= 255) begin
 							count_rst = 1;
 						end
-					end else if (count_inc == 1) begin
+					end else if (count + 1 == 1) begin
 						// Entry cycle, Send CMD READY
 						o_spi_ctrl.cmdRdy = 0;
 					end
@@ -123,7 +123,7 @@ module xmem_fsm	(
 				SEND_CMD_STATE: begin
 					o_spi_ctrl.sendSelect = COMMAND;
 
-					if (count_inc >= 14) begin
+					if (count + 1 >= 14) begin
 						// Wait for D_RDY Release
 						count_inc = count;
 						o_spi_ctrl.cmdRdy = 1;
@@ -137,24 +137,24 @@ module xmem_fsm	(
 							count_rst = 1;
 						end
 
-					end else if (count_inc == 12) begin
+					end else if (count + 1 == 12) begin
 						// send CMD READY
 						o_spi_ctrl.cmdRdy = 0;
 
-					end else if (count_inc == 11) begin 		// 3 cycl for Latency, 8 cycl for CMD
+					end else if (count + 1 == 11) begin 		// 3 cycl for Latency, 8 cycl for CMD
 						// Transaction end
 						o_spi_ctrl.enable = 0;
 						o_spi_ctrl.select = 1;
 
-					end else if (count_inc == 3) begin
+					end else if (count + 1 == 3) begin
 						// Pull down CS at start of data
 						o_spi_ctrl.select = 0;
 
-					end else if (count_inc == 2) begin
+					end else if (count + 1 == 2) begin
 						// Begin Shifting
 						o_spi_ctrl.enable = 1;
 
-					end else if (count_inc == 1) begin
+					end else if (count + 1 == 1) begin
 						// Entry cycle
 						o_spi_ctrl.readWrite = 1;
 					end
@@ -162,7 +162,7 @@ module xmem_fsm	(
 				SEND_ADDR_STATE: begin
 					o_spi_ctrl.sendSelect = ADDRESS;
 
-					if (count_inc >= 38) begin
+					if (count + 1 >= 38) begin
 						// Wait for D_RDY Release
 						count_inc = count;
 						o_spi_ctrl.cmdRdy = 1;
@@ -171,16 +171,16 @@ module xmem_fsm	(
 							count_rst = 1;
 						end
 
-					end else if (count_inc == 36) begin
+					end else if (count + 1 == 36) begin
 						// send CMD READY
 						o_spi_ctrl.cmdRdy = 0;
 
-					end else if (count_inc == 35) begin 		// 3 cycl for Latency, 32 cycl for CMD
+					end else if (count + 1 == 35) begin 		// 3 cycl for Latency, 32 cycl for CMD
 						// Transaction end
 						o_spi_ctrl.enable = 0;
 						o_spi_ctrl.select = 1;
 
-					end else if (count_inc == 3) begin
+					end else if (count + 1 == 3) begin
 						// Pull down CS at start of data
 						o_spi_ctrl.select = 0;
 
@@ -196,7 +196,7 @@ module xmem_fsm	(
 				SEND_ADDR_DATA_STATE: begin
 					o_spi_ctrl.sendSelect = DATA;
 
-					if (count_inc >= 70) begin
+					if (count + 1 >= 70) begin
 						// Wait for D_RDY Release
 						count_inc = count;
 						o_spi_ctrl.cmdRdy = 1;
@@ -205,44 +205,44 @@ module xmem_fsm	(
 							count_rst = 1;
 						end
 
-					end else if (count_inc == 68) begin
+					end else if (count + 1 == 68) begin
 						// send CMD READY
 						o_spi_ctrl.cmdRdy = 0;
 
-					end else if (count_inc == 67) begin 		// 3 cycl for Latency, 64 cycl for CMD
+					end else if (count + 1 == 67) begin 		// 3 cycl for Latency, 64 cycl for CMD
 						// Transaction end
 						o_spi_ctrl.enable = 0;
 						o_spi_ctrl.select = 1;
 						o_spi_ctrl.dbl = 0;
 
-					end else if (count_inc == 3) begin
+					end else if (count + 1 == 3) begin
 						// Pull down CS at start of data
 						o_spi_ctrl.select = 0;
 
-					end else if (count_inc == 2) begin
+					end else if (count + 1 == 2) begin
 						// Begin Shifting
 						o_spi_ctrl.enable = 1;
 
-					end else if (count_inc == 1) begin
+					end else if (count + 1 == 1) begin
 						// Entry cycle
 						o_spi_ctrl.readWrite = 1;
 						o_spi_ctrl.dbl = 1;
 					end
 				end
 				RCV_DATA_STATE: begin
-					if (count_inc >= 35) begin 	// 32 cycles for Data, 2 cycle latency, 1 cycle save data
+					if (count + 1 >= 35) begin 	// 32 cycles for Data, 2 cycle latency, 1 cycle save data
 						// Data Received
 						next_state = DONE_STATE;
 						count_rst = 1;
 
 						o_saveData = 1;
 
-					end else if (count_inc >= 34) begin 	// 1 cycl for pause, 32 cycles for Data, 1 cycle latency
+					end else if (count + 1 >= 34) begin 	// 1 cycl for pause, 32 cycles for Data, 1 cycle latency
 						// Response Received
 						o_spi_ctrl.enable = 0;
 						o_spi_ctrl.select = 1;
 
-					end else if (count_inc == 1) begin
+					end else if (count + 1 == 1) begin
 						// Entry Loop
 						o_spi_ctrl.enable = 1;
 						o_spi_ctrl.select = 0;
