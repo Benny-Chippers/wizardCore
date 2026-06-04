@@ -51,30 +51,12 @@ Addr[31:30] will be used for northbridge routing areas
 | `0b10` | `0xA` | SD card |
 | `0b11` | `0xE` | Southbridge communication |
 
-Addr[25:0] will be actual memory addresses, but still need to fit in the ranges availible to each Area
+Addr[27:0] will be actual memory addresses, but still need to fit in the ranges availible to each Area
 
 | Address Range | Description |
 | --- | --- |
 | `0x0000_0000 - 0x0x0000_0000` | Example Range |
 
-Addr[29:26] will be overwritten on dispatch to north bridge as meta data for Byte addresibility and read/write
-
-| Addr[29:27] | Byte Adressing |
-| --- | --- |
-| `0b000` | Whole Word |
-| `0b001` | First Half Word |
-| `0b010` | Second Half Word |
-| `0b011` | First Byte |
-| `0b100` | Second Byte |
-| `0b101` | Third Byte |
-| `0b110` | Fourth Byte |
-
-Addr[26] will indicate if the access is a read or a write
-
-| Addr[26] | Byte Adressing |
-| --- | --- |
-| `0b0` | Read |
-| `0b1` | Write |
 
 ## Special Module Registers
 

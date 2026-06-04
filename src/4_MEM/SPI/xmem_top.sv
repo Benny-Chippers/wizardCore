@@ -34,6 +34,7 @@ module xmem_top (
 	logic w_stall_buf;
 
 	macro_pkg::xmem_ctrl_t spi_ctrl;
+	logic [1:0] r_selectBuf_QSPI;
 	logic [31:0] w_sendData;
 	logic [31:0] w_sendData_dbl;
 	logic [31:0] w_recvData;
@@ -103,8 +104,8 @@ module xmem_top (
 
 	// ONLY QSPI SIDE SIGNALS
 	always_comb begin
-		o_clk_QSPI = i_clk_spi & ~o_select_QSPI;
-		// o_select_QSPI = spi_ctrl.select;
+		o_clk_QSPI = i_clk_spi & ~r_selectBuf_QSPI[0];
+		o_select_QSPI = r_selectBuf_QSPI[1] & r_selectBuf_QSPI[0];
 		o_cmd_rdy = spi_ctrl.cmdRdy;
 
 		// Byte address selection
@@ -124,7 +125,7 @@ module xmem_top (
 					1'b1: w_cmd_index = 3'b010;
 				endcase
 			end
-			2'b11: w_cmd_index = 3'b000;
+			2'b10: w_cmd_index = 3'b000;
 			default: w_cmd_index = 0;
 		endcase
 
@@ -150,9 +151,10 @@ module xmem_top (
 
 	always_ff @(negedge i_clk_spi) begin : proc_
 		if(~i_reset_n_SPI) begin
-			o_select_QSPI <= 1;
+			r_selectBuf_QSPI <= 2'b11;
 		end else begin
-			o_select_QSPI <= spi_ctrl.select;
+			r_selectBuf_QSPI[1] <= r_selectBuf_QSPI[0];
+			r_selectBuf_QSPI[0] <= spi_ctrl.select;
 		end
 	end
 

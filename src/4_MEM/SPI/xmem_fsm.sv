@@ -123,7 +123,7 @@ module xmem_fsm	(
 				SEND_CMD_STATE: begin
 					o_spi_ctrl.sendSelect = COMMAND;
 
-					if (count + 1 >= 14) begin
+					if (count + 1 >= 38) begin
 						// Wait for D_RDY Release
 						count_inc = count;
 						o_spi_ctrl.cmdRdy = 1;
@@ -137,11 +137,11 @@ module xmem_fsm	(
 							count_rst = 1;
 						end
 
-					end else if (count + 1 == 12) begin
+					end else if (count + 1 == 36) begin
 						// send CMD READY
 						o_spi_ctrl.cmdRdy = 0;
 
-					end else if (count + 1 == 11) begin 		// 3 cycl for Latency, 8 cycl for CMD
+					end else if (count + 1 == 35) begin 		// 3 cycl for Latency, 8 cycl for CMD
 						// Transaction end
 						o_spi_ctrl.enable = 0;
 						o_spi_ctrl.select = 1;
