@@ -105,9 +105,9 @@ module xmem_fsm	(
 				PRIME_RX_STATE: begin
 					if (count_inc >= 2) begin
 						// Wait for D_RDY Release
-						count_inc = count;
+						// count_inc = count;
+						o_spi_ctrl.cmdRdy = 1;
 						if (i_dRdy_fall == 1) begin
-							o_spi_ctrl.cmdRdy = 1;
 							next_state = SEND_CMD_STATE;
 							count_rst = 1;
 						end
@@ -126,6 +126,7 @@ module xmem_fsm	(
 					if (count_inc >= 14) begin
 						// Wait for D_RDY Release
 						count_inc = count;
+						o_spi_ctrl.cmdRdy = 1;
 						if (i_dRdy_fall == 1) begin
 							o_spi_ctrl.cmdRdy = 1;
 							if (i_memWrite) begin
@@ -164,8 +165,8 @@ module xmem_fsm	(
 					if (count_inc >= 38) begin
 						// Wait for D_RDY Release
 						count_inc = count;
+						o_spi_ctrl.cmdRdy = 1;
 						if (i_dRdy_fall == 1) begin
-							o_spi_ctrl.cmdRdy = 1;
 							next_state = RCV_DATA_STATE;
 							count_rst = 1;
 						end
@@ -198,8 +199,8 @@ module xmem_fsm	(
 					if (count_inc >= 70) begin
 						// Wait for D_RDY Release
 						count_inc = count;
+						o_spi_ctrl.cmdRdy = 1;
 						if (i_dRdy_fall == 1) begin
-							o_spi_ctrl.cmdRdy = 1;
 							next_state = DONE_STATE;
 							count_rst = 1;
 						end

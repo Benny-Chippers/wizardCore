@@ -129,7 +129,7 @@ module xmem_top (
 		endcase
 
 		// Command Assembly
-		w_cmd_serial = (w_packet_QSPI_CDC.addr[31:30] == 11) ? w_packet_QSPI_CDC.addr[27] : 1'b0;
+		w_cmd_serial = (w_packet_QSPI_CDC.addr[31:30] == 2'b11) ? w_packet_QSPI_CDC.addr[27] : 1'b0;
 
 		w_byteCmd = {1'b0, w_cmd_serial, w_packet_QSPI_CDC.addr[31:30],
 					 w_cmd_index, w_packet_QSPI_CDC.write};
