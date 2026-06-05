@@ -55,7 +55,8 @@ Addr[27:0] will be actual memory addresses, but still need to fit in the ranges 
 
 | Address Range | Description |
 | --- | --- |
-| `0x0000_0000 - 0x0x0000_0000` | Example Range |
+| `0xE000_0000 - 0x0xE800_0003` | KeyBoard Bit Field (a,b,...,z,`,`,`.`) |
+| `0xE800_0000 - 0x0xE800_0000` | NB Serial Print Out |
 
 
 ## Special Module Registers
