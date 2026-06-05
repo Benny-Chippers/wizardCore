@@ -230,14 +230,14 @@ module xmem_fsm	(
 					end
 				end
 				RCV_DATA_STATE: begin
-					if (count + 1 >= 35) begin 	// 32 cycles for Data, 2 cycle latency, 1 cycle save data
+					if (count + 1 >= 34) begin 	// 32 cycles for Data, 2 cycle latency, 1 cycle save data
 						// Data Received
 						next_state = DONE_STATE;
 						count_rst = 1;
 
 						o_saveData = 1;
 
-					end else if (count + 1 >= 34) begin 	// 1 cycl for pause, 32 cycles for Data, 1 cycle latency
+					end else if (count + 1 >= 33) begin 	// 1 cycl for pause, 32 cycles for Data, 1 cycle latency
 						// Response Received
 						o_spi_ctrl.enable = 0;
 						o_spi_ctrl.select = 1;
