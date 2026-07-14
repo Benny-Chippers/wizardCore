@@ -36,10 +36,6 @@ module vga_memory (
 	macro_pkg::vga_color_t w_color_1;
 
 
-	// Buffer Select
-	initial buffer_select_cpu = 0;
-	initial buffer_select_vga = 0;
-
 	always_ff @(posedge i_clk) begin
 		if(i_reset_n_CPU) begin
 			if(i_pxlAddr == 32'h1003_0000 && i_ctrlVGA.memWrite)

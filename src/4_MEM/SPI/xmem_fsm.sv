@@ -56,18 +56,21 @@ module xmem_fsm	(
 	localparam logic [7:0] DONE = 	8'h60;		// to make first byte 0
 
 
-	initial begin
-		current_state = IDLE_STATE;
-	end
-
 	always_ff @(posedge i_clk) begin
-		// State Managing
-		current_state <= next_state;
-		count <= (count_rst) ? 0 : count_inc;
+		if (!i_reset_n) begin
+			current_state <= IDLE_STATE;
+			count <= '0;
+			wB_spi_ctrl <= '0;
+			wB_send_QtC <= 1'b0;
+		end else begin
+			// State Managing
+			current_state <= next_state;
+			count <= (count_rst) ? 0 : count_inc;
 
-		// Output State saving
-		wB_spi_ctrl <= o_spi_ctrl;
-		wB_send_QtC <= o_send_QtC;
+			// Output State saving
+			wB_spi_ctrl <= o_spi_ctrl;
+			wB_send_QtC <= o_send_QtC;
+		end
 	end
 
 	always_comb begin
