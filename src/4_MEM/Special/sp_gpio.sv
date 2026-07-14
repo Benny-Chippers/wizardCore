@@ -34,6 +34,7 @@ module sp_gpio (
 		for (i = 0; i < 32; i++) begin : gen_bits
 			pin_io u_pin_io (
 				.i_clk     (i_clk),
+				.i_reset_n (i_reset_n),
 				.i_dir     (r_direction[i]),
 				.i_dataSend(r_out_reg[i]),
 				.o_dataRecv(w_sig_in[i]),

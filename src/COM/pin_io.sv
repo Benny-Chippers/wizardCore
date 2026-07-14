@@ -1,6 +1,7 @@
 module pin_io (
 	// Input
 	input logic i_clk,
+	input logic i_reset_n,
 	input logic i_dir,
 	input logic i_dataSend,
 
@@ -11,11 +12,6 @@ module pin_io (
 	inout wire io_pin	// make sure to explicitly delcare everything this touches externally a wire.
 );
 
-	initial begin
-		sendBuf = 0;
-		recvBuf = 0;
-	end
-
 	// Internal
 	logic sendBuf;
 	logic recvBuf;
@@ -24,12 +20,20 @@ module pin_io (
 	assign o_dataRecv = recvBuf;
 
 	always_ff @(posedge i_clk) begin
-		recvBuf <= io_pin;
+		if (!i_reset_n) begin
+			recvBuf <= 1'b0;
+		end else begin
+			recvBuf <= io_pin;
+		end
 		// sendBuf <= i_dataSend;
 	end
 
 	always_ff @(negedge i_clk) begin
-	   sendBuf <= i_dataSend;
+		if (!i_reset_n) begin
+			sendBuf <= 1'b0;
+		end else begin
+			sendBuf <= i_dataSend;
+		end
 	end
 
 

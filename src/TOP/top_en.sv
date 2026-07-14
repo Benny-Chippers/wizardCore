@@ -38,13 +38,14 @@ module top_en (
 	localparam logic [2:0] MEM_STATE = 3'b100;
 	localparam logic [2:0] WB_STATE = 3'b101;
 
-	initial begin
-		current_state = 0;
-	end
-
 	always_ff @(posedge i_clk) begin
-		current_state <= next_state;
-		count <= (count_rst) ? 0 : count_inc;
+		if (!i_reset_n) begin
+			current_state <= '0;
+			count <= '0;
+		end else begin
+			current_state <= next_state;
+			count <= (count_rst) ? 0 : count_inc;
+		end
 	end
 
 	always_comb begin

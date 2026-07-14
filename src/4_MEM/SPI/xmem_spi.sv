@@ -55,8 +55,8 @@ module xmem_spi (
 
 	always_ff @(posedge i_clk) begin
 		if(~i_reset_n) begin
-			w_dataBuf <= 32'h0;
-			w_dataBuf_ext <= 32'h0;
+			w_dataBuf <= 32'hFFFF_FFFF;
+			w_dataBuf_ext <= 32'hFFFF_FFFF;
 			w_outBuf <= 1;
 		end else begin
 			if (i_spi_en == 0) begin
@@ -77,10 +77,10 @@ module xmem_spi (
 					w_outBuf <= w_dataBuf[31];
 					// need to add double word send option
 					if(i_spi_dbl == 0) begin
-						w_dataBuf <= {w_dataBuf[30:0], 1'b0};
+						w_dataBuf <= {w_dataBuf[30:0], 1'b1};
 					end else begin
 						w_dataBuf <= {w_dataBuf[30:0], w_dataBuf_ext[31]};
-						w_dataBuf_ext <= {w_dataBuf_ext[30:0], 1'b0};
+						w_dataBuf_ext <= {w_dataBuf_ext[30:0], 1'b1};
 					end
 				end
 			end
